@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:visualizeit/pages/base_page.dart';
+import 'package:visualizeit/pages/script_editor.dart';
 import 'package:visualizeit/pages/script_selector.dart';
 
 void main() => runApp(const VisualizeItApp());
@@ -12,34 +13,23 @@ final GoRouter _router = GoRouter(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
         return ScriptSelectorPage(
-          onPlayPressed: (scriptId) => {
-            debugPrint("Opening player for script: $scriptId"),
-            context.go("/scripts/$scriptId/play")
-          },
-          onViewPressed: (scriptId) => {
-            debugPrint("Opening script editor for script: $scriptId"),
-            context.go("/scripts/$scriptId/edit")
-          },
-          onHelpPressed: () => {
-            debugPrint("Opening help"),
-            context.go("/help")
-          },
-          onSignInPressed: () => {
-            debugPrint("Opening sign-in"),
-            context.go("/sign-in")
-          },
-          onExtensionsPressed: () => {
-            debugPrint("Opening extensions"),
-            context.go("/extensions")
-          }
+          onPlayPressed: (scriptId) => { context.go("/scripts/$scriptId/play") },
+          onViewPressed: (scriptId) => { context.go("/scripts/$scriptId/edit") },
+          onHelpPressed: () => { context.go("/help") },
+          onSignInPressed: () => { context.go("/sign-in") },
+          onExtensionsPressed: () => { context.go("/extensions") }
         );
       },
       routes: <RouteBase>[
         GoRoute(
           path: 'scripts/:sid/edit',
           builder: (BuildContext context, GoRouterState state) {
-            final scriptId = state.pathParameters['sid'];
-            return FakePage(title: "Script editor for: $scriptId", goToRoutes: []);
+            final scriptId = state.pathParameters['sid']!;
+            return ScriptEditorPage(scriptId,
+                onHelpPressed: () => { context.go("/help") },
+                onSignInPressed: () => { context.go("/sign-in") },
+                onExtensionsPressed: () => { context.go("/extensions") }
+            );
           },
         ),
         GoRoute(
@@ -85,7 +75,14 @@ class VisualizeItApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(routerConfig: _router, debugShowCheckedModeBanner: false);
+    return MaterialApp.router(
+        routerConfig: _router,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: const ColorScheme.light(),
+          useMaterial3: true,
+        ),
+    );
   }
 }
 
