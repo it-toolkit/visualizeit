@@ -12,6 +12,7 @@ abstract class BasePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          scrolledUnderElevation: 0,//Disable color change on scroll
             toolbarHeight: 80,
             bottom: buildAppBarBottom(context),
             title: const FittedBox(child: Text("Visualize IT", textScaler: TextScaler.linear(3.0))),
