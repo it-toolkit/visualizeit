@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -20,12 +19,21 @@ class ScriptSelectorPage extends BasePage {
         length: 3,
         initialIndex: 0,
         child: Scaffold(
-          appBar: const TabBar(
-            tabs: [
-              Tab(child: Text("Public scripts", softWrap: true, textAlign: TextAlign.center)),
-              Tab(child: Text("My scripts", softWrap: true, textAlign: TextAlign.center)),
-              Tab(child: Text("Shared with me", softWrap: true, textAlign: TextAlign.center))
-            ],
+          appBar: PreferredSize(
+            preferredSize:  const Size.fromHeight(40.0),
+            child: Container(
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(colors: <Color>[Colors.lightBlue, Colors.lightGreenAccent]),
+                  borderRadius: BorderRadius.all(Radius.circular(5))
+              ),
+              child: const TabBar(
+                tabs: [
+                  Tab(child: Text("Public scripts", softWrap: true, textAlign: TextAlign.center)),
+                  Tab(child: Text("My scripts", softWrap: true, textAlign: TextAlign.center)),
+                  Tab(child: Text("Shared with me", softWrap: true, textAlign: TextAlign.center))
+                ],
+              ),
+            ),
           ),
           body: TabBarView(
             children: [
@@ -68,7 +76,7 @@ class ScriptSelectorPage extends BasePage {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text("Script details"),
+            const Text("Scripts"),
             Expanded(
                 child: Container(
               decoration:
@@ -78,7 +86,8 @@ class ScriptSelectorPage extends BasePage {
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     dense: true,
-                    title: Text('Test script ${index + 1}'),
+                    title: Text('Test script ${index + 1}'), //TODO replace with model selected value
+                    selected: index == 0,
                   );
                 },
               ),
@@ -124,7 +133,7 @@ class ScriptSelectorPage extends BasePage {
                       color: Color.fromRGBO(171, 197, 212, 0.3),
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    child: const Text("lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum"))),
+                    child: const SingleChildScrollView(child: Text(scriptDetailsExample)))),
             buttonBar
           ],
         ));
@@ -134,7 +143,7 @@ class ScriptSelectorPage extends BasePage {
     return ButtonBar(
       children: [
         TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script")}, child: const Text("Clone")),
-        TextButton(onPressed: () => {onViewPressed?.call("Test script 1")}, child: const Text("View")),
+        TextButton(onPressed: () => {onViewPressed?.call("Test script 1 with long message")}, child: const Text("View")),
         ElevatedButton(onPressed: () => {onPlayPressed?.call("Test script 1")}, child: const Text("Play")),
       ],
     );
@@ -181,4 +190,13 @@ class ScriptSelectorPage extends BasePage {
       },
     );
   }
+
+
+  static const scriptDetailsExample = """
+lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
+lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
+lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
+lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
+lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
+""";
 }
