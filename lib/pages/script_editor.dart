@@ -107,6 +107,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
               decoration:
                   const BoxDecoration(color: Color.fromRGBO(171, 197, 212, 0.3), borderRadius: BorderRadius.all(Radius.circular(10))),
               child: ReorderableListView.builder(
+                physics: const ClampingScrollPhysics(),
                 onReorder: (int oldIndex, int newIndex) => {},
                 buildDefaultDragHandles: false,
                 itemCount: 5,
@@ -153,7 +154,9 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
                 child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
                   child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     child: Text(sampleText),
                   ),

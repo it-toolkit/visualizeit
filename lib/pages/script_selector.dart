@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:visualizeit/pages/base_page.dart';
 
 class ScriptSelectorPage extends BasePage {
@@ -83,6 +82,7 @@ class ScriptSelectorPage extends BasePage {
                   const BoxDecoration(color: Color.fromRGBO(171, 197, 212, 0.3), borderRadius: BorderRadius.all(Radius.circular(10))),
               child: ListView.builder(
                 itemCount: 5,
+                physics: const ClampingScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     dense: true,
@@ -133,7 +133,11 @@ class ScriptSelectorPage extends BasePage {
                       color: Color.fromRGBO(171, 197, 212, 0.3),
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    child: const SingleChildScrollView(child: Text(scriptDetailsExample)))),
+                    child: const SingleChildScrollView(
+                        physics: ClampingScrollPhysics(),
+                        child: Text(scriptDetailsExample)),
+                ),
+            ),
             buttonBar
           ],
         ));
@@ -168,6 +172,7 @@ class ScriptSelectorPage extends BasePage {
         return AlertDialog(
           title: const Text('...'),
           content: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
             child: ListBody(
               children: <Widget>[
                 Text('Would you like to $actionDescription?'),
