@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/pages/base_page.dart';
 
 import 'adaptive_container.dart';
@@ -79,7 +80,7 @@ class ExtensionPage extends BasePage {
                 ),
                 child: const SingleChildScrollView(
                     physics: ClampingScrollPhysics(),
-                    child: Text(extensionDocsExample)),
+                    child: MarkdownBody (data : extensionDocsExample)),
               ),
             ),
           ],
@@ -87,10 +88,20 @@ class ExtensionPage extends BasePage {
   }
 
   static const extensionDocsExample = """
+> lorem ipsum, lorem ipsum, lorem ipsum
+
+# Lorem impsum  
+lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
+lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
+
+## Lorem impsum  
 lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
 lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
+lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
+
+```
+lorem ipsum
+```
+  
 """;
 }
