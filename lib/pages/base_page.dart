@@ -17,6 +17,7 @@ abstract class BasePage extends StatelessWidget {
             toolbarHeight: 80,
             bottom: buildAppBarBottom(context),
             title: const FittedBox(child: Text("Visualize IT", textScaler: TextScaler.linear(3.0))),
+            centerTitle: false,
             actions: <Widget?>[
               IconButton(icon: const Icon(Icons.login), tooltip: 'SignIn', onPressed: onSignInPressed).takeIfDef(onSignInPressed),
               IconButton(icon: const Icon(Icons.account_tree), tooltip: 'Extensions', onPressed: onExtensionsPressed).takeIfDef(onExtensionsPressed),
