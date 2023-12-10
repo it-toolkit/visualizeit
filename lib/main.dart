@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:visualizeit/pages/base_page.dart';
+import 'package:visualizeit/pages/extension_page.dart';
 import 'package:visualizeit/pages/signin_page.dart';
 import 'package:visualizeit/pages/script_editor.dart';
 import 'package:visualizeit/pages/script_selector.dart';
@@ -37,7 +38,9 @@ final GoRouter _router = GoRouter(
         GoRoute(
           path: 'extensions',
           builder: (BuildContext context, GoRouterState state) {
-            return const FakePage(title: "Extensions", goToRoutes: []);
+            return ExtensionPage(
+              onHelpPressed: () => { context.go("/help") }
+            );
           },
         ),
         GoRoute(
