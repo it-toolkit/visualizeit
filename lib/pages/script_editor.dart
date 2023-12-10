@@ -4,23 +4,39 @@ import 'package:visualizeit/pages/tags.dart';
 
 import 'base_page.dart';
 
-class ScriptEditorPage extends BasePage {
-  const ScriptEditorPage(this.scriptId, {super.key, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
+class ScriptEditorPage extends StatefulBasePage {
+  const ScriptEditorPage({super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
 
   final String scriptId;
 
   @override
+  State<StatefulWidget> createState() {
+    return ScriptEditorPageState();
+  }
+}
+
+
+class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
+
+  bool graphicalMode = true;
+
+  @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "> $scriptId",
-      (bool it) => debugPrint("Mode updated: $it"),
+      "> ${widget.scriptId}",
+      (bool it) => {
+        debugPrint("Mode updated: $it"),
+        setState(() {
+          graphicalMode = it;
+        })
+      },
       (bool it) => it ? "Graphical" : "Text",
     );
   }
 
   @override
   Widget buildBody(BuildContext context) {
-    return buildGraphicalScriptEditorContent(context);
+    return graphicalMode ? buildGraphicalScriptEditorContent(context) : buildTextScriptEditorContent(context);
   }
 
   ButtonBar buildButtonBar(BuildContext context) {
@@ -45,6 +61,15 @@ class ScriptEditorPage extends BasePage {
     );
   }
 
+  Widget buildTextScriptEditorContent(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        buildScriptWidget(context, buildButtonBar(context), scriptExample),
+      ],
+    );
+  }
+
   Widget withAdaptativeLayout(BuildContext context, List<Widget> widgets) {
     return (MediaQuery.sizeOf(context).width >= 600)
         ? Expanded(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: widgets))
@@ -52,7 +77,11 @@ class ScriptEditorPage extends BasePage {
   }
 
   Widget buildDetails(BuildContext context) {
-    return withAdaptativeLayout(context, [buildScriptsList(), const Spacer(flex: 2), buildScriptWidget(context, buildButtonBar(context))]);
+    return withAdaptativeLayout(context, [
+      buildScriptsList(),
+      const Spacer(flex: 2),
+      buildScriptWidget(context, buildButtonBar(context), sceneExample),
+    ]);
   }
 
   Widget buildDescriptionRow(BuildContext context) {
@@ -109,7 +138,7 @@ class ScriptEditorPage extends BasePage {
   }
 
   //TODO replace with Script widget from scripting module
-  Expanded buildScriptWidget(BuildContext context, ButtonBar buttonBar) {
+  Expanded buildScriptWidget(BuildContext context, ButtonBar buttonBar, String sampleText) {
     return Expanded(
         flex: 58,
         child: Column(
@@ -123,10 +152,10 @@ class ScriptEditorPage extends BasePage {
                   color: Color.fromRGBO(171, 197, 212, 0.3),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
-                child: const SingleChildScrollView(
+                child: SingleChildScrollView(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Text(sceneExample),
+                    child: Text(sampleText),
                   ),
                 ),
               ),
@@ -137,7 +166,27 @@ class ScriptEditorPage extends BasePage {
   }
 
   static const sceneExample = """
-scene A[B+ Tree values manipulation]
+fixture
+    btree TD
+      # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
+      P1 : 2 : 1 -> P1.1, 7 -> P1.2
+      P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
+      P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
+      P1.1.1/P1.1 : 0 : 1,2
+      P1.1.2/P1.1 : 0 : 3,4
+      P1.1.3/P1.2 : 0 : 5,6
+      P1.2.1/P1.2 : 0 : 7,8
+      P1.2.2/P1.3 : 0 : 9,10,11,12
+transitions
+    Add node value 13 (1s)
+    Add node value 14 (1s)
+    Delete node value 13
+""";
+
+  static const scriptExample = """
+scene A
+    description: B+ Tree values manipulation
+    tags: data-structure, tree
     fixture
         btree TD
           # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
@@ -155,3 +204,4 @@ scene A[B+ Tree values manipulation]
         Delete node value 13
 """;
 }
+

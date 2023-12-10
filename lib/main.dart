@@ -25,7 +25,8 @@ final GoRouter _router = GoRouter(
           path: 'scripts/:sid/edit',
           builder: (BuildContext context, GoRouterState state) {
             final scriptId = state.pathParameters['sid']!;
-            return ScriptEditorPage(scriptId,
+            return ScriptEditorPage(
+                scriptId: scriptId,
                 onHelpPressed: () => { context.go("/help") },
                 onSignInPressed: () => { context.go("/sign-in") },
                 onExtensionsPressed: () => { context.go("/extensions") }
