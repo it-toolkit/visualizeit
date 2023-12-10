@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:visualizeit/pages/base_page.dart';
+import 'package:visualizeit/pages/tags.dart';
 
 import 'adaptive_container.dart';
 
@@ -21,12 +21,11 @@ class ScriptSelectorPage extends BasePage {
         initialIndex: 0,
         child: Scaffold(
           appBar: PreferredSize(
-            preferredSize:  const Size.fromHeight(40.0),
+            preferredSize: const Size.fromHeight(40.0),
             child: Container(
               decoration: const BoxDecoration(
                   gradient: LinearGradient(colors: <Color>[Colors.lightBlue, Colors.lightGreenAccent]),
-                  borderRadius: BorderRadius.all(Radius.circular(5))
-              ),
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
               child: const TabBar(
                 tabs: [
                   Tab(child: Text("Public scripts", softWrap: true, textAlign: TextAlign.center)),
@@ -51,11 +50,7 @@ class ScriptSelectorPage extends BasePage {
   Widget buildTabContent(BuildContext context, ButtonBar scriptButtonBar) {
     return AdaptiveContainer(
       header: buildSearchBar(),
-      children: [
-        buildScriptsList(),
-        const Spacer(flex: 2),
-        buildDetailsSection(context, scriptButtonBar)
-      ],
+      children: [buildScriptsList(), const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar)],
     );
   }
 
@@ -65,7 +60,13 @@ class ScriptSelectorPage extends BasePage {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text("Scripts"),
+            const Row(children: [
+              Text("Scripts"),
+              Spacer(),
+              IconButton(onPressed: null, icon: Icon(Icons.add_circle_outline), tooltip: "Create script"),
+              IconButton(onPressed: null, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts"),
+              IconButton(onPressed: null, icon: Icon(Icons.import_export), tooltip: "Export scripts",),
+            ]),
             Expanded(
                 child: Container(
               decoration:
@@ -90,22 +91,19 @@ class ScriptSelectorPage extends BasePage {
   Widget buildSearchBar() {
     return Container(
         padding: const EdgeInsets.all(10),
-        child: Wrap(
+        child: const Wrap(
           spacing: 15,
           runSpacing: 10,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            const SizedBox(
+            SizedBox(
               width: 200,
               height: 40,
               child: TextField(
                   style: TextStyle(fontSize: 14),
                   decoration: InputDecoration(suffixIcon: Icon(Icons.search), hintText: 'Search scripts...')),
             ),
-            Chip(
-              label: const Text("data", style: TextStyle(fontSize: 10)),
-              onDeleted: () => {},
-            ),
+            TagsWidget(),
           ],
         ));
   }
@@ -118,16 +116,14 @@ class ScriptSelectorPage extends BasePage {
           children: [
             const Text("Script details"),
             Expanded(
-                child: Container(
-                    padding: const EdgeInsets.all(15.0),
-                    decoration: const BoxDecoration(
-                      color: Color.fromRGBO(171, 197, 212, 0.3),
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    child: const SingleChildScrollView(
-                        physics: ClampingScrollPhysics(),
-                        child: Text(scriptDetailsExample)),
+              child: Container(
+                padding: const EdgeInsets.all(15.0),
+                decoration: const BoxDecoration(
+                  color: Color.fromRGBO(171, 197, 212, 0.3),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
+                child: const SingleChildScrollView(physics: ClampingScrollPhysics(), child: Text(scriptDetailsExample)),
+              ),
             ),
             buttonBar
           ],
@@ -186,7 +182,6 @@ class ScriptSelectorPage extends BasePage {
       },
     );
   }
-
 
   static const scriptDetailsExample = """
 lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
