@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:visualizeit/utils/extensions.dart';
 
 abstract class BasePage extends StatelessWidget {
   /// Constructs a [TemplateScreen]
@@ -16,11 +17,11 @@ abstract class BasePage extends StatelessWidget {
             toolbarHeight: 80,
             bottom: buildAppBarBottom(context),
             title: const FittedBox(child: Text("Visualize IT", textScaler: TextScaler.linear(3.0))),
-            actions: <Widget>[
-              IconButton(icon: const Icon(Icons.login), tooltip: 'SignIn', onPressed: onSignInPressed),
-              IconButton(icon: const Icon(Icons.account_tree), tooltip: 'Extensions', onPressed: onExtensionsPressed),
-              IconButton(icon: const Icon(Icons.help), tooltip: 'Help', onPressed: onHelpPressed),
-            ]),
+            actions: <Widget?>[
+              IconButton(icon: const Icon(Icons.login), tooltip: 'SignIn', onPressed: onSignInPressed).takeIfDef(onSignInPressed),
+              IconButton(icon: const Icon(Icons.account_tree), tooltip: 'Extensions', onPressed: onExtensionsPressed).takeIfDef(onExtensionsPressed),
+              IconButton(icon: const Icon(Icons.help), tooltip: 'Help', onPressed: onHelpPressed).takeIfDef(onHelpPressed),
+            ].nonNulls.toList()),
         body: Container(margin: const EdgeInsets.all(15), child: buildBody(context)));
   }
 
