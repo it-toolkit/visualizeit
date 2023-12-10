@@ -87,6 +87,9 @@ class VisualizeItApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: const ColorScheme.light(),
           useMaterial3: true,
+          scrollbarTheme: ScrollbarThemeData(
+            thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
+          )
         ),
     );
   }
