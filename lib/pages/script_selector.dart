@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:visualizeit/pages/base_page.dart';
 
+import 'adaptive_container.dart';
+
 class ScriptSelectorPage extends BasePage {
   /// Constructs a [ScriptSelectorPage]
   const ScriptSelectorPage(
@@ -47,24 +49,12 @@ class ScriptSelectorPage extends BasePage {
   }
 
   Widget buildTabContent(BuildContext context, ButtonBar scriptButtonBar) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return AdaptiveContainer(
+      header: buildSearchBar(),
       children: [
-        buildSearchBar(),
-        const SizedBox(height: 20),
-        (MediaQuery.sizeOf(context).width >= 600)
-            ? Expanded(
-                child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                buildScriptsList(),
-                const Spacer(flex: 2),
-                buildDetailsSection(context, scriptButtonBar),
-              ]))
-            : Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                buildScriptsList(),
-                const Spacer(flex: 2),
-                buildDetailsSection(context, scriptButtonBar),
-              ]))
+        buildScriptsList(),
+        const Spacer(flex: 2),
+        buildDetailsSection(context, scriptButtonBar)
       ],
     );
   }

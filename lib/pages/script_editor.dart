@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:visualizeit/pages/adaptive_container.dart';
 import 'package:visualizeit/pages/custom_bar.dart';
 import 'package:visualizeit/pages/tags.dart';
 
@@ -70,14 +71,8 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
     );
   }
 
-  Widget withAdaptativeLayout(BuildContext context, List<Widget> widgets) {
-    return (MediaQuery.sizeOf(context).width >= 600)
-        ? Expanded(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: widgets))
-        : Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: widgets));
-  }
-
   Widget buildDetails(BuildContext context) {
-    return withAdaptativeLayout(context, [
+    return AdaptiveContainer(children: [
       buildScriptsList(),
       const Spacer(flex: 2),
       buildScriptWidget(context, buildButtonBar(context), sceneExample),
