@@ -71,12 +71,13 @@ class ScriptSelectorPage extends BasePage {
               decoration:
                   const BoxDecoration(color: Color.fromRGBO(171, 197, 212, 0.3), borderRadius: BorderRadius.all(Radius.circular(10))),
               child: ListView.builder(
+                itemExtent: 25,
                 itemCount: 5,
                 physics: const ClampingScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     dense: true,
-                    title: Text('Test script ${index + 1}'), //TODO replace with model selected value
+                    title: Text('- Test script ${index + 1}'), //TODO replace with model selected value
                     selected: index == 0,
                   );
                 },
