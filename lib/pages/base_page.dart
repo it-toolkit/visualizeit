@@ -53,11 +53,11 @@ abstract class BasePageState<T extends StatefulBasePage> extends State<T> {
             toolbarHeight: 80,
             bottom: buildAppBarBottom(context),
             title: const FittedBox(child: Text("Visualize IT", textScaler: TextScaler.linear(3.0))),
-            actions: <Widget>[
-              IconButton(icon: const Icon(Icons.login), tooltip: 'SignIn', onPressed: widget.onSignInPressed),
-              IconButton(icon: const Icon(Icons.account_tree), tooltip: 'Extensions', onPressed: widget.onExtensionsPressed),
-              IconButton(icon: const Icon(Icons.help), tooltip: 'Help', onPressed: widget.onHelpPressed),
-            ]),
+            actions: <Widget?>[
+              IconButton(icon: const Icon(Icons.login), tooltip: 'SignIn', onPressed: widget.onSignInPressed).takeIfDef(widget.onSignInPressed),
+              IconButton(icon: const Icon(Icons.account_tree), tooltip: 'Extensions', onPressed: widget.onExtensionsPressed).takeIfDef(widget.onExtensionsPressed),
+              IconButton(icon: const Icon(Icons.help), tooltip: 'Help', onPressed: widget.onHelpPressed).takeIfDef(widget.onHelpPressed),
+            ].nonNulls.toList()),
         body: Container(margin: const EdgeInsets.all(15), child: buildBody(context)));
   }
 
