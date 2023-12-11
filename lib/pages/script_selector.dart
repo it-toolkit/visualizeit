@@ -60,12 +60,12 @@ class ScriptSelectorPage extends BasePage {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Row(children: [
+            const Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
               Text("Scripts"),
               Spacer(),
-              IconButton(onPressed: null, icon: Icon(Icons.add_circle_outline), tooltip: "Create script"),
-              IconButton(onPressed: null, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts"),
-              IconButton(onPressed: null, icon: Icon(Icons.import_export), tooltip: "Export scripts",),
+              IconButton(onPressed: null, icon: Icon(Icons.add_circle_outline), tooltip: "Create script", iconSize: 20),
+              IconButton(onPressed: null, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
+              IconButton(onPressed: null, icon: Icon(Icons.import_export), tooltip: "Export scripts", iconSize: 20),
             ]),
             Expanded(
                 child: Container(
@@ -114,7 +114,10 @@ class ScriptSelectorPage extends BasePage {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text("Script details"),
+            const SizedBox(
+              height: 40,
+              child: Align(alignment: Alignment.centerLeft, child: Text("Script details")),
+            ),
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(15.0),
