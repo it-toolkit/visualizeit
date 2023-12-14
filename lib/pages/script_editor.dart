@@ -31,7 +31,9 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
           graphicalMode = it;
         })
       },
-      (bool it) => it ? "Graphical" : "Text",
+      (bool it) => it ? "GUI" : "Text",
+        titleActionIcon: Icons.edit,
+      onTitleActionIconPressed: () { debugPrint("perform title edit"); }
     );
   }
 
