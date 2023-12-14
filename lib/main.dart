@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:visualizeit/pages/base_page.dart';
 import 'package:visualizeit/pages/extension_page.dart';
 import 'package:visualizeit/pages/help_page.dart';
+import 'package:visualizeit/pages/player_page.dart';
 import 'package:visualizeit/pages/signin_page.dart';
 import 'package:visualizeit/pages/script_editor.dart';
 import 'package:visualizeit/pages/script_selector.dart';
@@ -53,8 +54,13 @@ final GoRouter _router = GoRouter(
         GoRoute(
           path: 'scripts/:sid/play',
           builder: (BuildContext context, GoRouterState state) {
-            final scriptId = state.pathParameters['sid'];
-            return FakePage(title: "Player for: $scriptId", goToRoutes: []);
+            final scriptId = state.pathParameters['sid']!;
+            return PlayerPage(
+                scriptId: scriptId,
+                onHelpPressed: () => { context.go("/help") },
+                onSignInPressed: () => { context.go("/sign-in") },
+                onExtensionsPressed: () => { context.go("/extensions") }
+            );
           },
         ),
         GoRoute(

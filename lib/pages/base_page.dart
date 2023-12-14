@@ -45,10 +45,12 @@ abstract class BasePageState<T extends StatefulBasePage> extends State<T> {
   /// Constructs a [BasePageState]
   BasePageState();
 
+  bool showAppBar = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+        appBar: !showAppBar ? null : AppBar(
             scrolledUnderElevation: 0,//Disable color change on scroll
             toolbarHeight: 80,
             bottom: buildAppBarBottom(context),
