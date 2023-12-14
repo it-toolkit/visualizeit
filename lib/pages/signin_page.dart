@@ -107,15 +107,15 @@ class _SignInPageState extends State<SignInPageComponent> {
 
   _sendToRegistrationPage() {
     //TODO implement registration page
-    print("go to registration page");
+    debugPrint("go to registration page");
   }
 
   _sendToServer() {
     if (_key.currentState!.validate()) {
       _key.currentState!.save();
       //TODO implement sign in
-      print("Email ${_userCredentials.email}");
-      print("Password ${_userCredentials.password}");
+      debugPrint("Email ${_userCredentials.email}");
+      debugPrint("Password ${_userCredentials.password}");
     } else {
       setState(() {
         _validate = true;

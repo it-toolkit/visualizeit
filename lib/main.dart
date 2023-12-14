@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:visualizeit/pages/base_page.dart';
 import 'package:visualizeit/pages/extension_page.dart';
 import 'package:visualizeit/pages/help_page.dart';
 import 'package:visualizeit/pages/player_page.dart';
@@ -17,12 +16,11 @@ final GoRouter _router = GoRouter(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
         return ScriptSelectorPage(
-          onPlayPressed: (scriptId) => { context.go("/scripts/$scriptId/play") },
-          onViewPressed: (scriptId) => { context.go("/scripts/$scriptId/edit") },
-          onHelpPressed: () => { context.go("/help") },
-          onSignInPressed: () => { context.go("/sign-in") },
-          onExtensionsPressed: () => { context.go("/extensions") }
-        );
+            onPlayPressed: (scriptId) => {context.go("/scripts/$scriptId/play")},
+            onViewPressed: (scriptId) => {context.go("/scripts/$scriptId/edit")},
+            onHelpPressed: () => {context.go("/help")},
+            onSignInPressed: () => {context.go("/sign-in")},
+            onExtensionsPressed: () => {context.go("/extensions")});
       },
       routes: <RouteBase>[
         GoRoute(
@@ -30,20 +28,18 @@ final GoRouter _router = GoRouter(
           builder: (BuildContext context, GoRouterState state) {
             final scriptId = state.pathParameters['sid']!;
             return ScriptEditorPage(
-                scriptId: scriptId,
-                onHelpPressed: () => { context.go("/help") },
-                onSignInPressed: () => { context.go("/sign-in") },
-                onExtensionsPressed: () => { context.go("/extensions") },
-                onPlayPressed: (scriptId) => { context.go("/scripts/$scriptId/play") },
+              scriptId: scriptId,
+              onHelpPressed: () => {context.go("/help")},
+              onSignInPressed: () => {context.go("/sign-in")},
+              onExtensionsPressed: () => {context.go("/extensions")},
+              onPlayPressed: (scriptId) => {context.go("/scripts/$scriptId/play")},
             );
           },
         ),
         GoRoute(
           path: 'extensions',
           builder: (BuildContext context, GoRouterState state) {
-            return ExtensionPage(
-              onHelpPressed: () => { context.go("/help") }
-            );
+            return ExtensionPage(onHelpPressed: () => {context.go("/help")});
           },
         ),
         GoRoute(
@@ -58,22 +54,15 @@ final GoRouter _router = GoRouter(
             final scriptId = state.pathParameters['sid']!;
             return PlayerPage(
                 scriptId: scriptId,
-                onHelpPressed: () => { context.go("/help") },
-                onSignInPressed: () => { context.go("/sign-in") },
-                onExtensionsPressed: () => { context.go("/extensions") }
-            );
+                onHelpPressed: () => {context.go("/help")},
+                onSignInPressed: () => {context.go("/sign-in")},
+                onExtensionsPressed: () => {context.go("/extensions")});
           },
         ),
         GoRoute(
           path: 'help',
           builder: (BuildContext context, GoRouterState state) {
             return const HelpPage();
-          },
-        ),
-        GoRoute(
-          path: 'extensions',
-          builder: (BuildContext context, GoRouterState state) {
-            return const FakePage(title: "Extensions", goToRoutes: []);
           },
         )
       ],
@@ -89,41 +78,14 @@ class VisualizeItApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-        routerConfig: _router,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
+      routerConfig: _router,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
           colorScheme: const ColorScheme.light(),
           useMaterial3: true,
           scrollbarTheme: ScrollbarThemeData(
             thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
-          )
-        ),
+          )),
     );
-  }
-}
-
-/// Temporal fake page
-class FakePage extends BasePage {
-  /// Constructs a [FakePage]
-  const FakePage({super.key, required this.title, required this.goToRoutes});
-
-  final String title;
-  final List<String> goToRoutes;
-
-  @override
-  Widget buildBody(BuildContext context) {
-    return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text("TO DO $title"),
-            Row(children: goToRoutes
-              .map((goToRoute) => ElevatedButton(
-            onPressed: () => context.go(goToRoute),
-            child: Text('Go to $goToRoute'),
-          ))
-              .toList())
-          ],
-        ));
   }
 }
