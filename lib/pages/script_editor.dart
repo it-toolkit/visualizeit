@@ -6,9 +6,12 @@ import 'package:visualizeit/pages/tags.dart';
 import 'base_page.dart';
 
 class ScriptEditorPage extends StatefulBasePage {
-  const ScriptEditorPage({super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
+  const ScriptEditorPage({
+    super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed, this.onPlayPressed
+  });
 
   final String scriptId;
+  final Function(String)? onPlayPressed;
 
   @override
   State<StatefulWidget> createState() {
@@ -47,7 +50,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
       children: [
         TextButton(onPressed: () => {}, child: const Text("Delete")),
         TextButton(onPressed: () => {}, child: const Text("Edit")),
-        ElevatedButton(onPressed: () => {}, child: const Text("Play")),
+        ElevatedButton(onPressed: () { widget.onPlayPressed?.call(widget.scriptId); }, child: const Text("Play")),
       ],
     );
   }

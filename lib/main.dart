@@ -33,7 +33,8 @@ final GoRouter _router = GoRouter(
                 scriptId: scriptId,
                 onHelpPressed: () => { context.go("/help") },
                 onSignInPressed: () => { context.go("/sign-in") },
-                onExtensionsPressed: () => { context.go("/extensions") }
+                onExtensionsPressed: () => { context.go("/extensions") },
+                onPlayPressed: (scriptId) => { context.go("/scripts/$scriptId/play") },
             );
           },
         ),
