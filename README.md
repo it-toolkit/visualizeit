@@ -32,7 +32,7 @@ flutter pub get
 
 #### 2 - Activate `git_hooks` tool in shell
 ```bash
-pub global activate git_hooks
+flutter pub global activate git_hooks
 ```
 
 > Pub installs executables into $HOME/.pub-cache/bin, if it is not in your path
@@ -44,4 +44,11 @@ pub global activate git_hooks
 #### 3 - Enable git_hooks for current project
 ```bash
 git_hooks create tools/git_hooks.dart
+```
+
+#### 4 - Set up custom hooks
+Go to `tools` folder and run
+
+```bash
+sh setup-git-hooks.sh
 ```

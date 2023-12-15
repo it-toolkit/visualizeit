@@ -1,0 +1,44 @@
+#!/bin/sh
+# !!!don"t edit this file
+# visualizeit
+# Hook created by
+#   Version: 1.0.0+1
+#   At: 2023-12-13 23:35:36.402627
+#   See: #readme
+
+# From
+#   Homepage: #readme
+
+if [ -f ~/.bash_profile ]
+then
+  source ~/.bash_profile
+fi
+if [ -f ~/.zsh_profile ]
+then
+  source ~/.zsh_profile
+fi
+hookName=`basename "$0"`
+gitParams="$*"
+program_exists() {
+    local ret="0"
+    command -v $1 >/dev/null 2>&1 || { local ret="1"; }
+    if [ "$ret" -ne 0 ]; then
+        return 1
+    fi
+    return 0
+}
+if program_exists dart; then
+  dart tools/git_hooks.dart $hookName
+  if [ "$?" -ne "0" ];then
+    exit 1
+  fi
+
+  # Setup expected test coverage %
+  dart run dlcov --coverage=1 --include-untested-files=true --lcov-gen="flutter test --coverage" --log=true
+  if [ "$?" -ne "0" ];then
+    exit 1
+  fi
+else
+  echo "git_hooks > $hookName"
+  echo "Cannot find dart in PATH"
+fi

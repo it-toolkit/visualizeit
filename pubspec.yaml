@@ -53,6 +53,8 @@ dev_dependencies:
   dart_pre_commit: ^5.2.1
   git_hooks: ^1.0.1
 
+  dlcov: ^4.2.1
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
