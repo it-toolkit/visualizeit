@@ -52,3 +52,7 @@ Go to `tools` folder and run
 ```bash
 sh setup-git-hooks.sh
 ```
+
+This is required to enable Code Coverage on git pre-commit hook.
+
+To analyze test covera we use the tool https://pub.dev/packages/dlcov
