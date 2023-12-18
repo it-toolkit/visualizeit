@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:visualizeit/pages/base_page.dart';
-import 'package:visualizeit/pages/tags.dart';
+import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/common/ui/tags_widget.dart';
 
-import 'adaptive_container.dart';
+import '../../common/ui/adaptive_container_widget.dart';
 
 class ScriptSelectorPage extends BasePage {
   /// Constructs a [ScriptSelectorPage]
@@ -48,7 +48,7 @@ class ScriptSelectorPage extends BasePage {
   }
 
   Widget buildTabContent(BuildContext context, ButtonBar scriptButtonBar) {
-    return AdaptiveContainer(
+    return AdaptiveContainerWidget(
       header: buildSearchBar(),
       children: [buildScriptsList(), const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar)],
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:visualizeit/pages/base_page.dart';
-
-import '../utils/validators.dart';
+import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/common/utils/validators.dart';
 
 class SignInPage extends BasePage {
   const SignInPage({super.key});

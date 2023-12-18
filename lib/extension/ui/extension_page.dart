@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:visualizeit/pages/base_page.dart';
+import 'package:visualizeit/common/ui/base_page.dart';
 
-import 'adaptive_container.dart';
+import '../../common/ui/adaptive_container_widget.dart';
 
 class ExtensionPage extends StatefulBasePage {
   const ExtensionPage({super.key, super.onHelpPressed});
@@ -22,15 +22,15 @@ class Extension {
 
 class _ExtensionPageState extends BasePageState<ExtensionPage> {
   //TODO implement extensions model
-  final List<Extension> _extensions = List<int>.generate(20, (i) => i + 1)
-      .map((i) {
-        final doc = """
+  final List<Extension> _extensions = List<int>.generate(20, (i) => i + 1).map((i) {
+    final doc = """
 ## Documentation for extension $i         
 This is a fake extension.        
-        """.trimLeft();
+        """
+        .trimLeft();
 
-        return Extension('Fake extension $i', doc);
-      }).toList();
+    return Extension('Fake extension $i', doc);
+  }).toList();
 
   List<Extension> _filteredExtensions = [];
   int? _selectedIndex;
@@ -52,7 +52,7 @@ This is a fake extension.
 
   @override
   Widget buildBody(BuildContext context) {
-    return AdaptiveContainer(
+    return AdaptiveContainerWidget(
       header: buildSearchBar(),
       children: [buildScriptsList(), const Spacer(flex: 2), buildDetailsSection(context)],
     );
@@ -119,9 +119,14 @@ This is a fake extension.
   }
 
   Expanded buildDetailsSection(BuildContext context) {
-
-    final selectedExtension = _selectedIndex != null ? _filteredExtensions.isEmpty ? _extensions[_selectedIndex!] : _filteredExtensions[_selectedIndex!]: null;
-    final detailsWidget = selectedExtension != null ? SingleChildScrollView(physics: const ClampingScrollPhysics(), child: MarkdownBody(data: selectedExtension.documentation)) : null;
+    final selectedExtension = _selectedIndex != null
+        ? _filteredExtensions.isEmpty
+            ? _extensions[_selectedIndex!]
+            : _filteredExtensions[_selectedIndex!]
+        : null;
+    final detailsWidget = selectedExtension != null
+        ? SingleChildScrollView(physics: const ClampingScrollPhysics(), child: MarkdownBody(data: selectedExtension.documentation))
+        : null;
 
     return Expanded(
         flex: 58,
@@ -131,13 +136,13 @@ This is a fake extension.
             const Text("Details"),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(15.0),
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(171, 197, 212, 0.3),
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: detailsWidget),
-              ),
+                  padding: const EdgeInsets.all(15.0),
+                  decoration: const BoxDecoration(
+                    color: Color.fromRGBO(171, 197, 212, 0.3),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: detailsWidget),
+            ),
           ],
         ));
   }

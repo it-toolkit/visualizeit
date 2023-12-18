@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:visualizeit/pages/adaptive_container.dart';
-import 'package:visualizeit/pages/custom_bar.dart';
-import 'package:visualizeit/pages/tags.dart';
+import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
+import 'package:visualizeit/common/ui/custom_bar_widget.dart';
+import 'package:visualizeit/common/ui/tags_widget.dart';
+import 'package:visualizeit/common/utils/extensions.dart';
+import 'package:visualizeit/scripting/ui/script_view_widget.dart';
 
-import 'base_page.dart';
+import '../../common/ui/base_page.dart';
 
 class ScriptEditorPage extends StatefulBasePage {
-  const ScriptEditorPage({
-    super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed, this.onPlayPressed
-  });
+  const ScriptEditorPage(
+      {super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed, this.onPlayPressed});
 
   final String scriptId;
   final Function(String)? onPlayPressed;
@@ -19,25 +20,23 @@ class ScriptEditorPage extends StatefulBasePage {
   }
 }
 
-
 class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
-
   bool graphicalMode = true;
 
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "> ${widget.scriptId}",
-      (bool it) => {
-        debugPrint("Mode updated: $it"),
-        setState(() {
-          graphicalMode = it;
-        })
-      },
-      (bool it) => it ? "GUI" : "Text",
-        titleActionIcon: Icons.edit,
-      onTitleActionIconPressed: () { debugPrint("perform title edit"); }
-    );
+        "> ${widget.scriptId}",
+        (bool it) => {
+              debugPrint("Mode updated: $it"),
+              setState(() {
+                graphicalMode = it;
+              })
+            },
+        (bool it) => it ? "GUI" : "Text",
+        titleActionIcon: Icons.edit, onTitleActionIconPressed: () {
+      debugPrint("perform title edit");
+    });
   }
 
   @override
@@ -50,7 +49,11 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
       children: [
         TextButton(onPressed: () => {}, child: const Text("Delete")),
         TextButton(onPressed: () => {}, child: const Text("Edit")),
-        ElevatedButton(onPressed: () { widget.onPlayPressed?.call(widget.scriptId); }, child: const Text("Play")),
+        ElevatedButton(
+            onPressed: () {
+              widget.onPlayPressed?.call(widget.scriptId);
+            },
+            child: const Text("Play")),
       ],
     );
   }
@@ -71,16 +74,16 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        buildScriptWidget(context, buildButtonBar(context), scriptExample),
+        buildScriptWidget(context, buildButtonBar(context), _scriptExample),
       ],
     );
   }
 
   Widget buildDetails(BuildContext context) {
-    return AdaptiveContainer(children: [
-      buildScriptsList(),
+    return AdaptiveContainerWidget(children: [
+      buildScenesList(),
       const Spacer(flex: 2),
-      buildScriptWidget(context, buildButtonBar(context), sceneExample),
+      buildScriptWidget(context, buildButtonBar(context), _sceneExample),
     ]);
   }
 
@@ -95,7 +98,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
         )));
   }
 
-  Expanded buildScriptsList() {
+  Expanded buildScenesList() {
     return Expanded(
         flex: 40,
         child: Column(
@@ -147,64 +150,50 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
           children: [
             const Text("Scene 1 script"),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(15.0),
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(171, 197, 212, 0.3),
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    child: Text(sampleText),
-                  ),
-                ),
-              ),
+              child: ScriptViewWidget(script: sampleText),
             ),
             buttonBar
           ],
         ));
   }
 
-  static const sceneExample = """
-fixture
-    btree TD
-      # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
-      P1 : 2 : 1 -> P1.1, 7 -> P1.2
-      P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
-      P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
-      P1.1.1/P1.1 : 0 : 1,2
-      P1.1.2/P1.1 : 0 : 3,4
-      P1.1.3/P1.2 : 0 : 5,6
-      P1.2.1/P1.2 : 0 : 7,8
-      P1.2.2/P1.3 : 0 : 9,10,11,12
-transitions
-    Add node value 13 (1s)
-    Add node value 14 (1s)
-    Delete node value 13
-""";
+  final _sceneExample = """
+      fixture
+          btree TD
+            # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
+            P1 : 2 : 1 -> P1.1, 7 -> P1.2
+            P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
+            P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
+            P1.1.1/P1.1 : 0 : 1,2
+            P1.1.2/P1.1 : 0 : 3,4
+            P1.1.3/P1.2 : 0 : 5,6
+            P1.2.1/P1.2 : 0 : 7,8
+            P1.2.2/P1.3 : 0 : 9,10,11,12
+      transitions
+          Add node value 13 (1s)
+          Add node value 14 (1s)
+          Delete node value 13
+      """;
 
-  static const scriptExample = """
-scene A
-    description: B+ Tree values manipulation
-    tags: data-structure, tree
-    fixture
-        btree TD
-          # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
-          P1 : 2 : 1 -> P1.1, 7 -> P1.2
-          P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
-          P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
-          P1.1.1/P1.1 : 0 : 1,2
-          P1.1.2/P1.1 : 0 : 3,4
-          P1.1.3/P1.2 : 0 : 5,6
-          P1.2.1/P1.2 : 0 : 7,8
-          P1.2.2/P1.3 : 0 : 9,10,11,12
-    transitions
-        Add node value 13 (1s)
-        Add node value 14 (1s)
-        Delete node value 13
-""";
+  final _scriptExample = """
+      scene A
+          description: B+ Tree values manipulation
+          tags: data-structure, tree
+          fixture
+              btree TD
+                # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
+                P1 : 2 : 1 -> P1.1, 7 -> P1.2
+                P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
+                P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
+                P1.1.1/P1.1 : 0 : 1,2
+                P1.1.2/P1.1 : 0 : 3,4
+                P1.1.3/P1.2 : 0 : 5,6
+                P1.2.1/P1.2 : 0 : 7,8
+                P1.2.2/P1.3 : 0 : 9,10,11,12
+          transitions
+              Add node value 13 (1s)
+              Add node value 14 (1s)
+              Delete node value 13
+      """
+      .trimIndent();
 }
-

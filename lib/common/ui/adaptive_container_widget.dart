@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
-class AdaptiveContainer extends StatelessWidget {
-  const AdaptiveContainer({super.key, this.header, required this.children, this.wrapWidth = 600});
+class AdaptiveContainerWidget extends StatelessWidget {
+  const AdaptiveContainerWidget({super.key, this.header, required this.children, this.wrapWidth = 600});
 
   final Widget? header;
   final List<Widget> children;

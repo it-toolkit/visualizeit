@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:visualizeit/pages/adaptive_container.dart';
-import 'package:visualizeit/pages/custom_bar.dart';
-import 'package:visualizeit/pages/player_button_bar.dart';
-
-import 'base_page.dart';
+import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
+import 'package:visualizeit/common/ui/custom_bar_widget.dart';
+import 'package:visualizeit/player/ui/player_button_bar.dart';
+import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 
 class PlayerPage extends StatefulBasePage {
   const PlayerPage({super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
@@ -16,9 +16,7 @@ class PlayerPage extends StatefulBasePage {
   }
 }
 
-
 class PlayerPageState extends BasePageState<PlayerPage> {
-
   bool graphicalMode = true;
 
   @override
@@ -50,8 +48,9 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   }
 
   PlayerButtonBar buildPlayerButtonBar() {
-    return PlayerButtonBar(progress: 0.6,
-      onFullscreenPressed: (){
+    return PlayerButtonBar(
+      progress: 0.6,
+      onFullscreenPressed: () {
         setState(() {
           super.showAppBar = !super.showAppBar;
         });
@@ -63,37 +62,30 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(child: Container(
-          decoration: BoxDecoration(color: Colors.blue.shade100),
-          child: const Center(child: Icon(Icons.play_circle, size: 48,)),
-        )),
+        const Expanded(child: CanvasWidget()),
         buildPlayerButtonBar(),
       ],
     );
   }
 
   Widget buildExplorationModeContent(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [AdaptiveContainer(
-
-      children: [
-        Expanded(
-            flex: 100,
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(child: Container(
-              decoration: BoxDecoration(color: Colors.blue.shade100),
-              child: const Center(child: Icon(Icons.play_circle, size: 48,)),
-            )),
-            buildPlayerButtonBar(),
-          ],
-        )),
-        const Spacer(flex: 2),
-        buildScriptWidget(context, buildButtonBar(context), scriptExample),
-      ],
-    )]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      AdaptiveContainerWidget(
+        children: [
+          Expanded(
+              flex: 100,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Expanded(child: CanvasWidget()),
+                  buildPlayerButtonBar(),
+                ],
+              )),
+          const Spacer(flex: 2),
+          buildScriptWidget(context, buildButtonBar(context), scriptExample),
+        ],
+      )
+    ]);
   }
 
   //TODO replace with Script widget from scripting module
@@ -147,4 +139,3 @@ scene A
         Delete node value 13
 """;
 }
-

@@ -34,10 +34,10 @@ class _TagsState extends State<TagsWidget> {
 
   Chip buildChip(String label, VoidCallback? onDeleted) {
     return Chip(
-          label: Text(label, style: const TextStyle(fontSize: 10)),
-          backgroundColor: Colors.orangeAccent,
-        side: BorderSide.none,
-        onDeleted: onDeleted,
-      );
+      label: Text(label, style: const TextStyle(fontSize: 10)),
+      backgroundColor: Colors.orangeAccent,
+      side: BorderSide.none,
+      onDeleted: onDeleted,
+    );
   }
 }

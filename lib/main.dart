@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:visualizeit/pages/extension_page.dart';
-import 'package:visualizeit/pages/help_page.dart';
-import 'package:visualizeit/pages/player_page.dart';
-import 'package:visualizeit/pages/signin_page.dart';
-import 'package:visualizeit/pages/script_editor.dart';
-import 'package:visualizeit/pages/script_selector.dart';
+import 'package:visualizeit/extension/ui/extension_page.dart';
+import 'package:visualizeit/misc/ui/help_page.dart';
+import 'package:visualizeit/player/ui/player_page.dart';
+import 'package:visualizeit/user/ui/signin_page.dart';
+import 'package:visualizeit/scripting/ui/script_editor_page.dart';
+import 'package:visualizeit/scripting/ui/script_selector_page.dart';
 
 void main() => runApp(const VisualizeItApp());
 
