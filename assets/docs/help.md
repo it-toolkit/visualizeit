@@ -15,27 +15,25 @@ Welcome to Visualize IT, your go-to app for creating dynamic diagrams and adding
 ## Example script
 
 ```
-    description: B+ Tree values manipulation
-    tags: data-structure, tree
-    fixture
-        btree TD
-          # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
-          P1 : 2 : 1 -> P1.1, 7 -> P1.2
-          P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
-          P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
-          P1.1.1/P1.1 : 0 : 1,2
-          P1.1.2/P1.1 : 0 : 3,4
-          P1.1.3/P1.2 : 0 : 5,6
-          P1.2.1/P1.2 : 0 : 7,8
-          P1.2.2/P1.3 : 0 : 9,10,11,12
-    transitions
-        Add node value 13 (1s)
-        Add node value 14 (1s)
-        Delete node value 13
+  name [B# Tree values manipulation]  
+  details [[[
+    ## B# Tree values manipulation
+    This script creates B# trees and perform some operations on it.
+  ]]]
+  tags: data-structure, tree
+  scene 1
+      description [B# Tree values manipulation]
+      fixture
+          btree TD
+      transitions
+          add 1
+          add 2
+          add 3
 ```
 
-## Visualize IT syntax
 
-### Script Metadata
 
-### Scene
+
+
+
+

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
 
 import '../../common/ui/adaptive_container_widget.dart';
+import '../../fake_data.dart';
 
 class ScriptSelectorPage extends BasePage {
   /// Constructs a [ScriptSelectorPage]
@@ -38,14 +40,16 @@ class ScriptSelectorPage extends BasePage {
           body: TabBarView(
             children: [
               buildTabContent(context, buildButtonBar(context)),
-              buildTabContent(context, buildMyScriptsButtonBar(context)),
-              buildTabContent(context, buildButtonBar(context)),
+              _isUserLoggedIn() ? buildTabContent(context, buildMyScriptsButtonBar(context)) : buildLoginRequiredTabContent(context),
+              _isUserLoggedIn() ? buildTabContent(context, buildButtonBar(context)) : buildLoginRequiredTabContent(context),
             ],
           ),
         ),
       ),
     );
   }
+
+  bool _isUserLoggedIn() => false; //TODO
 
   Widget buildTabContent(BuildContext context, ButtonBar scriptButtonBar) {
     return AdaptiveContainerWidget(
@@ -73,12 +77,12 @@ class ScriptSelectorPage extends BasePage {
                   const BoxDecoration(color: Color.fromRGBO(171, 197, 212, 0.3), borderRadius: BorderRadius.all(Radius.circular(10))),
               child: ListView.builder(
                 itemExtent: 25,
-                itemCount: 5,
+                itemCount: fakeScriptNames.length,
                 physics: const ClampingScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     dense: true,
-                    title: Text('- Test script ${index + 1}'), //TODO replace with model selected value
+                    title: Text('- ${fakeScriptNames[index]}'), //TODO replace with model selected value
                     selected: index == 0,
                   );
                 },
@@ -125,7 +129,7 @@ class ScriptSelectorPage extends BasePage {
                   color: Color.fromRGBO(171, 197, 212, 0.3),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
-                child: const SingleChildScrollView(physics: ClampingScrollPhysics(), child: Text(scriptDetailsExample)),
+                child: SingleChildScrollView(physics: const ClampingScrollPhysics(), child: MarkdownBody(data: fakeSelectedScriptDetails)),
               ),
             ),
             buttonBar
@@ -137,8 +141,8 @@ class ScriptSelectorPage extends BasePage {
     return ButtonBar(
       children: [
         TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script")}, child: const Text("Clone")),
-        TextButton(onPressed: () => {onViewPressed?.call("Test script 1 with long message")}, child: const Text("View")),
-        ElevatedButton(onPressed: () => {onPlayPressed?.call("Test script 1")}, child: const Text("Play")),
+        TextButton(onPressed: () => {onViewPressed?.call(fakeSelectedScriptId)}, child: const Text("View")),
+        ElevatedButton(onPressed: () => {onPlayPressed?.call(fakeSelectedScriptId)}, child: const Text("Play")),
       ],
     );
   }
@@ -148,8 +152,8 @@ class ScriptSelectorPage extends BasePage {
       children: [
         TextButton(onPressed: () => {_showConfirmDialog(context, "delete the script")}, child: const Text("Delete")),
         TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script")}, child: const Text("Clone")),
-        TextButton(onPressed: () => {onViewPressed?.call("Test script 1")}, child: const Text("View")),
-        ElevatedButton(onPressed: () => {onPlayPressed?.call("Test script 1")}, child: const Text("Play")),
+        TextButton(onPressed: () => {onViewPressed?.call(fakeSelectedScriptId)}, child: const Text("View")),
+        ElevatedButton(onPressed: () => {onPlayPressed?.call(fakeSelectedScriptId)}, child: const Text("Play")),
       ],
     );
   }
@@ -186,11 +190,19 @@ class ScriptSelectorPage extends BasePage {
     );
   }
 
-  static const scriptDetailsExample = """
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum  
-""";
+  buildLoginRequiredTabContent(BuildContext context) {
+    return Container(
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.info_outline,
+              size: 36,
+              color: Colors.blue.shade300,
+            ),
+            const Text("Login required")
+          ],
+        ));
+  }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
-import 'package:visualizeit/common/utils/extensions.dart';
+import 'package:visualizeit/fake_data.dart';
 import 'package:visualizeit/scripting/ui/script_view_widget.dart';
 
 import '../../common/ui/base_page.dart';
@@ -26,7 +26,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-        "> ${widget.scriptId}",
+        "> ${fakeScriptNames[int.tryParse(widget.scriptId) ?? 0]}",
         (bool it) => {
               debugPrint("Mode updated: $it"),
               setState(() {
@@ -74,7 +74,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        buildScriptWidget(context, buildButtonBar(context), _scriptExample),
+        buildScriptWidget(context, buildButtonBar(context), fakeFullScriptExample),
       ],
     );
   }
@@ -83,19 +83,25 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
     return AdaptiveContainerWidget(children: [
       buildScenesList(),
       const Spacer(flex: 2),
-      buildScriptWidget(context, buildButtonBar(context), _sceneExample),
+      buildScriptWidget(context, buildButtonBar(context), fakeSceneScriptExample),
     ]);
   }
 
   Widget buildDescriptionRow(BuildContext context) {
-    return Container(
-        constraints: const BoxConstraints(maxHeight: 100),
-        child: const SingleChildScrollView(
-            child: TextField(
-          style: TextStyle(fontSize: 14),
-          decoration: InputDecoration(labelText: "Description", hintText: '...'),
-          maxLines: null,
-        )));
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      const Text("Details"),
+      Container(
+        constraints: const BoxConstraints(maxHeight: 80),
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Colors.blue.shade50,
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
+        child: SingleChildScrollView(
+          child: Text(fakeSelectedScriptDetails, style: const TextStyle(fontSize: 14)),
+        ),
+      )
+    ]);
   }
 
   Expanded buildScenesList() {
@@ -107,13 +113,12 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
             const Text("Scenes"),
             Expanded(
                 child: Container(
-              decoration:
-                  const BoxDecoration(color: Color.fromRGBO(171, 197, 212, 0.3), borderRadius: BorderRadius.all(Radius.circular(10))),
+              decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: const BorderRadius.all(Radius.circular(10))),
               child: ReorderableListView.builder(
                 physics: const ClampingScrollPhysics(),
                 onReorder: (int oldIndex, int newIndex) => {},
                 buildDefaultDragHandles: false,
-                itemCount: 5,
+                itemCount: fakeScenes.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ReorderableDragStartListener(
                       index: index,
@@ -129,8 +134,8 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
                               ]),
                           child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
                             Row(children: [const Icon(Icons.drag_indicator), Text('Scene ${index + 1}')]),
-                            const Text(
-                              'Scene description\nin two lines...',
+                            Text(
+                              fakeScenes[index],
                               textAlign: TextAlign.center,
                             ),
                           ])));
@@ -141,7 +146,6 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
         ));
   }
 
-  //TODO replace with Script widget from scripting module
   Expanded buildScriptWidget(BuildContext context, ButtonBar buttonBar, String sampleText) {
     return Expanded(
         flex: 58,
@@ -156,44 +160,4 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
           ],
         ));
   }
-
-  final _sceneExample = """
-      fixture
-          btree TD
-            # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
-            P1 : 2 : 1 -> P1.1, 7 -> P1.2
-            P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
-            P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
-            P1.1.1/P1.1 : 0 : 1,2
-            P1.1.2/P1.1 : 0 : 3,4
-            P1.1.3/P1.2 : 0 : 5,6
-            P1.2.1/P1.2 : 0 : 7,8
-            P1.2.2/P1.3 : 0 : 9,10,11,12
-      transitions
-          Add node value 13 (1s)
-          Add node value 14 (1s)
-          Delete node value 13
-      """;
-
-  final _scriptExample = """
-      scene A
-          description: B+ Tree values manipulation
-          tags: data-structure, tree
-          fixture
-              btree TD
-                # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
-                P1 : 2 : 1 -> P1.1, 7 -> P1.2
-                P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
-                P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
-                P1.1.1/P1.1 : 0 : 1,2
-                P1.1.2/P1.1 : 0 : 3,4
-                P1.1.3/P1.2 : 0 : 5,6
-                P1.2.1/P1.2 : 0 : 7,8
-                P1.2.2/P1.3 : 0 : 9,10,11,12
-          transitions
-              Add node value 13 (1s)
-              Add node value 14 (1s)
-              Delete node value 13
-      """
-      .trimIndent();
 }

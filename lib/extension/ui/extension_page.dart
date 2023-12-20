@@ -3,6 +3,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 
 import '../../common/ui/adaptive_container_widget.dart';
+import '../../fake_data.dart';
 
 class ExtensionPage extends StatefulBasePage {
   const ExtensionPage({super.key, super.onHelpPressed});
@@ -22,15 +23,7 @@ class Extension {
 
 class _ExtensionPageState extends BasePageState<ExtensionPage> {
   //TODO implement extensions model
-  final List<Extension> _extensions = List<int>.generate(20, (i) => i + 1).map((i) {
-    final doc = """
-## Documentation for extension $i         
-This is a fake extension.        
-        """
-        .trimLeft();
-
-    return Extension('Fake extension $i', doc);
-  }).toList();
+  final List<Extension> _extensions = fakeExtensions;
 
   List<Extension> _filteredExtensions = [];
   int? _selectedIndex;
@@ -67,8 +60,7 @@ This is a fake extension.
             const Text("Extensions"),
             Expanded(
                 child: Container(
-                    decoration:
-                        const BoxDecoration(color: Color.fromRGBO(171, 197, 212, 0.3), borderRadius: BorderRadius.all(Radius.circular(10))),
+                    decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: const BorderRadius.all(Radius.circular(10))),
                     child: Material(
                         type: MaterialType.transparency,
                         child: _filteredExtensions.isNotEmpty || _query.isNotEmpty
@@ -137,9 +129,9 @@ This is a fake extension.
             Expanded(
               child: Container(
                   padding: const EdgeInsets.all(15.0),
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(171, 197, 212, 0.3),
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
                   child: detailsWidget),
             ),

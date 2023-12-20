@@ -9,9 +9,9 @@ class ScriptViewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(15.0),
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(171, 197, 212, 0.3),
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),

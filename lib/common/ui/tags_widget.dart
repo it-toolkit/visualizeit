@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../fake_data.dart';
+
 class TagsWidget extends StatefulWidget {
   const TagsWidget({super.key});
 
@@ -25,9 +27,7 @@ class _TagsState extends State<TagsWidget> {
           tooltip: "Add",
           iconSize: 20,
         ),
-        buildChip("tag-1", () => {}),
-        buildChip("tag-2", () => {}),
-        buildChip("tag-3", () => {}),
+        buildChip(fakeSelectedTags[0], () => {}),
       ],
     );
   }

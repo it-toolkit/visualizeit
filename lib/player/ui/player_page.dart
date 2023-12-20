@@ -5,6 +5,8 @@ import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 
+import '../../fake_data.dart';
+
 class PlayerPage extends StatefulBasePage {
   const PlayerPage({super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
 
@@ -22,14 +24,14 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "> ${widget.scriptId}",
+      "> ${fakeScriptNames[int.tryParse(widget.scriptId) ?? 0]}",
       (bool it) => {
         debugPrint("Mode updated: $it"),
         setState(() {
           graphicalMode = it;
         })
       },
-      (bool it) => it ? "View" : "Script",
+      (bool it) => it ? "View" : "Exploration",
     );
   }
 
@@ -82,7 +84,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
                 ],
               )),
           const Spacer(flex: 2),
-          buildScriptWidget(context, buildButtonBar(context), scriptExample),
+          buildScriptWidget(context, buildButtonBar(context), fakeSceneScriptExample),
         ],
       )
     ]);
@@ -99,10 +101,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(15.0),
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(171, 197, 212, 0.3),
-                  // borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
+                decoration: BoxDecoration(color: Colors.blue.shade50),
                 child: SingleChildScrollView(
                   physics: const ClampingScrollPhysics(),
                   child: SingleChildScrollView(
@@ -117,25 +116,4 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           ],
         ));
   }
-
-  static const scriptExample = """
-scene A
-    description: B+ Tree values manipulation
-    tags: data-structure, tree
-    fixture
-        btree TD
-          # nodeId(/parentNodeId)? : level : (value(->childNodeId)?)(,value(->childNodeId)?)+
-          P1 : 2 : 1 -> P1.1, 7 -> P1.2
-          P1.1/P1 : 1 : 1 -> P1.1.1, 3 -> P1.1.2, 5 -> P1.1.3
-          P1.2/P1 : 1 : 7 -> P1.2.1, 9 -> P1.2.2
-          P1.1.1/P1.1 : 0 : 1,2
-          P1.1.2/P1.1 : 0 : 3,4
-          P1.1.3/P1.2 : 0 : 5,6
-          P1.2.1/P1.2 : 0 : 7,8
-          P1.2.2/P1.3 : 0 : 9,10,11,12
-    transitions
-        Add node value 13 (1s)
-        Add node value 14 (1s)
-        Delete node value 13
-""";
 }
