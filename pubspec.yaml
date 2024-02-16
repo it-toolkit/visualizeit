@@ -39,6 +39,8 @@ dependencies:
   flutter_markdown: ^0.6.18+2
   visualizeit_extensions:
     path: ../visualizeit_extensions
+  yaml: ^3.1.2
+  mocktail: ^1.0.3
 
 dev_dependencies:
   flutter_test:

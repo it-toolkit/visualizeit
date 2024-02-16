@@ -1,7 +1,7 @@
 extension ObjectExtensions<T extends Object> on T {
   T? takeIf(bool condition) => condition ? this : null;
   T? takeIfDef(Object? object) => object != null ? this : null;
-  R? map<R>(R Function(T) map) => map(this);
+  R? let<R>(R Function(T) map) => map(this);
 }
 
 extension StringExtensions on String {
@@ -12,10 +12,11 @@ extension StringExtensions on String {
     int minIndentation = lines
         .where((line) => line.trim().isNotEmpty)
         .map((line) => line.indexOf(RegExp(r'\S')))
-        .reduce((minIndent, currentIndent) => (currentIndent < minIndent) ? currentIndent : minIndent);
+        .let((list) => list.isEmpty ? 0 : list.reduce((minIndent, currentIndent) => (currentIndent < minIndent) ? currentIndent : minIndent))
+        ?? 0;
 
     // Remove the common indentation from each line
-    final trimmedLines = lines.map((line) => line.substring(minIndentation));
+    final trimmedLines = lines.map((line) => line.trim().isNotEmpty ? line.substring(minIndentation) : "");
 
     // Join the lines back together
     final result = trimmedLines.join('\n');

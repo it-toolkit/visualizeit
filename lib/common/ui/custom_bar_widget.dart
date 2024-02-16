@@ -56,7 +56,7 @@ class _CustomBarContent extends State<CustomBarWidget> {
                   LimitedBox(
                       maxWidth: MediaQuery.sizeOf(context).width - (widget.onTitleActionIconPressed == null ? 120 : 160),
                       child: Text(widget.title, softWrap: true, maxLines: 3)),
-                  widget.onTitleActionIconPressed?.map((action) => IconButton(
+                  widget.onTitleActionIconPressed?.let((action) => IconButton(
                       onPressed: action,
                       icon: const Icon(
                         Icons.edit,
