@@ -3,10 +3,10 @@ import 'package:visualizeit_extensions/common.dart';
 
 class Scene {
   SceneMetadata metadata;
-  Model model;
+  List<Command> initialStateBuilderCommands;
   List<Command> transitionCommands;
 
-  Scene(this.metadata, this.model, this.transitionCommands);
+  Scene(this.metadata, this.initialStateBuilderCommands, this.transitionCommands);
 }
 
 class Script {

@@ -1,6 +1,6 @@
 
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/scripting.dart';
@@ -19,6 +19,32 @@ class ShowMessage extends GlobalCommand {
   }
 }
 
+showAlertDialog(BuildContext context) {
+
+  // set up the button
+  Widget okButton = TextButton(
+    child: Text("OK"),
+    onPressed: () { },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("My title"),
+    content: Text("This is my message."),
+    actions: [
+      okButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
 class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExtension {
   static const String _extensionId = "default";
 
@@ -35,17 +61,23 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   }
 
   @override
-  Widget? buildWidgetFor(Model model) {
-    // TODO: implement buildWidgetFor
-    throw UnimplementedError();
-  }
-
-  @override
   List<CommandDefinition> getAllCommandDefinitions() {
     return [
       CommandDefinition(_extensionId, "show-message", [CommandArgDef("message", ArgType.string)])
     ];
   }
+
+  @override
+  Widget? render(Model model, BuildContext context) {
+    switch (model.name) {
+      case "show-message":
+        showAlertDialog(context, );
+        return null;
+      default: return null;
+    }
+  }
+
+
 
   MapEntry<String, List<String>> _parseCommandNode(rawCommand) {
     YamlNode commandNode = loadYamlNode(rawCommand);

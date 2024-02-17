@@ -9,7 +9,7 @@ import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/scripting.dart';
 
-class GetExtensionsByIdMock extends Mock implements GetExtensionsById {}
+class GetExtensionsByIdMock extends Mock implements GetExtensionById {}
 class ExtensionMock extends Mock implements Extension {}
 class ScriptingExtensionMock extends Mock implements ScriptingExtension {}
 class CommandMock extends Mock implements GlobalCommand {}
@@ -26,7 +26,6 @@ void main() {
     reset(scriptingExtensionMock);
     reset(commandMock);
   });
-
   final validRawScriptYaml = """
       name: "Flow diagram example"
       description: |
@@ -96,14 +95,14 @@ void main() {
     final script = ScriptParser(getExtensionsById).parse(validRawScriptYaml);
 
     expect(script.scenes.length, equals(1));
-    expect(script.scenes.single.model, equals(NoModel()));
+    expect(script.scenes.single.initialStateBuilderCommands.length, equals(3));
     expect(script.scenes.single.transitionCommands.length, equals(3));
 
     verify(() => scriptingExtensionMock.buildCommand(any(that: equals('no-arg-command')))).called(2);
     verify(() => scriptingExtensionMock.buildCommand(any(that: equals('{single-arg-command: my-arg}')))).called(2);
     verify(() => scriptingExtensionMock.buildCommand(any(that: equals('{multi-arg-command: [arg1, arg2]}')))).called(2);
 
-    verify(() => commandMock.call()).called(3);
+    verifyNever(() => commandMock.call());
   });
 
 }
