@@ -41,6 +41,11 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   @override
   Widget buildBody(BuildContext context) {
+    return graphicalMode ? buildPresentationModeContent(context) : buildExplorationModeContent(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     //TODO parse real script
     const validRawScriptYaml = """
       name: "Flow diagram example"
@@ -65,7 +70,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
     return BlocProvider(
         create: (context) => PlayerBloc(initialPlayerState),
-        child: graphicalMode ? buildPresentationModeContent(context) : buildExplorationModeContent(context),
+        child: Builder(builder: (context) => super.build(context))
     );
   }
 
@@ -78,7 +83,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     );
   }
 
-  PlayerButtonBar buildPlayerButtonBar() {
+  PlayerButtonBar buildPlayerButtonBar(BuildContext context) {
     return PlayerButtonBar(
       progress: 0.6,
       onFullscreenPressed: () {
@@ -86,6 +91,9 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           super.showAppBar = !super.showAppBar;
         });
       },
+      onNextPressed: () {
+        BlocProvider.of<PlayerBloc>(context).add(AdvanceEvent());
+      }
     );
   }
 
@@ -94,7 +102,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Expanded(child: CanvasWidget()),
-        buildPlayerButtonBar(),
+        buildPlayerButtonBar(context),
       ],
     );
   }
@@ -109,7 +117,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Expanded(child: CanvasWidget()),
-                  buildPlayerButtonBar(),
+                  buildPlayerButtonBar(context),
                 ],
               )),
           const Spacer(flex: 2),
