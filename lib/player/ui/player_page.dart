@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 
+import '../../extension/domain/action.dart';
 import '../../fake_data.dart';
+import '../../scripting/domain/parser.dart';
+import '../domain/player.dart';
 
 class PlayerPage extends StatefulBasePage {
   const PlayerPage({super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
@@ -37,7 +41,32 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   @override
   Widget buildBody(BuildContext context) {
-    return graphicalMode ? buildPresentationModeContent(context) : buildExplorationModeContent(context);
+    //TODO parse real script
+    const validRawScriptYaml = """
+      name: "Flow diagram example"
+      description: |
+        ## Example of flow diagram usage
+        This script builds a simple flow diagram and adds some components 
+      tags: [data-structure, example]
+      scenes:
+        - name: Scene name
+          extensions: []
+          description: Initial scene description
+          initial-state:
+            - nop
+            - nop
+          transitions:
+            - nop
+            - nop
+            - show-message: "Showing a nice message"
+            - show-message: "Goodbye!"
+    """;
+    var initialPlayerState = PlayerState(ScriptParser(GetExtensionById()).parse(validRawScriptYaml));
+
+    return BlocProvider(
+        create: (context) => PlayerBloc(initialPlayerState),
+        child: graphicalMode ? buildPresentationModeContent(context) : buildExplorationModeContent(context),
+    );
   }
 
   ButtonBar buildButtonBar(BuildContext context) {
