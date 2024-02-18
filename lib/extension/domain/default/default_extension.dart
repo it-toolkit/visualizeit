@@ -1,49 +1,16 @@
 
 
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:visualizeit/extension/domain/default/show_message.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/scripting.dart';
 import 'package:visualizeit_extensions/visualizer.dart';
 import 'package:yaml/yaml.dart';
 
-class ShowMessage extends GlobalCommand {
-
-  final String _message;
-
-  ShowMessage.build(List<String> args) : _message = args.single;
-
-  @override
-  void call() {
-    print("Showing message: $_message");// TODO: implement call
-  }
-}
-
-showAlertDialog(BuildContext context) {
-
-  // set up the button
-  Widget okButton = TextButton(
-    child: Text("OK"),
-    onPressed: () { },
-  );
-
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text("My title"),
-    content: Text("This is my message."),
-    actions: [
-      okButton,
-    ],
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
+import 'nop.dart';
 
 class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExtension {
   static const String _extensionId = "default";
@@ -51,10 +18,14 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   @override
   Command? buildCommand(String rawCommand) {
     MapEntry<String, List<String>> commandParts = _parseCommandNode(rawCommand);
-    CommandDefinition def = getAllCommandDefinitions()
-        .firstWhere((it) => commandParts.key == it.name && commandParts.value.length == it.args.length);
+    CommandDefinition? def = getAllCommandDefinitions()
+        .where((it) => commandParts.key == it.name && commandParts.value.length == it.args.length)
+        .singleOrNull;
+
+    if(def ==null) return null;
 
     switch (def.name) {
+      case "nop": return NoOp.build();
       case "show-message": return ShowMessage.build(commandParts.value);
       default: return null;
     }
@@ -63,7 +34,8 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   @override
   List<CommandDefinition> getAllCommandDefinitions() {
     return [
-      CommandDefinition(_extensionId, "show-message", [CommandArgDef("message", ArgType.string)])
+      CommandDefinition(_extensionId, "show-message", [CommandArgDef("message", ArgType.string)]),
+      CommandDefinition(_extensionId, "nop", [])
     ];
   }
 
@@ -71,7 +43,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   Widget? render(Model model, BuildContext context) {
     switch (model.name) {
       case "show-message":
-        showAlertDialog(context, );
+        // showAlertDialog(context, message: );
         return null;
       default: return null;
     }
@@ -97,6 +69,43 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
     } else {
       throw Exception("Unknown command"); //TODO improve error handling
     }
+  }
+}
+
+
+abstract class GlobalCommand extends ModelCommand {
+  GlobalCommand() : super ("global");
+}
+
+abstract class GlobalStateUpdate{}
+
+class MessageDialog extends GlobalStateUpdate {
+  String? title;
+  String message;
+
+  MessageDialog({this.title, required this.message});
+}
+
+const globalModelName = "global";
+
+class GlobalModel extends Model {
+
+  GlobalModel() : super(globalModelName);
+
+  Queue<GlobalStateUpdate> globalStateUpdates = Queue();
+  
+  @override
+  void apply(Command command) {
+    if (command is ShowMessage) {
+      globalStateUpdates.add(MessageDialog(message: command.message));
+    }
+  }
+
+  GlobalStateUpdate? takeNextGlobalStateUpdate() => globalStateUpdates.isNotEmpty ? globalStateUpdates.removeFirst() : null;
+
+  void pushGlobalStateUpdate(GlobalStateUpdate globalStateUpdate) {
+    print("Pushing $globalStateUpdate");
+    globalStateUpdates.add(globalStateUpdate);
   }
 }
 

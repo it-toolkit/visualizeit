@@ -12,13 +12,19 @@ import 'package:visualizeit_extensions/scripting.dart';
 class GetExtensionsByIdMock extends Mock implements GetExtensionById {}
 class ExtensionMock extends Mock implements Extension {}
 class ScriptingExtensionMock extends Mock implements ScriptingExtension {}
-class CommandMock extends Mock implements GlobalCommand {}
+class CommandMock extends Mock implements ModelCommand {}
+class ModelMock extends Mock implements Model {}
 
 void main() {
   var getExtensionsById = GetExtensionsByIdMock();
   var extensionMock = ExtensionMock();
   var scriptingExtensionMock = ScriptingExtensionMock();
   var commandMock = CommandMock();
+  var modelMock = ModelMock();
+
+  setUpAll(() {
+    registerFallbackValue(modelMock);
+  });
 
   tearDown(() {
     reset(getExtensionsById);
@@ -102,7 +108,7 @@ void main() {
     verify(() => scriptingExtensionMock.buildCommand(any(that: equals('{single-arg-command: my-arg}')))).called(2);
     verify(() => scriptingExtensionMock.buildCommand(any(that: equals('{multi-arg-command: [arg1, arg2]}')))).called(2);
 
-    verifyNever(() => commandMock.call());
+    verifyNever(() => commandMock.call(any<Model>()));
   });
 
 }

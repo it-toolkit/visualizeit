@@ -5,6 +5,8 @@ import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:yaml/yaml.dart';
 
+import '../../extension/domain/default/default_extension.dart';
+
 class ScriptParser {
   final GetExtensionById _getExtensionsById;
 
@@ -18,6 +20,8 @@ class ScriptParser {
       Map<String, Extension> extensions = {
         for (var extensionId in sceneDef.metadata.extensionIds) extensionId : _getExtensionsById(extensionId)
       };
+
+      extensions["default"] = buildDefaultExtension();
 
       return Scene(
           sceneDef.metadata,
