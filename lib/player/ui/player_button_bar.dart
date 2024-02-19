@@ -7,6 +7,7 @@ class PlayerButtonBar extends StatelessWidget {
   final VoidCallback? onNextPressed;
   final VoidCallback? onFullscreenPressed;
   final double progress; // Value between 0.0 and 1.0 for the progress bar
+  final bool isPlaying;
 
   const PlayerButtonBar({
     super.key,
@@ -16,6 +17,7 @@ class PlayerButtonBar extends StatelessWidget {
     this.onNextPressed,
     this.onFullscreenPressed,
     required this.progress,
+    required this.isPlaying,
   });
 
   @override
@@ -26,9 +28,9 @@ class PlayerButtonBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(icon: const Icon(Icons.restart_alt), onPressed: onPreviousPressed),
+          IconButton(icon: const Icon(Icons.restart_alt), onPressed: onRestartPressed),
           IconButton(icon: const Icon(Icons.skip_previous), onPressed: onPreviousPressed),
-          IconButton(icon: const Icon(Icons.play_arrow), onPressed: onPlayPausePressed),
+          IconButton(icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow), onPressed: onPlayPausePressed),
           IconButton(icon: const Icon(Icons.skip_next), onPressed: onNextPressed),
           Expanded(
             child: Padding(

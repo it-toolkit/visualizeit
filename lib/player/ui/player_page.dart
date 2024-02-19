@@ -10,6 +10,8 @@ import '../../extension/domain/action.dart';
 import '../../fake_data.dart';
 import '../../scripting/domain/parser.dart';
 import '../domain/player.dart';
+import '../domain/player_timer.dart';
+
 
 class PlayerPage extends StatefulBasePage {
   const PlayerPage({super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
@@ -24,6 +26,7 @@ class PlayerPage extends StatefulBasePage {
 
 class PlayerPageState extends BasePageState<PlayerPage> {
   bool graphicalMode = true;
+  final PlayerTimer _timer = PlayerTimer();
 
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
@@ -63,13 +66,17 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           transitions:
             - nop
             - nop
+            - nop
+            - nop
             - show-message: "Showing a nice message"
             - show-message: "Goodbye!"
     """;
     var initialPlayerState = PlayerState(ScriptParser(GetExtensionById()).parse(validRawScriptYaml));
 
-    return BlocProvider(
-        create: (context) => PlayerBloc(initialPlayerState),
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState)),
+        ],
         child: Builder(builder: (context) => super.build(context))
     );
   }
@@ -83,18 +90,40 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     );
   }
 
-  PlayerButtonBar buildPlayerButtonBar(BuildContext context) {
-    return PlayerButtonBar(
-      progress: 0.6,
+  Widget buildPlayerButtonBar(BuildContext context) {
+    return BlocBuilder<PlayerBloc, PlayerState>(
+        builder: (context, playerState) => PlayerButtonBar(
+      progress: playerState.progress,
+      isPlaying: playerState.isPlaying,
       onFullscreenPressed: () {
         setState(() {
           super.showAppBar = !super.showAppBar;
         });
       },
+      onRestartPressed: () {
+        _timer.pause();
+        BlocProvider.of<PlayerBloc>(context).add(RestartPlaybackEvent());
+      },
+      onPreviousPressed: () {
+        BlocProvider.of<PlayerBloc>(context).add(PreviousTransitionEvent());
+      },
       onNextPressed: () {
-        BlocProvider.of<PlayerBloc>(context).add(AdvanceEvent());
-      }
-    );
+        BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent());
+      },
+      onPlayPausePressed: () {
+        if (!_timer.isInitialized) {
+          _timer.init(() { BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent()); });
+          _timer.start();
+          BlocProvider.of<PlayerBloc>(context).add(StartPlaybackEvent());
+        } else {
+          if(_timer.toggle()) {
+            BlocProvider.of<PlayerBloc>(context).add(StartPlaybackEvent());
+          } else {
+            BlocProvider.of<PlayerBloc>(context).add(StopPlaybackEvent());
+          }
+        }
+      },
+    ));
   }
 
   Widget buildPresentationModeContent(BuildContext context) {

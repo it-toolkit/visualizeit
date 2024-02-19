@@ -22,6 +22,8 @@ class CanvasWidget extends StatelessWidget {
             }
           },
           builder: (context, playerState) {
+
+            print("Rendering state: ${playerState.currentSceneIndex} - ${playerState.currentCommandIndex}");
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -29,7 +31,7 @@ class CanvasWidget extends StatelessWidget {
                 ElevatedButton(
                   style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.redAccent)),
                   onPressed: () {
-                    BlocProvider.of<PlayerBloc>(context).add(AdvanceEvent());
+                    BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent());
                   },
                   child: const Text("+"),
                 ),
@@ -59,7 +61,9 @@ class CanvasWidget extends StatelessWidget {
           title: title != null ? Text(title) : null,
           content: Text(message),
           actions: [
-            TextButton(child: const Text("Close"), onPressed: () => Navigator.of(context, rootNavigator: true).pop()),
+            TextButton(child: const Text("Close"), onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
+            }),
           ],
         );
       },
