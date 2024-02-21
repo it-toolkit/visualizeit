@@ -61,14 +61,19 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           extensions: []
           description: Initial scene description
           initial-state:
-            - nop
-            - nop
+            - show-banner: ["Initial state banner", center, 1]
           transitions:
             - nop
+            - show-banner: ["Top Banner", topCenter, 1]
             - nop
+            - show-banner: ["Left Banner", centerLeft, 1]
             - nop
+            - show-banner: ["Right Banner", centerRight, 1]
+            - nop
+            - show-banner: ["Bottom Banner", bottomCenter, 1]
             - nop
             - show-popup: "Showing a nice message"
+            - nop
             - show-popup: "Goodbye!"
     """;
     var initialPlayerState = PlayerState(ScriptParser(GetExtensionById()).parse(validRawScriptYaml));

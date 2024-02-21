@@ -3,7 +3,6 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:visualizeit/extension/domain/default/show_popup.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/scripting.dart';
@@ -11,6 +10,8 @@ import 'package:visualizeit_extensions/visualizer.dart';
 import 'package:yaml/yaml.dart';
 
 import 'nop.dart';
+import 'show_banner.dart';
+import 'show_popup.dart';
 
 class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExtension {
   static const String _extensionId = "default";
@@ -27,6 +28,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
     switch (def.name) {
       case "nop": return NoOp.build();
       case "show-popup": return ShowPopup.build(commandParts.value);
+      case "show-banner": return ShowBanner.build(commandParts.value);
       default: return null;
     }
   }
@@ -35,6 +37,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   List<CommandDefinition> getAllCommandDefinitions() {
     return [
       CommandDefinition(_extensionId, "show-popup", [CommandArgDef("message", ArgType.string)]),
+      CommandDefinition(_extensionId, "show-banner", [CommandArgDef("message", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]),
       CommandDefinition(_extensionId, "nop", [])
     ];
   }
@@ -45,12 +48,14 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
       case "show-popup":
         // showAlertDialog(context, message: );
         return null;
-
-      default: return null;
+      default:
+        if (model.name.indexOf(showBannerModelName) == 0) {
+          model as ShowBannerModel;
+          return Positioned.fill(child: Align(alignment: parseAlignment(model.alignment), child: Text(model.message)));
+        }
+        return null;
     }
   }
-
-
 
   MapEntry<String, List<String>> _parseCommandNode(rawCommand) {
     YamlNode commandNode = loadYamlNode(rawCommand);
@@ -69,6 +74,21 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
       }
     } else {
       throw Exception("Unknown command"); //TODO improve error handling
+    }
+  }
+
+  Alignment parseAlignment(String alignment) {
+    switch(alignment) {
+      case "topLeft": return Alignment.topLeft;
+      case "topCenter": return Alignment.topCenter;
+      case "topRight": return Alignment.topRight;
+      case "centerLeft": return Alignment.centerLeft;
+      case "center": return Alignment.center;
+      case "centerRight": return Alignment.centerRight;
+      case "bottomLeft": return Alignment.bottomLeft;
+      case "bottomCenter": return Alignment.bottomCenter;
+      case "bottomRight": return Alignment.bottomRight;
+      default: throw Exception("Unknown alignment value"); //TODO handle error properly
     }
   }
 }

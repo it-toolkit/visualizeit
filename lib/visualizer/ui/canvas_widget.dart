@@ -24,19 +24,10 @@ class CanvasWidget extends StatelessWidget {
           builder: (context, playerState) {
 
             print("Rendering state: ${playerState.currentSceneIndex} - ${playerState.currentCommandIndex}");
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('Next command: ${playerState.currentCommandIndex + 1}'),
-                ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.redAccent)),
-                  onPressed: () {
-                    BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent());
-                  },
-                  child: const Text("+"),
-                ),
-              ],
-            );
+            var visualizer = buildDefaultExtension().visualizer;
+            List<Widget> widgets = playerState.currentSceneModels.values.map((e) => visualizer.render(e, context)).nonNulls.toList();
+
+            return Stack(children: widgets);
           },
     ),);
 
@@ -50,8 +41,6 @@ class CanvasWidget extends StatelessWidget {
     //   ),
     // );
   }
-
-
 
   void _showAlertDialog(BuildContext context, {String? title, required String message}) {
     showDialog(

@@ -65,7 +65,15 @@ class ScriptParser {
 
   ///Throws error if command cannot be parsed
   Command _parseCommand(String rawCommand, Map<String, Extension> extensions) {
-    return extensions.values.map((extension) => extension.scripting.buildCommand(rawCommand)).nonNulls.single; //TODO handle too many or none
+    try {
+      return extensions.values
+          .map((extension) => extension.scripting.buildCommand(rawCommand))
+          .nonNulls
+          .single; //TODO handle too many or none
+    } catch (e) {
+      print("Error parsing command: ${[rawCommand, extensions]}");
+      rethrow;
+    }
   }
 
   List<Command> _parseRawCommands(List<String> rawCommands, Map<String, Extension> extensions) {
