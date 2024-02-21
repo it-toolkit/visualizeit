@@ -11,8 +11,14 @@ abstract class PlayerEvent {}
 
 class NextTransitionEvent extends PlayerEvent {}
 class PreviousTransitionEvent extends PlayerEvent {}
-class StartPlaybackEvent extends PlayerEvent {}
-class StopPlaybackEvent extends PlayerEvent {}
+class StartPlaybackEvent extends PlayerEvent {
+  bool waitingAction;
+  StartPlaybackEvent({this.waitingAction = false});
+}
+class StopPlaybackEvent extends PlayerEvent {
+  bool waitingAction;
+  StopPlaybackEvent({this.waitingAction = false});
+}
 class RestartPlaybackEvent extends PlayerEvent {}
 
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
@@ -55,6 +61,7 @@ class PlayerState {
   late final int currentCommandIndex;
   late final Map<String, Model> currentSceneModels;
   late final bool isPlaying;
+  late final bool waitingAction;
 
   PlayerState(this.script) {
     _setupScene(0);
@@ -71,10 +78,10 @@ class PlayerState {
     return commandsRun / totalCommands;
   }
 
-  PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying);
+  PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction);
 
-  PlayerState copy({required int sceneIndex, required int commandIndex, required Map<String, Model> models, required bool isPlaying}) {
-    return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying);
+  PlayerState copy({required int sceneIndex, required int commandIndex, required Map<String, Model> models, required bool isPlaying, bool waitingAction = false}) {
+    return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying, waitingAction);
   }
 
   PlayerState runNextCommand() {
@@ -89,12 +96,14 @@ class PlayerState {
     return copy(sceneIndex: currentSceneIndex, commandIndex: nextCommandIndex, models: updatedModels, isPlaying: isPlaying);
   }
 
-  PlayerState startPlayback() {
-    return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels, isPlaying: true);
+  PlayerState startPlayback({bool waitingAction = false}) {
+    print("startPlayback");
+    return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels, isPlaying: !waitingAction || this.waitingAction);
   }
 
-  PlayerState stopPlayback() {
-    return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels, isPlaying: false);
+  PlayerState stopPlayback({bool waitingAction = false}) {
+    print("stopPlayback");
+    return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels, isPlaying: false, waitingAction: isPlaying && waitingAction);
   }
 
   PlayerState restartPlayback() {

@@ -75,6 +75,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
             - show-popup: "Showing a nice message"
             - nop
             - show-popup: "Goodbye!"
+            - nop
     """;
     var initialPlayerState = PlayerState(ScriptParser(GetExtensionById()).parse(validRawScriptYaml));
 
@@ -96,39 +97,44 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   }
 
   Widget buildPlayerButtonBar(BuildContext context) {
-    return BlocBuilder<PlayerBloc, PlayerState>(
-        builder: (context, playerState) => PlayerButtonBar(
-      progress: playerState.progress,
-      isPlaying: playerState.isPlaying,
-      onFullscreenPressed: () {
-        setState(() {
-          super.showAppBar = !super.showAppBar;
-        });
-      },
-      onRestartPressed: () {
-        _timer.pause();
-        BlocProvider.of<PlayerBloc>(context).add(RestartPlaybackEvent());
-      },
-      onPreviousPressed: () {
-        BlocProvider.of<PlayerBloc>(context).add(PreviousTransitionEvent());
-      },
-      onNextPressed: () {
-        BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent());
-      },
-      onPlayPausePressed: () {
-        if (!_timer.isInitialized) {
-          _timer.init(() { BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent()); });
-          _timer.start();
-          BlocProvider.of<PlayerBloc>(context).add(StartPlaybackEvent());
-        } else {
-          if(_timer.toggle()) {
+    return BlocBuilder<PlayerBloc, PlayerState>(builder: (context, playerState) {
+      if (playerState.isPlaying != _timer.running) _timer.toggle();
+
+      return PlayerButtonBar(
+        progress: playerState.progress,
+        isPlaying: playerState.isPlaying,
+        onFullscreenPressed: () {
+          setState(() {
+            super.showAppBar = !super.showAppBar;
+          });
+        },
+        onRestartPressed: () {
+          _timer.pause();
+          BlocProvider.of<PlayerBloc>(context).add(RestartPlaybackEvent());
+        },
+        onPreviousPressed: () {
+          BlocProvider.of<PlayerBloc>(context).add(PreviousTransitionEvent());
+        },
+        onNextPressed: () {
+          BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent());
+        },
+        onPlayPausePressed: () {
+          if (!_timer.isInitialized) {
+            _timer.init(() {
+              BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent());
+            });
+            _timer.start();
             BlocProvider.of<PlayerBloc>(context).add(StartPlaybackEvent());
           } else {
-            BlocProvider.of<PlayerBloc>(context).add(StopPlaybackEvent());
+            if (_timer.toggle()) {
+              BlocProvider.of<PlayerBloc>(context).add(StartPlaybackEvent());
+            } else {
+              BlocProvider.of<PlayerBloc>(context).add(StopPlaybackEvent());
+            }
           }
-        }
-      },
-    ));
+        },
+      );
+    });
   }
 
   Widget buildPresentationModeContent(BuildContext context) {

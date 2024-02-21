@@ -8,6 +8,8 @@ class PlayerTimer {
   void Function()? _callback;
   bool _running = false;
 
+  bool get running => _running;
+
   bool get isInitialized => _callback != null;
 
   void init(void Function() callback) {
@@ -17,7 +19,7 @@ class PlayerTimer {
   void start(){
     if (_callback == null) throw Exception("Timer not initialized");
 
-    _timer ??= Timer.periodic(const Duration(seconds: 1), (timer) { if (_running) _callback?.call(); });
+    _timer ??= Timer.periodic(const Duration(milliseconds: 500), (timer) { if (_running) _callback?.call(); });
     _running = true;
   }
 
