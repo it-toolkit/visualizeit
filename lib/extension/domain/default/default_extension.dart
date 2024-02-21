@@ -3,7 +3,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:visualizeit/extension/domain/default/show_message.dart';
+import 'package:visualizeit/extension/domain/default/show_popup.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/scripting.dart';
@@ -26,7 +26,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
 
     switch (def.name) {
       case "nop": return NoOp.build();
-      case "show-message": return ShowMessage.build(commandParts.value);
+      case "show-popup": return ShowPopup.build(commandParts.value);
       default: return null;
     }
   }
@@ -34,7 +34,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   @override
   List<CommandDefinition> getAllCommandDefinitions() {
     return [
-      CommandDefinition(_extensionId, "show-message", [CommandArgDef("message", ArgType.string)]),
+      CommandDefinition(_extensionId, "show-popup", [CommandArgDef("message", ArgType.string)]),
       CommandDefinition(_extensionId, "nop", [])
     ];
   }
@@ -42,9 +42,10 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   @override
   Widget? render(Model model, BuildContext context) {
     switch (model.name) {
-      case "show-message":
+      case "show-popup":
         // showAlertDialog(context, message: );
         return null;
+
       default: return null;
     }
   }
@@ -79,11 +80,11 @@ abstract class GlobalCommand extends ModelCommand {
 
 abstract class GlobalStateUpdate{}
 
-class MessageDialog extends GlobalStateUpdate {
+class PopupMessage extends GlobalStateUpdate {
   String? title;
   String message;
 
-  MessageDialog({this.title, required this.message});
+  PopupMessage({this.title, required this.message});
 }
 
 const globalModelName = "global";
@@ -96,8 +97,8 @@ class GlobalModel extends Model {
   
   @override
   void apply(Command command) {
-    if (command is ShowMessage) {
-      globalStateUpdates.add(MessageDialog(message: command.message));
+    if (command is ShowPopup) {
+      globalStateUpdates.add(PopupMessage(message: command.message));
     }
   }
 

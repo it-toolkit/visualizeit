@@ -18,7 +18,7 @@ class CanvasWidget extends StatelessWidget {
             var stateUpdate = (playerState.currentSceneModels[globalModelName] as GlobalModel).takeNextGlobalStateUpdate();
             if (stateUpdate == null) return;
             switch(stateUpdate){
-              case MessageDialog _: _showAlertDialog(context, message: stateUpdate.message);
+              case PopupMessage _: _showAlertDialog(context, message: stateUpdate.message);
             }
           },
           builder: (context, playerState) {

@@ -68,8 +68,8 @@ class PlayerPageState extends BasePageState<PlayerPage> {
             - nop
             - nop
             - nop
-            - show-message: "Showing a nice message"
-            - show-message: "Goodbye!"
+            - show-popup: "Showing a nice message"
+            - show-popup: "Goodbye!"
     """;
     var initialPlayerState = PlayerState(ScriptParser(GetExtensionById()).parse(validRawScriptYaml));
 
