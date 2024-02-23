@@ -51,7 +51,13 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
       default:
         if (model.name.indexOf(showBannerModelName) == 0) {
           model as ShowBannerModel;
-          return Positioned.fill(child: Align(alignment: parseAlignment(model.alignment), child: Text(model.message)));
+          return Positioned.fill(
+              child: Align(
+                  alignment: parseAlignment(model.alignment),
+                  child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(color: Colors.deepPurpleAccent.shade100, borderRadius: BorderRadius.circular(10)),
+                      child: Text(model.message))));
         }
         return null;
     }
