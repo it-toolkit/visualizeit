@@ -61,16 +61,17 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           extensions: []
           description: Initial scene description
           initial-state:
-            - show-banner: ["Initial state banner", center, 1]
+            - banner: [A, "Banner text"]
+            - show-banner: [A, center, 1]
           transitions:
             - nop
-            - show-banner: ["Top Banner", topCenter, 1]
+            - show-banner: [A, topCenter, 1]
             - nop
-            - show-banner: ["Left Banner", centerLeft, 1]
+            - show-banner: [A, centerLeft, 4]
             - nop
-            - show-banner: ["Right Banner", centerRight, 1]
+            - show-banner: [A, centerRight, 4]
             - nop
-            - show-banner: ["Bottom Banner", bottomCenter, 1]
+            - show-banner: [A, bottomCenter, 1]
             - nop
             - show-popup: "Showing a nice message"
             - nop

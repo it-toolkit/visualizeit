@@ -28,6 +28,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
     switch (def.name) {
       case "nop": return NoOp.build();
       case "show-popup": return ShowPopup.build(commandParts.value);
+      case "banner": return CreateBanner.build(commandParts.value);
       case "show-banner": return ShowBanner.build(commandParts.value);
       default: return null;
     }
@@ -37,7 +38,8 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   List<CommandDefinition> getAllCommandDefinitions() {
     return [
       CommandDefinition(_extensionId, "show-popup", [CommandArgDef("message", ArgType.string)]),
-      CommandDefinition(_extensionId, "show-banner", [CommandArgDef("message", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]),
+      CommandDefinition(_extensionId, "banner", [CommandArgDef("name", ArgType.string), CommandArgDef("message", ArgType.string)]),
+      CommandDefinition(_extensionId, "show-banner", [CommandArgDef("name", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]),
       CommandDefinition(_extensionId, "nop", [])
     ];
   }
@@ -49,8 +51,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
         // showAlertDialog(context, message: );
         return null;
       default:
-        if (model.name.indexOf(showBannerModelName) == 0) {
-          model as ShowBannerModel;
+        if (model is BannerModel) {
           return Positioned.fill(
               child: Align(
                   alignment: parseAlignment(model.alignment),
@@ -121,13 +122,6 @@ class GlobalModel extends Model {
 
   Queue<GlobalStateUpdate> globalStateUpdates = Queue();
   
-  @override
-  void apply(Command command) {
-    if (command is ShowPopup) {
-      globalStateUpdates.add(PopupMessage(message: command.message));
-    }
-  }
-
   GlobalStateUpdate? takeNextGlobalStateUpdate() => globalStateUpdates.isNotEmpty ? globalStateUpdates.removeFirst() : null;
 
   void pushGlobalStateUpdate(GlobalStateUpdate globalStateUpdate) {

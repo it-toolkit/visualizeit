@@ -7,7 +7,8 @@ class NoOp extends GlobalCommand {
   NoOp.build();
 
   @override
-  void call(Model model) {
+  Result call(Model model) {
     print("No op");// TODO: implement call
+    return Result(model: model);
   }
 }

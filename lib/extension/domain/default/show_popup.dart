@@ -9,7 +9,8 @@ class ShowPopup extends GlobalCommand {
   ShowPopup.build(List<String> args) : message = args.single;
 
   @override
-  void call(Model model) {
+  Result call(Model model) {
     (model as GlobalModel).pushGlobalStateUpdate(PopupMessage(message: message));
+    return Result(model: model);
   }
 }

@@ -54,6 +54,18 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 }
 
 
+class _RunCommandResult{
+  Map<String, Model> models;
+  bool finished;
+
+  _RunCommandResult(this.models, this.finished);
+
+  @override
+  String toString() {
+    return '_RunCommandResult{models: $models, finished: $finished}';
+  }
+}
+
 class PlayerState {
 
   final Script script;
@@ -62,6 +74,7 @@ class PlayerState {
   late final Map<String, Model> currentSceneModels;
   late final bool isPlaying;
   late final bool waitingAction;
+  late final copyCounter = 0;
 
   PlayerState(this.script) {
     _setupScene(0);
@@ -86,14 +99,20 @@ class PlayerState {
 
   PlayerState runNextCommand() {
     var nextCommandIndex = currentCommandIndex + 1;
-    print("Running command $nextCommandIndex");
-
     var scene = script.scenes[currentSceneIndex];
-    if (nextCommandIndex >= scene.transitionCommands.length) return this; //TODO advance scene?
 
-    var updatedModels = _runCommand(scene.transitionCommands[nextCommandIndex], currentSceneModels);
-    print("updated models: $updatedModels");
-    return copy(sceneIndex: currentSceneIndex, commandIndex: nextCommandIndex, models: updatedModels, isPlaying: isPlaying);
+    if (nextCommandIndex >= scene.transitionCommands.length) return stopPlayback(); //TODO advance scene?
+
+    print("Running command $nextCommandIndex: ${scene.transitionCommands[nextCommandIndex]}");
+
+    var result = _runCommand(scene.transitionCommands[nextCommandIndex], currentSceneModels);
+    print("Command result: updated models: ${result.models}, finished: ${result.finished}");
+    return copy(
+      sceneIndex: currentSceneIndex,
+      commandIndex: result.finished ? nextCommandIndex : currentCommandIndex,
+      models: result.models,
+      isPlaying: isPlaying,
+    );
   }
 
   PlayerState startPlayback({bool waitingAction = false}) {
@@ -117,28 +136,42 @@ class PlayerState {
   }
 
   Map<String, Model> _buildInitialState(List<Command> commands) {
-    var sceneModels = commands.fold(<String, Model>{ globalModelName: GlobalModel()}, (models, command) {
-      return _runCommand(command, models);
+    var sceneModels = commands.fold(<String, Model>{globalModelName: GlobalModel()}, (models, command) {
+      _RunCommandResult result;
+      do {
+        print("Running command: $command");
+        result = _runCommand(command, models);
+      } while (!result.finished);
+      return result.models;
     });
 
     return sceneModels;
   }
 
-  Map<String, Model> _runCommand(Command command, Map<String, Model> baseModels) {
-    var updatedModels = Map.of(baseModels);
+  _RunCommandResult _runCommand(Command command, Map<String, Model> baseModels) {
+    final result = _RunCommandResult(Map.of(baseModels), true);
     if (command is ModelBuilderCommand) {
       Model model = command();
-      updatedModels[model.name] = model;
+      result.models[model.name] = model;
+
     } else if (command is ModelCommand) {
-      var model = updatedModels[command.modelName];
+      var model = result.models[command.modelName];
       if (model == null) throw Exception("Unknown model: ${command.modelName}"); //TODO define custom exception for linter
 
-      command(model);
+      var cmdResult = command(model);
+      final updatedModel = cmdResult.model;
+      if (updatedModel == null){
+        result.models.remove(command.modelName);
+      } else {
+        result.models[command.modelName] = updatedModel;
+        result.finished = cmdResult.finished;
+      }
+
     } else {
       throw Exception("Unknown command: $command"); //TODO define custom exception for linter
     }
-
-    return updatedModels;
+    print(result);
+    return result;
   }
 }
 

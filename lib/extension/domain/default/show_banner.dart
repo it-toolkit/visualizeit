@@ -3,29 +3,59 @@ import 'package:visualizeit_extensions/common.dart';
 
 const showBannerModelName = "default.show_banner";
 
-class ShowBannerModel extends Model {
+class BannerModel extends Model {
   final String message;
   final String alignment;
   final int framesDuration;
 
-  ShowBannerModel(this.message, this.alignment, this.framesDuration): super("$showBannerModelName.${uniqueSuffix()}");
+  BannerModel(super.name, this.message, {this.alignment = "center", this.framesDuration = 1});
 
-  static int uniqueSuffix() => DateTime.timestamp().millisecondsSinceEpoch;
+  BannerModel copy(String alignment, int framesDuration)
+    => BannerModel(name, message, alignment: alignment, framesDuration: framesDuration);
 
   @override
-  void apply(Command command) {}
+  String toString() {
+    return "BannerModel($message, $alignment, $framesDuration)";
+  }
 }
 
-class ShowBanner extends ModelBuilderCommand {
-
+class CreateBanner extends ModelBuilderCommand {
+  final String name;
   final String message;
-  final String alignment;
-  final int framesDuration;
 
-  ShowBanner.build(List<String> args) : message = args[0], alignment = args[1], framesDuration = int.parse(args[2]); //TODO validate int
+  CreateBanner.build(List<String> args) : name = args[0], message = args[1];
 
   @override
   Model call() {
-    return ShowBannerModel(message, alignment, framesDuration);
+    return BannerModel(name, message);
+  }
+}
+
+class ShowBanner extends ModelCommand {
+
+  final String alignment;
+  final int framesDuration;
+
+  ShowBanner.build(List<String> args) : alignment = args[1], framesDuration = int.parse(args[2]), super(args[0]); //TODO validate int
+
+  @override
+  Result call(Model model) {
+    model as BannerModel; //TODO fail if cannot cast
+    if (framesDuration > 0 && model.framesDuration == 0) {
+      var nextFrameDuration = framesDuration - 1;
+      var result = Result(model: model.copy(alignment, nextFrameDuration), finished: nextFrameDuration <= 0);
+      print("Call result: $result");
+      return result;
+    }
+    else if (model.framesDuration > 0){
+      var nextFrameDuration = model.framesDuration - 1;
+      var result = Result(model: model.copy(alignment, nextFrameDuration), finished: nextFrameDuration <= 0);
+      print("Call result: $result");
+      return result;
+    }
+    else {
+      print("Call result not touched");
+      return Result(model: model);
+    }
   }
 }

@@ -30,6 +30,7 @@ class CanvasWidget extends StatelessWidget {
           builder: (context, playerState) {
 
             print("Rendering state: ${playerState.currentSceneIndex} - ${playerState.currentCommandIndex}, playing: ${playerState.isPlaying}");
+            print(playerState.currentSceneModels);
             var visualizer = buildDefaultExtension().visualizer;
             List<Widget> widgets = playerState.currentSceneModels.values.map((e) => visualizer.render(e, context)).nonNulls.toList();
 
