@@ -3,9 +3,12 @@ import 'dart:collection';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit_extensions/common.dart';
+import 'package:visualizeit_extensions/logging.dart';
 
 import '../../extension/domain/default/default_extension.dart';
 import '../../scripting/domain/script.dart';
+
+final _logger = Logger("player");
 
 abstract class PlayerEvent {}
 
@@ -28,13 +31,13 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     on<NextTransitionEvent>((event, emit) {
       history.add(state.isPlaying ? state.stopPlayback() : state);
       var newState = state.runNextCommand();
-      print("Going to next state: ${newState.currentSceneIndex} - ${newState.currentCommandIndex}");
+      _logger.debug(() => "Going to next state: ${newState.currentSceneIndex} - ${newState.currentCommandIndex}");
       emit(newState);
     });
     on<PreviousTransitionEvent>((event, emit) {
       if(history.isNotEmpty) {
         var previousState = history.removeLast();
-        print("Going to previous state: ${previousState.currentSceneIndex} - ${previousState.currentCommandIndex}");
+        _logger.debug(() => "Going to previous state: ${previousState.currentSceneIndex} - ${previousState.currentCommandIndex}");
         emit(previousState);
       }
     });
@@ -76,6 +79,12 @@ class PlayerState {
   late final bool waitingAction;
   late final copyCounter = 0;
 
+
+  @override
+  String toString() {
+    return 'PlayerState{script: ${script.metadata.name}, command: $currentSceneIndex/$currentCommandIndex, isPlaying: $isPlaying, models: $currentSceneModels}';
+  }
+
   PlayerState(this.script) {
     _setupScene(0);
     isPlaying = false;
@@ -103,10 +112,10 @@ class PlayerState {
 
     if (nextCommandIndex >= scene.transitionCommands.length) return stopPlayback(); //TODO advance scene?
 
-    print("Running command $nextCommandIndex: ${scene.transitionCommands[nextCommandIndex]}");
+    _logger.debug(() => "Running command $nextCommandIndex: ${scene.transitionCommands[nextCommandIndex]}");
 
     var result = _runCommand(scene.transitionCommands[nextCommandIndex], currentSceneModels);
-    print("Command result: updated models: ${result.models}, finished: ${result.finished}");
+    _logger.debug(() => "Command result: updated models: ${result.models}, finished: ${result.finished}");
     return copy(
       sceneIndex: currentSceneIndex,
       commandIndex: result.finished ? nextCommandIndex : currentCommandIndex,
@@ -116,12 +125,12 @@ class PlayerState {
   }
 
   PlayerState startPlayback({bool waitingAction = false}) {
-    print("startPlayback");
+    _logger.debug(() => "Start playback (waitingAction=$waitingAction)");
     return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels, isPlaying: !waitingAction || this.waitingAction);
   }
 
   PlayerState stopPlayback({bool waitingAction = false}) {
-    print("stopPlayback");
+    _logger.debug(() => "Stop playback (waitingAction=$waitingAction)");
     return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels, isPlaying: false, waitingAction: isPlaying && waitingAction);
   }
 
@@ -139,7 +148,7 @@ class PlayerState {
     var sceneModels = commands.fold(<String, Model>{globalModelName: GlobalModel()}, (models, command) {
       _RunCommandResult result;
       do {
-        print("Running command: $command");
+        _logger.debug(() => "Running command: $command");
         result = _runCommand(command, models);
       } while (!result.finished);
       return result.models;
@@ -170,7 +179,8 @@ class PlayerState {
     } else {
       throw Exception("Unknown command: $command"); //TODO define custom exception for linter
     }
-    print(result);
+
+    _logger.debug(() => "Command result: $result");
     return result;
   }
 }

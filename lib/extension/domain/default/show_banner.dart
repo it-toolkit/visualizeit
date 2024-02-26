@@ -1,7 +1,9 @@
 
 import 'package:visualizeit_extensions/common.dart';
+import 'package:visualizeit_extensions/logging.dart';
 
 const showBannerModelName = "default.show_banner";
+final _logger = Logger("extension.default.banner");
 
 class BannerModel extends Model {
   final String message;
@@ -27,7 +29,10 @@ class CreateBanner extends ModelBuilderCommand {
 
   @override
   Model call() {
-    return BannerModel(name, message);
+    var bannerModel = BannerModel(name, message);
+
+    _logger.trace(() => "CreateBanner call result: $bannerModel");
+    return bannerModel;
   }
 }
 
@@ -41,21 +46,20 @@ class ShowBanner extends ModelCommand {
   @override
   Result call(Model model) {
     model as BannerModel; //TODO fail if cannot cast
+    Result result;
     if (framesDuration > 0 && model.framesDuration == 0) {
       var nextFrameDuration = framesDuration - 1;
-      var result = Result(model: model.copy(alignment, nextFrameDuration), finished: nextFrameDuration <= 0);
-      print("Call result: $result");
-      return result;
+      result = Result(model: model.copy(alignment, nextFrameDuration), finished: nextFrameDuration <= 0);
     }
     else if (model.framesDuration > 0){
       var nextFrameDuration = model.framesDuration - 1;
-      var result = Result(model: model.copy(alignment, nextFrameDuration), finished: nextFrameDuration <= 0);
-      print("Call result: $result");
-      return result;
+      result = Result(model: model.copy(alignment, nextFrameDuration), finished: nextFrameDuration <= 0);
     }
     else {
-      print("Call result not touched");
-      return Result(model: model);
+      result = Result(model: model);
     }
+
+    _logger.trace(() => "ShowBanner call result: $result");
+    return result;
   }
 }

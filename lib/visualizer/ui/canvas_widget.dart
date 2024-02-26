@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:visualizeit_extensions/logging.dart';
 
 import '../../extension/domain/default/default_extension.dart';
 import '../../player/domain/player.dart';
+
+final _logger = Logger("visualizer.ui.canvas");
 
 class CanvasWidget extends StatelessWidget {
 
@@ -13,14 +16,14 @@ class CanvasWidget extends StatelessWidget {
     return Center(
       child: BlocConsumer<PlayerBloc, PlayerState>(
           listener: (context, playerState) {
-            print("listen $playerState, playing: ${playerState.isPlaying}");
+            _logger.debug(() => "Listening $playerState when script isPlaying=${playerState.isPlaying}");
 
             var stateUpdate = (playerState.currentSceneModels[globalModelName] as GlobalModel).takeNextGlobalStateUpdate();
             if (stateUpdate == null) return;
             switch(stateUpdate){
               case PopupMessage _:
                 {
-                  print("Showing PopupMessage");
+                  _logger.debug(() => "Showing PopupMessage");
                   var playerBloc = BlocProvider.of<PlayerBloc>(context);
                   playerBloc.add(StopPlaybackEvent(waitingAction: true));
                   _showAlertDialog(context, playerBloc, message: stateUpdate.message);
@@ -28,9 +31,7 @@ class CanvasWidget extends StatelessWidget {
             }
           },
           builder: (context, playerState) {
-
-            print("Rendering state: ${playerState.currentSceneIndex} - ${playerState.currentCommandIndex}, playing: ${playerState.isPlaying}");
-            print(playerState.currentSceneModels);
+            _logger.debug(() => "Rendering $playerState");
             var visualizer = buildDefaultExtension().visualizer;
             List<Widget> widgets = playerState.currentSceneModels.values.map((e) => visualizer.render(e, context)).nonNulls.toList();
 

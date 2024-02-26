@@ -1,6 +1,9 @@
 import 'package:visualizeit_extensions/common.dart';
+import 'package:visualizeit_extensions/logging.dart';
 
 import 'default_extension.dart';
+
+final _logger = Logger("extension.default.nop");
 
 class NoOp extends GlobalCommand {
 
@@ -8,7 +11,8 @@ class NoOp extends GlobalCommand {
 
   @override
   Result call(Model model) {
-    print("No op");// TODO: implement call
+    _logger.trace(() => "Call on No op command");
+
     return Result(model: model);
   }
 }

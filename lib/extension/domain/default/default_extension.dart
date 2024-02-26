@@ -112,6 +112,11 @@ class PopupMessage extends GlobalStateUpdate {
   String message;
 
   PopupMessage({this.title, required this.message});
+
+  @override
+  String toString() {
+    return 'PopupMessage{title: $title, message: $message}';
+  }
 }
 
 const globalModelName = "global";
@@ -125,7 +130,6 @@ class GlobalModel extends Model {
   GlobalStateUpdate? takeNextGlobalStateUpdate() => globalStateUpdates.isNotEmpty ? globalStateUpdates.removeFirst() : null;
 
   void pushGlobalStateUpdate(GlobalStateUpdate globalStateUpdate) {
-    print("Pushing $globalStateUpdate");
     globalStateUpdates.add(globalStateUpdate);
   }
 }
