@@ -11,8 +11,9 @@ class SceneMetadata {
   String name;
   String description;
   Set<String> extensionIds;
+  String rawYaml;
 
-  SceneMetadata(this.name, this.description, this.extensionIds);
+  SceneMetadata(this.name, this.description, this.extensionIds, this.rawYaml);
 }
 
 class SceneDef {

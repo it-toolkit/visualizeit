@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:json2yaml/json2yaml.dart';
 import 'package:visualizeit/extension/domain/action.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
@@ -49,7 +52,8 @@ class ScriptParser {
       final description = sceneNode['description'];
       final extensionIds = (sceneNode['extensions'] as YamlList).value.map((e) => e.toString()).toSet();
 
-      final metadata = SceneMetadata(name, description, extensionIds);
+      final rawSceneYaml = json2yaml(json.decode(json.encode(sceneNode)));
+      final metadata = SceneMetadata(name, description, extensionIds, rawSceneYaml);
 
       final initialStateCommands = (sceneNode['initial-state'] as YamlList).map((commandNode) => commandNode.toString()).toList();
       final transitionCommands = (sceneNode['transitions'] as YamlList).map((commandNode) => commandNode.toString()).toList();

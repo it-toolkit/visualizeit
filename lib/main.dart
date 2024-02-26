@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:visualizeit/extension/ui/extension_page.dart';
 import 'package:visualizeit/misc/ui/help_page.dart';
 import 'package:visualizeit/player/ui/player_page.dart';
+import 'package:visualizeit/scripting/domain/parser.dart';
+import 'package:visualizeit/scripting/domain/script_repository.dart';
+import 'package:visualizeit/scripting/infrastructure/script_repository.dart';
 import 'package:visualizeit/user/ui/signin_page.dart';
 import 'package:visualizeit/scripting/ui/script_editor_page.dart';
 import 'package:visualizeit/scripting/ui/script_selector_page.dart';
+
+import 'extension/domain/action.dart';
 
 void main() => runApp(const VisualizeItApp());
 
@@ -52,8 +58,12 @@ final GoRouter _router = GoRouter(
           path: 'scripts/:sid/play',
           builder: (BuildContext context, GoRouterState state) {
             final scriptId = state.pathParameters['sid']!;
+            final rawScriptRepository = context.read<RawScriptRepository>();
+            final contentAsYaml = rawScriptRepository.findById(scriptId).contentAsYaml;
+            var script = ScriptParser(GetExtensionById()).parse(contentAsYaml);
+
             return PlayerPage(
-                scriptId: scriptId,
+                script: script,
                 onHelpPressed: () => {context.go("/help")},
                 onSignInPressed: () => {context.go("/sign-in")},
                 onExtensionsPressed: () => {context.go("/extensions")});
@@ -77,15 +87,20 @@ class VisualizeItApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: _router,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          colorScheme: const ColorScheme.light(),
-          useMaterial3: true,
-          scrollbarTheme: ScrollbarThemeData(
-            thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
-          )),
-    );
+    return MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<RawScriptRepository> (create: (context) => FakeRawScriptRepository()),
+
+        ],
+        child: MaterialApp.router(
+          routerConfig: _router,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+              colorScheme: const ColorScheme.light(),
+              useMaterial3: true,
+              scrollbarTheme: ScrollbarThemeData(
+                thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
+              )),
+        ));
   }
 }

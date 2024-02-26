@@ -6,17 +6,15 @@ import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 
-import '../../extension/domain/action.dart';
-import '../../fake_data.dart';
-import '../../scripting/domain/parser.dart';
+import '../../scripting/domain/script.dart';
 import '../domain/player.dart';
 import '../domain/player_timer.dart';
 
 
 class PlayerPage extends StatefulBasePage {
-  const PlayerPage({super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
+  const PlayerPage({super.key, required this.script, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
 
-  final String scriptId;
+  final Script script;
 
   @override
   State<StatefulWidget> createState() {
@@ -31,7 +29,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "> ${fakeScriptNames[int.tryParse(widget.scriptId) ?? 0]}",
+      "> ${widget.script.metadata.name}",
       (bool it) => {
         debugPrint("Mode updated: $it"),
         setState(() {
@@ -49,36 +47,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    //TODO parse real script
-    const validRawScriptYaml = """
-      name: "Flow diagram example"
-      description: |
-        ## Example of flow diagram usage
-        This script builds a simple flow diagram and adds some components 
-      tags: [data-structure, example]
-      scenes:
-        - name: Scene name
-          extensions: []
-          description: Initial scene description
-          initial-state:
-            - banner: [A, "Banner text"]
-            - show-banner: [A, center, 1]
-          transitions:
-            - nop
-            - show-banner: [A, topCenter, 1]
-            - nop
-            - show-banner: [A, centerLeft, 4]
-            - nop
-            - show-banner: [A, centerRight, 4]
-            - nop
-            - show-banner: [A, bottomCenter, 1]
-            - nop
-            - show-popup: "Showing a nice message"
-            - nop
-            - show-popup: "Goodbye!"
-            - nop
-    """;
-    var initialPlayerState = PlayerState(ScriptParser(GetExtensionById()).parse(validRawScriptYaml));
+    var initialPlayerState = PlayerState(widget.script);
 
     return MultiBlocProvider(
         providers: [
@@ -162,7 +131,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
                 ],
               )),
           const Spacer(flex: 2),
-          buildScriptWidget(context, buildButtonBar(context), fakeSceneScriptExample),
+          buildScriptWidget(context, buildButtonBar(context), widget.script.scenes[0].metadata.rawYaml),//TODO choose current scene
         ],
       )
     ]);
