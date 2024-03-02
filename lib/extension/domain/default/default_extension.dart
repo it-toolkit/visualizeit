@@ -13,9 +13,12 @@ import 'nop.dart';
 import 'show_banner.dart';
 import 'show_popup.dart';
 
-class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExtension {
-  static const String _extensionId = "default";
+abstract class DefaultExtensionConsts {
+  static const String Id = "default";
+}
 
+
+class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExtension {
   @override
   Command? buildCommand(String rawCommand) {
     MapEntry<String, List<String>> commandParts = _parseCommandNode(rawCommand);
@@ -37,10 +40,10 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   @override
   List<CommandDefinition> getAllCommandDefinitions() {
     return [
-      CommandDefinition(_extensionId, "show-popup", [CommandArgDef("message", ArgType.string)]),
-      CommandDefinition(_extensionId, "banner", [CommandArgDef("name", ArgType.string), CommandArgDef("message", ArgType.string)]),
-      CommandDefinition(_extensionId, "show-banner", [CommandArgDef("name", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]),
-      CommandDefinition(_extensionId, "nop", [])
+      CommandDefinition(DefaultExtensionConsts.Id, "show-popup", [CommandArgDef("message", ArgType.string)]),
+      CommandDefinition(DefaultExtensionConsts.Id, "banner", [CommandArgDef("name", ArgType.string), CommandArgDef("message", ArgType.string)]),
+      CommandDefinition(DefaultExtensionConsts.Id, "show-banner", [CommandArgDef("name", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]),
+      CommandDefinition(DefaultExtensionConsts.Id, "nop", [])
     ];
   }
 
@@ -123,7 +126,7 @@ const globalModelName = "global";
 
 class GlobalModel extends Model {
 
-  GlobalModel() : super(globalModelName);
+  GlobalModel() : super(DefaultExtensionConsts.Id, globalModelName);
 
   Queue<GlobalStateUpdate> globalStateUpdates = Queue();
   
@@ -136,5 +139,5 @@ class GlobalModel extends Model {
 
 Extension buildDefaultExtension() {
   final component = _DefaultExtensionComponents();
-  return Extension(component, component);
+  return Extension(DefaultExtensionConsts.Id, component, component);
 }

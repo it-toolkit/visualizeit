@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:visualizeit/extension/domain/action.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
 import '../../extension/domain/default/default_extension.dart';
@@ -32,8 +33,11 @@ class CanvasWidget extends StatelessWidget {
           },
           builder: (context, playerState) {
             _logger.debug(() => "Rendering $playerState");
-            var visualizer = buildDefaultExtension().visualizer;
-            List<Widget> widgets = playerState.currentSceneModels.values.map((e) => visualizer.render(e, context)).nonNulls.toList();
+
+            final getExtensionById = context.read<GetExtensionById>();
+
+            List<Widget> widgets = playerState.currentSceneModels.values
+                .map((e) => getExtensionById(e.extensionId).visualizer.render(e, context)).nonNulls.toList();
 
             return Stack(children: widgets);
           },

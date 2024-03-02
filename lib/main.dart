@@ -60,7 +60,8 @@ final GoRouter _router = GoRouter(
             final scriptId = state.pathParameters['sid']!;
             final rawScriptRepository = context.read<RawScriptRepository>();
             final contentAsYaml = rawScriptRepository.findById(scriptId).contentAsYaml;
-            var script = ScriptParser(GetExtensionById()).parse(contentAsYaml);
+            final getExtensionById = context.read<GetExtensionById>();
+            var script = ScriptParser(getExtensionById).parse(contentAsYaml);
 
             return PlayerPage(
                 script: script,
@@ -90,6 +91,7 @@ class VisualizeItApp extends StatelessWidget {
     return MultiRepositoryProvider(
         providers: [
           RepositoryProvider<RawScriptRepository> (create: (context) => FakeRawScriptRepository()),
+          RepositoryProvider<GetExtensionById> (create: (context) => GetExtensionById()),
 
         ],
         child: MaterialApp.router(

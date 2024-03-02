@@ -2,6 +2,8 @@
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
+import 'default_extension.dart';
+
 const showBannerModelName = "default.show_banner";
 final _logger = Logger("extension.default.banner");
 
@@ -10,7 +12,7 @@ class BannerModel extends Model {
   final String alignment;
   final int framesDuration;
 
-  BannerModel(super.name, this.message, {this.alignment = "center", this.framesDuration = 1});
+  BannerModel(name, this.message, {this.alignment = "center", this.framesDuration = 1}): super(DefaultExtensionConsts.Id, name);
 
   BannerModel copy(String alignment, int framesDuration)
     => BannerModel(name, message, alignment: alignment, framesDuration: framesDuration);

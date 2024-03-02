@@ -24,7 +24,7 @@ class ScriptParser {
         for (var extensionId in sceneDef.metadata.extensionIds) extensionId : _getExtensionsById(extensionId)
       };
 
-      extensions["default"] = buildDefaultExtension();
+      extensions[DefaultExtensionConsts.Id] = _getExtensionsById(DefaultExtensionConsts.Id);
 
       return Scene(
           sceneDef.metadata,
