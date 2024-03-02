@@ -30,9 +30,14 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   PlayerBloc(super.playerState) {
     on<NextTransitionEvent>((event, emit) {
       history.add(state.isPlaying ? state.stopPlayback() : state);
-      var newState = state.runNextCommand();
-      _logger.debug(() => "Going to next state: ${newState.currentSceneIndex} - ${newState.currentCommandIndex}");
-      emit(newState);
+      try {
+        var newState = state.runNextCommand();
+        _logger.debug(() => "Going to next state: ${newState.currentSceneIndex} - ${newState.currentCommandIndex}");
+        emit(newState);
+      } on Exception catch (e) {
+        _logger.error(() => "Unexpected error running command", error: e);
+        emit(state.restartPlayback());
+      }
     });
     on<PreviousTransitionEvent>((event, emit) {
       if(history.isNotEmpty) {
@@ -115,6 +120,7 @@ class PlayerState {
     _logger.debug(() => "Running command $nextCommandIndex: ${scene.transitionCommands[nextCommandIndex]}");
 
     var result = _runCommand(scene.transitionCommands[nextCommandIndex], currentSceneModels);
+
     _logger.debug(() => "Command result: updated models: ${result.models}, finished: ${result.finished}");
     return copy(
       sceneIndex: currentSceneIndex,
