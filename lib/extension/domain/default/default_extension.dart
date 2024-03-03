@@ -31,7 +31,6 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
     switch (def.name) {
       case "nop": return NoOp.build();
       case "show-popup": return ShowPopup.build(commandParts.value);
-      case "banner": return CreateBanner.build(commandParts.value);
       case "show-banner": return ShowBanner.build(commandParts.value);
       default: return null;
     }
@@ -54,17 +53,32 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
         // showAlertDialog(context, message: );
         return null;
       default:
-        if (model is BannerModel) {
-          return Positioned.fill(
-              child: Align(
-                  alignment: parseAlignment(model.alignment),
-                  child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(color: Colors.deepPurpleAccent.shade100, borderRadius: BorderRadius.circular(10)),
-                      child: Text(model.message))));
+        if (model is GlobalModel) {
+          return Stack(children: model.models.values.map((innerModel) {
+              switch (innerModel) {
+                case BannerModel():
+                 return buildBannerWidget(innerModel);
+                default:
+                 return null;
+              }
+          }).nonNulls.toList());
         }
+
         return null;
     }
+  }
+
+  Widget buildBannerWidget(BannerModel innerModel) {
+    return Positioned.fill(
+        child: Align(
+            alignment: parseAlignment(innerModel.alignment),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(color: Colors.deepPurpleAccent.shade100, borderRadius: BorderRadius.circular(10)),
+              child: Text(innerModel.message + " [${innerModel.pendingFrames + 1}]"),
+            ),
+        ),
+    );
   }
 
   MapEntry<String, List<String>> _parseCommandNode(rawCommand) {
@@ -129,11 +143,17 @@ class GlobalModel extends Model {
   GlobalModel() : super(DefaultExtensionConsts.Id, globalModelName);
 
   Queue<GlobalStateUpdate> globalStateUpdates = Queue();
+  Map<String, Model> models = {};
   
   GlobalStateUpdate? takeNextGlobalStateUpdate() => globalStateUpdates.isNotEmpty ? globalStateUpdates.removeFirst() : null;
 
   void pushGlobalStateUpdate(GlobalStateUpdate globalStateUpdate) {
     globalStateUpdates.add(globalStateUpdate);
+  }
+
+  @override
+  String toString() {
+    return 'GlobalModel{globalStateUpdates: $globalStateUpdates, models: $models}';
   }
 }
 

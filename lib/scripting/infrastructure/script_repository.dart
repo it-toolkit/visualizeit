@@ -16,17 +16,17 @@ class FakeRawScriptRepository implements RawScriptRepository {
           extensions: []
           description: Initial scene description
           initial-state:
-            - banner: [A, "Banner text"]
-            - show-banner: [A, center, 1]
+            - nop
           transitions:
+            - show-banner: ["Banner at center position", center, 3]
             - nop
-            - show-banner: [A, topCenter, 1]
+            - show-banner: ["Banner at top position", topCenter, 3]
             - nop
-            - show-banner: [A, centerLeft, 4]
+            - show-banner: ["Banner at left position", centerLeft, 3]
             - nop
-            - show-banner: [A, centerRight, 4]
+            - show-banner: ["Banner at right position", centerRight, 3]
             - nop
-            - show-banner: [A, bottomCenter, 1]
+            - show-banner: ["Banner at bottom position", bottomCenter, 3]
             - nop
             - show-popup: "Showing a nice message"
             - nop

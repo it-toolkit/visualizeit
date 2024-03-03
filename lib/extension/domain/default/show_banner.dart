@@ -10,55 +10,42 @@ final _logger = Logger("extension.default.banner");
 class BannerModel extends Model {
   final String message;
   final String alignment;
-  final int framesDuration;
+  final int pendingFrames;
 
-  BannerModel(name, this.message, {this.alignment = "center", this.framesDuration = 1}): super(DefaultExtensionConsts.Id, name);
+  BannerModel(name, this.message, {this.alignment = "center", this.pendingFrames = 1}): super(DefaultExtensionConsts.Id, name);
 
   BannerModel copy(String alignment, int framesDuration)
-    => BannerModel(name, message, alignment: alignment, framesDuration: framesDuration);
+    => BannerModel(name, message, alignment: alignment, pendingFrames: framesDuration);
 
   @override
   String toString() {
-    return "BannerModel($message, $alignment, $framesDuration)";
+    return "BannerModel($message, $alignment, $pendingFrames)";
   }
 }
 
-class CreateBanner extends ModelBuilderCommand {
-  final String name;
-  final String message;
-
-  CreateBanner.build(List<String> args) : name = args[0], message = args[1];
-
-  @override
-  Model call() {
-    var bannerModel = BannerModel(name, message);
-
-    _logger.trace(() => "CreateBanner call result: $bannerModel");
-    return bannerModel;
-  }
-}
-
-class ShowBanner extends ModelCommand {
+class ShowBanner extends GlobalCommand {
 
   final String alignment;
   final int framesDuration;
+  final String message;
+  final String bannerModelName = "${new DateTime.now().millisecondsSinceEpoch}"; //TODO usar uuid
 
-  ShowBanner.build(List<String> args) : alignment = args[1], framesDuration = int.parse(args[2]), super(args[0]); //TODO validate int
+  ShowBanner.build(List<String> args) : message = args[0], alignment = args[1], framesDuration = int.parse(args[2]); //TODO validate int
 
   @override
   Result call(Model model) {
-    model as BannerModel; //TODO fail if cannot cast
+    final globalModel = model as GlobalModel; //TODO fail if cannot cast
+    final bannerModel = globalModel.models[bannerModelName] as BannerModel? ?? BannerModel(bannerModelName, message, pendingFrames: framesDuration);
+
     Result result;
-    if (framesDuration > 0 && model.framesDuration == 0) {
-      var nextFrameDuration = framesDuration - 1;
-      result = Result(model: model.copy(alignment, nextFrameDuration), finished: nextFrameDuration <= 0);
-    }
-    else if (model.framesDuration > 0){
-      var nextFrameDuration = model.framesDuration - 1;
-      result = Result(model: model.copy(alignment, nextFrameDuration), finished: nextFrameDuration <= 0);
+    if (bannerModel.pendingFrames > 0){
+      var nextFrameDuration = bannerModel.pendingFrames - 1;
+      globalModel.models[bannerModelName] = bannerModel.copy(alignment, nextFrameDuration);
+      result = Result(model: globalModel, finished: nextFrameDuration < 0);
     }
     else {
-      result = Result(model: model);
+      globalModel.models.remove(bannerModelName);
+      result = Result(model: globalModel, finished: true); //Return null model to force deletion
     }
 
     _logger.trace(() => "ShowBanner call result: $result");
