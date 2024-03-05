@@ -8,8 +8,9 @@ class FakeRawScriptRepository implements RawScriptRepository {
     const validRawScriptYaml = """
       name: "Flow diagram example"
       description: |
-        ## Example of flow diagram usage
-        This script builds a simple flow diagram and adds some components 
+        "## Example of flow diagram usage
+        
+        This script builds a simple flow diagram and adds some components" 
       tags: [data-structure, example]
       scenes:
         - name: Scene name
@@ -18,7 +19,16 @@ class FakeRawScriptRepository implements RawScriptRepository {
           initial-state:
             - nop
           transitions:
-            - show-banner: ["Banner at center position", center, 3]
+            - show-banner: 
+              - |  
+                 "# Banner at center position
+                 
+                 with **multiple** lines
+                 
+                 
+                 and markdown format"
+              - center
+              - 3
             - nop
             - show-banner: ["Banner at top position", topCenter, 3]
             - nop
@@ -30,7 +40,13 @@ class FakeRawScriptRepository implements RawScriptRepository {
             - nop
             - show-popup: "Showing a nice message"
             - nop
-            - show-popup: "Goodbye!"
+            - show-popup: |  
+                 "# Final pop up
+                 
+                 with **multiple** lines
+                 
+                 
+                 and markdown format"
             - nop
     """;
 

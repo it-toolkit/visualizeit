@@ -3,8 +3,10 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
+import 'package:visualizeit_extensions/logging.dart';
 import 'package:visualizeit_extensions/scripting.dart';
 import 'package:visualizeit_extensions/visualizer.dart';
 import 'package:yaml/yaml.dart';
@@ -12,6 +14,8 @@ import 'package:yaml/yaml.dart';
 import 'nop.dart';
 import 'show_banner.dart';
 import 'show_popup.dart';
+
+final _logger = Logger("extension.default");
 
 abstract class DefaultExtensionConsts {
   static const String Id = "default";
@@ -49,9 +53,6 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   @override
   Widget? render(Model model, BuildContext context) {
     switch (model.name) {
-      case "show-popup":
-        // showAlertDialog(context, message: );
-        return null;
       default:
         if (model is GlobalModel) {
           return Stack(children: model.models.values.map((innerModel) {
@@ -69,13 +70,17 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   }
 
   Widget buildBannerWidget(BannerModel innerModel) {
+    _logger.trace(() => "Building widget for: ${innerModel.toString()}");
+
     return Positioned.fill(
         child: Align(
             alignment: parseAlignment(innerModel.alignment),
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(color: Colors.deepPurpleAccent.shade100, borderRadius: BorderRadius.circular(10)),
-              child: Text(innerModel.message + " [${innerModel.pendingFrames + 1}]"),
+              child: MarkdownBody(
+                  data : innerModel.message,//+ " [${innerModel.pendingFrames + 1}]"
+              ),
             ),
         ),
     );

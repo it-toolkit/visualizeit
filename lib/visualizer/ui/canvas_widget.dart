@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/extension/domain/action.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
@@ -60,7 +61,7 @@ class CanvasWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: title != null ? Text(title) : null,
-          content: Text(message),
+          content: MarkdownBody(data: message),
           actions: [
             TextButton(child: const Text("Close"), onPressed: () {
               Navigator.of(context, rootNavigator: true).pop();
