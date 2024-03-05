@@ -23,10 +23,14 @@ class FakeRawScriptRepository implements RawScriptRepository {
               - |  
                  "# Banner at center position
                  
-                 with **multiple** lines
+                 
+                 ![Argentina](https://pbs.twimg.com/profile_banners/507419507/1705687945/1500x500)
                  
                  
-                 and markdown format"
+                 with image and with **multiple** lines
+                 
+                 
+                 markdown format"
               - center
               - 3
             - nop
