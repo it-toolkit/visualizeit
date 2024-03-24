@@ -34,7 +34,7 @@ class ShowBanner extends GlobalCommand {
 
   @override
   Result call(Model model) {
-    final globalModel = model as GlobalModel; //TODO fail if cannot cast
+    final globalModel = GlobalModel.from(model as GlobalModel); //TODO fail if cannot cast
     final bannerModel = globalModel.models[bannerModelName] as BannerModel? ?? BannerModel(bannerModelName, message, pendingFrames: framesDuration);
 
     Result result;

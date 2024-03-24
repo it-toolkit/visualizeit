@@ -147,6 +147,11 @@ class GlobalModel extends Model {
 
   GlobalModel() : super(DefaultExtensionConsts.Id, globalModelName);
 
+  GlobalModel.from(GlobalModel globalModel): super(DefaultExtensionConsts.Id, globalModelName) {
+    globalStateUpdates = Queue.from(globalModel.globalStateUpdates);
+    models = Map.from(globalModel.models);
+  }
+
   Queue<GlobalStateUpdate> globalStateUpdates = Queue();
   Map<String, Model> models = {};
   
