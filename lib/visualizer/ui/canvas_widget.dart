@@ -40,7 +40,7 @@ class CanvasWidget extends StatelessWidget {
             List<Widget> widgets = playerState.currentSceneModels.values
                 .map((model) => getExtensionById(model.extensionId).visualizer.render(model, context)).nonNulls.toList();
 
-            return Stack(children: widgets);
+            return Stack(fit: StackFit.expand, children: widgets);
           },
     ),);
 

@@ -11,6 +11,7 @@ import 'package:visualizeit_extensions/scripting.dart';
 import 'package:visualizeit_extensions/visualizer.dart';
 import 'package:yaml/yaml.dart';
 
+import 'background.dart';
 import 'nop.dart';
 import 'show_banner.dart';
 import 'show_popup.dart';
@@ -36,6 +37,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
       case "nop": return NoOp.build();
       case "show-popup": return ShowPopup.build(commandParts.value);
       case "show-banner": return ShowBanner.build(commandParts.value);
+      case "background": return ShowBackground.build(commandParts.value);
       default: return null;
     }
   }
@@ -44,8 +46,8 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   List<CommandDefinition> getAllCommandDefinitions() {
     return [
       CommandDefinition(DefaultExtensionConsts.Id, "show-popup", [CommandArgDef("message", ArgType.string)]),
-      CommandDefinition(DefaultExtensionConsts.Id, "banner", [CommandArgDef("name", ArgType.string), CommandArgDef("message", ArgType.string)]),
-      CommandDefinition(DefaultExtensionConsts.Id, "show-banner", [CommandArgDef("name", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]),
+      CommandDefinition(DefaultExtensionConsts.Id, "background", [CommandArgDef("imageUrl", ArgType.string), CommandArgDef("scaling", ArgType.string)]),
+      CommandDefinition(DefaultExtensionConsts.Id, "show-banner", [CommandArgDef("message", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]),
       CommandDefinition(DefaultExtensionConsts.Id, "nop", [])
     ];
   }
@@ -55,12 +57,14 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
     switch (model.name) {
       default:
         if (model is GlobalModel) {
-          return Stack(children: model.models.values.map((innerModel) {
+          return Stack(fit: StackFit.expand, children: model.models.values.map((innerModel) {
               switch (innerModel) {
                 case BannerModel():
-                 return buildBannerWidget(innerModel);
+                  return buildBannerWidget(innerModel);
+                case BackgroundModel():
+                  return buildBackgroundWidget(innerModel);
                 default:
-                 return null;
+                  return null;
               }
           }).nonNulls.toList());
         }
@@ -84,6 +88,24 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
             ),
         ),
     );
+  }
+
+  Widget buildBackgroundWidget(BackgroundModel innerModel) {
+    _logger.trace(() => "Building widget for: ${innerModel.toString()}");
+
+    return Image.network(
+      innerModel.imageUrl,
+      fit: parseImageBoxFit(innerModel.scaling)
+    );
+  }
+
+  BoxFit parseImageBoxFit(String boxFit) {
+    switch(boxFit) {
+      case "fill": return BoxFit.fill;
+      case "contain": return BoxFit.contain;
+      case "cover": return BoxFit.cover;
+      default: throw Exception("Unknown image scaling strategy value"); //TODO handle error properly
+    }
   }
 
   MapEntry<String, List<String>> _parseCommandNode(rawCommand) {
@@ -147,9 +169,10 @@ class GlobalModel extends Model {
 
   GlobalModel() : super(DefaultExtensionConsts.Id, globalModelName);
 
-  GlobalModel.from(GlobalModel globalModel): super(DefaultExtensionConsts.Id, globalModelName) {
-    globalStateUpdates = Queue.from(globalModel.globalStateUpdates);
-    models = Map.from(globalModel.models);
+  GlobalModel clone() {
+    return GlobalModel()
+     ..globalStateUpdates = Queue.from(this.globalStateUpdates)
+     ..models = Map.from(this.models);
   }
 
   Queue<GlobalStateUpdate> globalStateUpdates = Queue();

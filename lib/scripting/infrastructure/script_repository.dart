@@ -17,7 +17,7 @@ class FakeRawScriptRepository implements RawScriptRepository {
           extensions: []
           description: Initial scene description
           initial-state:
-            - nop
+            - background: ["https://images.pexels.com/photos/159627/pencils-clips-colour-pencils-foam-rubber-159627.jpeg", cover]
           transitions:
             - show-banner: 
               - |  
@@ -52,6 +52,7 @@ class FakeRawScriptRepository implements RawScriptRepository {
                  
                  and markdown format"
             - nop
+            - background: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Thats_all_folks.svg/1589px-Thats_all_folks.svg.png?20150104034840", fill]
     """;
 
     return RawScript(validRawScriptYaml);

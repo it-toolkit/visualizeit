@@ -4,7 +4,6 @@ import 'package:visualizeit_extensions/logging.dart';
 
 import 'default_extension.dart';
 
-const showBannerModelName = "default.show_banner";
 final _logger = Logger("extension.default.banner");
 
 class BannerModel extends Model {
@@ -13,6 +12,11 @@ class BannerModel extends Model {
   final int pendingFrames;
 
   BannerModel(name, this.message, {this.alignment = "center", this.pendingFrames = 1}): super(DefaultExtensionConsts.Id, name);
+
+  @override
+  Model clone() {
+    return BannerModel(name, message, alignment: alignment, pendingFrames: pendingFrames);
+  }
 
   BannerModel copy(String alignment, int framesDuration)
     => BannerModel(name, message, alignment: alignment, pendingFrames: framesDuration);
@@ -34,7 +38,7 @@ class ShowBanner extends GlobalCommand {
 
   @override
   Result call(Model model) {
-    final globalModel = GlobalModel.from(model as GlobalModel); //TODO fail if cannot cast
+    final globalModel = (model as GlobalModel).clone(); //TODO fail if cannot cast
     final bannerModel = globalModel.models[bannerModelName] as BannerModel? ?? BannerModel(bannerModelName, message, pendingFrames: framesDuration);
 
     Result result;
