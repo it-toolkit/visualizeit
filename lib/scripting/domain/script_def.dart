@@ -1,10 +1,16 @@
 
+
 class ScriptMetadata {
   String name;
   String description;
   Set<String> tags;
 
   ScriptMetadata(this.name, this.description, this.tags);
+
+  @override
+  String toString() {
+    return 'ScriptMetadata{name: $name, description: $description, tags: $tags}';
+  }
 }
 
 class SceneMetadata {

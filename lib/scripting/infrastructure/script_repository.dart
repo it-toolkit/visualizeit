@@ -1,60 +1,37 @@
 
 
+import 'package:visualizeit/scripting/domain/parser.dart';
+import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 
-class FakeRawScriptRepository implements RawScriptRepository {
+class InMemoryRawScriptRepository implements RawScriptRepository {
+  final _scriptDefParser = ScriptDefParser();
+  final Map<ScriptRef, RawScript> _rawScripts;
 
-  RawScript findById(String id) {
-    const validRawScriptYaml = """
-      name: "Flow diagram example"
-      description: |
-        "## Example of flow diagram usage
-        
-        This script builds a simple flow diagram and adds some components" 
-      tags: [data-structure, example]
-      scenes:
-        - name: Scene name
-          extensions: []
-          description: Initial scene description
-          initial-state:
-            - background: ["https://images.pexels.com/photos/159627/pencils-clips-colour-pencils-foam-rubber-159627.jpeg", cover]
-          transitions:
-            - show-banner: 
-              - |  
-                 "# Banner at center position
-                 
-                 
-                 ![Argentina](https://pbs.twimg.com/profile_banners/507419507/1705687945/1500x500)
-                 
-                 
-                 with image and with **multiple** lines
-                 
-                 
-                 markdown format"
-              - center
-              - 3
-            - nop
-            - show-banner: ["Banner at top position", topCenter, 3]
-            - nop
-            - show-banner: ["Banner at left position", centerLeft, 3]
-            - nop
-            - show-banner: ["Banner at right position", centerRight, 3]
-            - nop
-            - show-banner: ["Banner at bottom position", bottomCenter, 3]
-            - nop
-            - show-popup: "Showing a nice message"
-            - nop
-            - show-popup: |  
-                 "# Final pop up
-                 
-                 with **multiple** lines
-                 
-                 
-                 and markdown format"
-            - nop
-            - background: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Thats_all_folks.svg/1589px-Thats_all_folks.svg.png?20150104034840", fill]
-    """;
+  InMemoryRawScriptRepository({List<RawScript> rawScripts = const []})
+      : _rawScripts  = <ScriptRef, RawScript>{for (var v in rawScripts) v.ref: v};
 
-    return RawScript(validRawScriptYaml);
+  @override
+  Future<Map<ScriptRef, ScriptMetadata>> fetchAvailableScriptsMetadata() async {
+    return _rawScripts.map((key, value) {
+      return MapEntry(key, _scriptDefParser.parse(value.contentAsYaml).metadata);
+    });
+  }
+
+  @override
+  Future<RawScript> get(ScriptRef id) async {
+    if (!_rawScripts.containsKey(id)) throw ScriptNotFoundException(id);
+
+    return _rawScripts[id]!;
+  }
+
+  @override
+  Future<List<RawScript>> getAll() async {
+    return _rawScripts.values.toList();
+  }
+
+  @override
+  Future<void> save(RawScript rawScript) async {
+    _rawScripts[rawScript.ref] = rawScript;
   }
 }

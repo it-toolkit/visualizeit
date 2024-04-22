@@ -12,21 +12,30 @@ import 'package:visualizeit/scripting/ui/script_editor_page.dart';
 import 'package:visualizeit/scripting/ui/script_selector_page.dart';
 
 import 'extension/domain/action.dart';
+import 'fake_data.dart';
 
 void main() => runApp(const VisualizeItApp());
 
 /// The route configuration.
 final GoRouter _router = GoRouter(
+  onException: (BuildContext context, GoRouterState state, GoRouter router) {
+    //TODO handle errors properly
+    print("Unexpected route!!!");
+    router.go("/");
+  },
   routes: <RouteBase>[
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
+        final rawScriptRepository = context.read<RawScriptRepository>();
         return ScriptSelectorPage(
+            rawScriptRepository,
             onPlayPressed: (scriptId) => {context.go("/scripts/$scriptId/play")},
             onViewPressed: (scriptId) => {context.go("/scripts/$scriptId/edit")},
             onHelpPressed: () => {context.go("/help")},
             onSignInPressed: () => {context.go("/sign-in")},
-            onExtensionsPressed: () => {context.go("/extensions")});
+            onExtensionsPressed: () => {context.go("/extensions")},
+        );
       },
       routes: <RouteBase>[
         GoRoute(
@@ -59,15 +68,27 @@ final GoRouter _router = GoRouter(
           builder: (BuildContext context, GoRouterState state) {
             final scriptId = state.pathParameters['sid']!;
             final rawScriptRepository = context.read<RawScriptRepository>();
-            final contentAsYaml = rawScriptRepository.findById(scriptId).contentAsYaml;
-            final getExtensionById = context.read<GetExtensionById>();
-            var script = ScriptParser(getExtensionById).parse(contentAsYaml);
+            final rawScriptFuture = rawScriptRepository.get(scriptId);
 
-            return PlayerPage(
-                script: script,
-                onHelpPressed: () => {context.go("/help")},
-                onSignInPressed: () => {context.go("/sign-in")},
-                onExtensionsPressed: () => {context.go("/extensions")});
+            return FutureBuilder<RawScript>( future: rawScriptFuture, builder: (BuildContext context, AsyncSnapshot<RawScript> rawScript) {
+              if(rawScript.hasError) {
+                //TODO handle error Ferman
+                // context.go("/");
+                return Text("Error: ${rawScript.error.toString()}");
+              } else if (!rawScript.hasData) {
+                return CircularProgressIndicator();
+              } else {
+                String contentAsYaml = rawScript.data!.contentAsYaml;
+                final getExtensionById = context.read<GetExtensionById>();
+                var script = ScriptParser(getExtensionById).parse(contentAsYaml);
+
+                return PlayerPage(
+                    script: script,
+                    onHelpPressed: () => {context.go("/help")},
+                    onSignInPressed: () => {context.go("/sign-in")},
+                    onExtensionsPressed: () => {context.go("/extensions")});
+              }
+            });
           },
         ),
         GoRoute(
@@ -83,16 +104,16 @@ final GoRouter _router = GoRouter(
 
 /// The main app.
 class VisualizeItApp extends StatelessWidget {
+
   /// Constructs a [VisualizeItApp]
-  const VisualizeItApp({super.key});
+  const VisualizeItApp();
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<RawScriptRepository> (create: (context) => FakeRawScriptRepository()),
+          RepositoryProvider<RawScriptRepository> (create: (context) => InMemoryRawScriptRepository(rawScripts: [RawScript("1", validRawScriptYaml)])),
           RepositoryProvider<GetExtensionById> (create: (context) => GetExtensionById()),
-
         ],
         child: MaterialApp.router(
           routerConfig: _router,
