@@ -18,7 +18,9 @@ class ModelMock extends Mock implements Model {}
 void main() {
   var getExtensionsById = GetExtensionsByIdMock();
   var extensionMock = ExtensionMock();
+  var extension2Mock = ExtensionMock();
   var scriptingExtensionMock = ScriptingExtensionMock();
+  var scriptingExtension2Mock = ScriptingExtensionMock();
   var commandMock = CommandMock();
   var modelMock = ModelMock();
 
@@ -66,9 +68,13 @@ void main() {
   });
 
   test('parse valid script metadata', () {
-    when(() => scriptingExtensionMock.buildCommand(any())).thenReturn(commandMock);
+    when(() => scriptingExtensionMock.buildCommand(any())).thenReturn(null);
     when(() => extensionMock.scripting).thenReturn(scriptingExtensionMock);
-    when(() => getExtensionsById.call(any())).thenReturn(extensionMock);
+    when(() => getExtensionsById.call(any(that: equals("default")))).thenReturn(extensionMock);
+
+    when(() => scriptingExtension2Mock.buildCommand(any())).thenReturn(commandMock);
+    when(() => extension2Mock.scripting).thenReturn(scriptingExtension2Mock);
+    when(() => getExtensionsById.call(any(that: equals("flow-diagram")))).thenReturn(extension2Mock);
 
     final script = ScriptParser(getExtensionsById).parse(validRawScriptYaml);
 
@@ -81,9 +87,13 @@ void main() {
   });
 
   test('parse valid script scene metadata', () {
-    when(() => scriptingExtensionMock.buildCommand(any())).thenReturn(commandMock);
+    when(() => scriptingExtensionMock.buildCommand(any())).thenReturn(null);
     when(() => extensionMock.scripting).thenReturn(scriptingExtensionMock);
-    when(() => getExtensionsById.call(any())).thenReturn(extensionMock);
+    when(() => getExtensionsById.call(any(that: equals("default")))).thenReturn(extensionMock);
+
+    when(() => scriptingExtension2Mock.buildCommand(any())).thenReturn(commandMock);
+    when(() => extension2Mock.scripting).thenReturn(scriptingExtension2Mock);
+    when(() => getExtensionsById.call(any(that: equals("flow-diagram")))).thenReturn(extension2Mock);
 
     final script = ScriptParser(getExtensionsById).parse(validRawScriptYaml);
 
@@ -94,9 +104,13 @@ void main() {
   });
 
   test('parse valid script scene commands', () {
-    when(() => scriptingExtensionMock.buildCommand(any())).thenReturn(commandMock);
+    when(() => scriptingExtensionMock.buildCommand(any())).thenReturn(null);
     when(() => extensionMock.scripting).thenReturn(scriptingExtensionMock);
-    when(() => getExtensionsById.call(any())).thenReturn(extensionMock);
+    when(() => getExtensionsById.call(any(that: equals("default")))).thenReturn(extensionMock);
+
+    when(() => scriptingExtension2Mock.buildCommand(any())).thenReturn(commandMock);
+    when(() => extension2Mock.scripting).thenReturn(scriptingExtension2Mock);
+    when(() => getExtensionsById.call(any(that: equals("flow-diagram")))).thenReturn(extension2Mock);
 
     final script = ScriptParser(getExtensionsById).parse(validRawScriptYaml);
 
