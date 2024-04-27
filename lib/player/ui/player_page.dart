@@ -42,7 +42,13 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   @override
   Widget buildBody(BuildContext context) {
-    return graphicalMode ? buildPresentationModeContent(context) : buildExplorationModeContent(context);
+    final canvas = CanvasWidget();
+    final playerButtonBar = buildPlayerButtonBar(context);
+    final scriptEditor = buildScriptWidget(context, buildButtonBar(context), widget.script.scenes[0].metadata.rawYaml);
+
+    return graphicalMode
+        ? buildPresentationModeContent(context, playerButtonBar, canvas)
+        : buildExplorationModeContent(context, playerButtonBar, canvas, scriptEditor);
   }
 
   @override
@@ -67,6 +73,8 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   }
 
   Widget buildPlayerButtonBar(BuildContext context) {
+    var playerBloc = BlocProvider.of<PlayerBloc>(context);
+
     return BlocBuilder<PlayerBloc, PlayerState>(builder: (context, playerState) {
       if (playerState.isPlaying != _timer.running) _timer.toggle();
 
@@ -80,26 +88,26 @@ class PlayerPageState extends BasePageState<PlayerPage> {
         },
         onRestartPressed: () {
           _timer.pause();
-          BlocProvider.of<PlayerBloc>(context).add(RestartPlaybackEvent());
+          playerBloc.add(RestartPlaybackEvent());
         },
         onPreviousPressed: () {
-          BlocProvider.of<PlayerBloc>(context).add(PreviousTransitionEvent());
+          playerBloc.add(PreviousTransitionEvent());
         },
         onNextPressed: () {
-          BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent());
+          playerBloc.add(NextTransitionEvent());
         },
         onPlayPausePressed: () {
           if (!_timer.isInitialized) {
             _timer.init(() {
-              BlocProvider.of<PlayerBloc>(context).add(NextTransitionEvent());
+              playerBloc.add(NextTransitionEvent());
             });
             _timer.start();
-            BlocProvider.of<PlayerBloc>(context).add(StartPlaybackEvent());
+            playerBloc.add(StartPlaybackEvent());
           } else {
             if (_timer.toggle()) {
-              BlocProvider.of<PlayerBloc>(context).add(StartPlaybackEvent());
+              playerBloc.add(StartPlaybackEvent());
             } else {
-              BlocProvider.of<PlayerBloc>(context).add(StopPlaybackEvent());
+              playerBloc.add(StopPlaybackEvent());
             }
           }
         },
@@ -107,17 +115,17 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     });
   }
 
-  Widget buildPresentationModeContent(BuildContext context) {
+  Widget buildPresentationModeContent(BuildContext context, Widget playerButtonBar, Widget canvas) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Expanded(child: CanvasWidget()),
-        buildPlayerButtonBar(context),
+        Expanded(child: canvas),
+        playerButtonBar
       ],
     );
   }
 
-  Widget buildExplorationModeContent(BuildContext context) {
+  Widget buildExplorationModeContent(BuildContext context, Widget playerButtonBar, Widget canvas, Widget scriptEditor) {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       AdaptiveContainerWidget(
         children: [
@@ -126,12 +134,12 @@ class PlayerPageState extends BasePageState<PlayerPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Expanded(child: CanvasWidget()),
-                  buildPlayerButtonBar(context),
+                  Expanded(child: canvas),
+                  playerButtonBar
                 ],
               )),
           const Spacer(flex: 2),
-          buildScriptWidget(context, buildButtonBar(context), widget.script.scenes[0].metadata.rawYaml),//TODO choose current scene
+          scriptEditor
         ],
       )
     ]);
