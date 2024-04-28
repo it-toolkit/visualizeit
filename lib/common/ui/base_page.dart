@@ -1,24 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:visualizeit/common/utils/extensions.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:visualizeit/router.dart';
+import 'package:visualizeit_extensions/logging.dart';
+
+final _logger = Logger("base.ui");
+
+class AppBarAction {
+  final IconData icon;
+  final String tooltip;
+  final String destinationName;
+
+  AppBarAction(this.icon, this.tooltip, this.destinationName);
+}
+
+class AppBarActions {
+  static final SignIn = AppBarAction(Icons.login, 'SignIn', "sign-in");
+  static final Extensions = AppBarAction(Icons.account_tree, 'Extensions', "extensions");
+  static final Help = AppBarAction(Icons.help, 'Help', "help");
+}
 
 PreferredSizeWidget _buildBasePageAppBar(
-    {required BuildContext context,
-    required PreferredSizeWidget? Function(BuildContext) buildAppBarBottom,
-    VoidCallback? onSignInPressed,
-    VoidCallback? onExtensionsPressed,
-    VoidCallback? onHelpPressed}) {
+    {
+      required BuildContext context,
+      required PreferredSizeWidget? Function(BuildContext) buildAppBarBottom,
+      List<AppBarAction> actions = const []
+    }) {
+
+  final bloc = BlocProvider.of<AppBloc>(context);
+
   return AppBar(
       scrolledUnderElevation: 0, //Disable color change on scroll
       toolbarHeight: 80,
       bottom: buildAppBarBottom(context),
       title: const FittedBox(child: Text("Visualize IT", textScaler: TextScaler.linear(3.0))),
       centerTitle: false,
-      actions: <Widget?>[
-        IconButton(icon: const Icon(Icons.login), tooltip: 'SignIn', onPressed: onSignInPressed).takeIfDef(onSignInPressed),
-        IconButton(icon: const Icon(Icons.account_tree), tooltip: 'Extensions', onPressed: onExtensionsPressed)
-            .takeIfDef(onExtensionsPressed),
-        IconButton(icon: const Icon(Icons.help), tooltip: 'Help', onPressed: onHelpPressed).takeIfDef(onHelpPressed),
-      ].nonNulls.toList());
+      actions: actions.map((action) => bloc._buildIconButton(action)).toList()
+  );
+}
+
+extension _AppBlocExt on AppBloc {
+  IconButton _buildIconButton(AppBarAction action) {
+    return IconButton(
+        icon: Icon(action.icon),
+        tooltip: action.tooltip,
+        onPressed: () => this.add(NavigationEvent(action.destinationName)));
+  }
 }
 
 abstract class BasePage extends StatelessWidget {
@@ -32,12 +58,7 @@ abstract class BasePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: _buildBasePageAppBar(
-            context: context,
-            buildAppBarBottom: buildAppBarBottom,
-            onSignInPressed: onSignInPressed,
-            onExtensionsPressed: onExtensionsPressed,
-            onHelpPressed: onHelpPressed),
+        appBar: _buildBasePageAppBar(context: context, buildAppBarBottom: buildAppBarBottom),
         body: Container(margin: const EdgeInsets.all(15), child: buildBody(context)));
   }
 
@@ -47,30 +68,25 @@ abstract class BasePage extends StatelessWidget {
 }
 
 abstract class StatefulBasePage extends StatefulWidget {
-  const StatefulBasePage({super.key, this.onSignInPressed, this.onExtensionsPressed, this.onHelpPressed});
+  final String name;
 
-  final VoidCallback? onHelpPressed;
-  final VoidCallback? onSignInPressed;
-  final VoidCallback? onExtensionsPressed;
+  const StatefulBasePage(this.name, {super.key});
 }
 
 abstract class BasePageState<T extends StatefulBasePage> extends State<T> {
-  /// Constructs a [BasePageState]
   BasePageState();
 
   bool showAppBar = true;
 
   @override
   Widget build(BuildContext context) {
+    final appActions = [AppBarActions.SignIn, AppBarActions.Extensions, AppBarActions.Help]
+        .where((a) => a.destinationName != widget.name).toList();
+
     return Scaffold(
         appBar: !showAppBar
             ? null
-            : _buildBasePageAppBar(
-                context: context,
-                buildAppBarBottom: buildAppBarBottom,
-                onSignInPressed: widget.onSignInPressed,
-                onExtensionsPressed: widget.onExtensionsPressed,
-                onHelpPressed: widget.onHelpPressed),
+            : _buildBasePageAppBar(context: context, buildAppBarBottom: buildAppBarBottom, actions: appActions),
         body: Container(margin: const EdgeInsets.all(15), child: buildBody(context)));
   }
 

@@ -5,18 +5,12 @@ import 'package:visualizeit/common/ui/tags_widget.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 
 import '../../common/ui/adaptive_container_widget.dart';
-import '../../fake_data.dart';
 import '../domain/script_def.dart';
 
 class ScriptSelectorPage extends StatefulBasePage {
-  const ScriptSelectorPage(this._rawScriptRepository, {
-    super.key,
-    this.onPlayPressed,
-    this.onViewPressed,
-    super.onSignInPressed,
-    super.onHelpPressed,
-    super.onExtensionsPressed,
-  });
+  static const RouteName = "script-selector";
+
+  const ScriptSelectorPage(this._rawScriptRepository, {super.key, this.onPlayPressed, this.onViewPressed}): super(RouteName);
 
   final Function(String)? onPlayPressed;
   final Function(String)? onViewPressed;

@@ -6,7 +6,9 @@ import '../../common/ui/adaptive_container_widget.dart';
 import '../../fake_data.dart';
 
 class ExtensionPage extends StatefulBasePage {
-  const ExtensionPage({super.key, super.onHelpPressed});
+  static const RouteName = "extensions";
+
+  const ExtensionPage({super.key}): super(RouteName);
 
   @override
   State<StatefulWidget> createState() {

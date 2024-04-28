@@ -3,6 +3,8 @@ import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/utils/validators.dart';
 
 class SignInPage extends BasePage {
+  static const RouteName = "sign-in";
+
   const SignInPage({super.key});
 
   @override

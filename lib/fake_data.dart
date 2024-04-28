@@ -81,10 +81,10 @@ final fakeExtensions = [
 
 const validRawScriptYaml = """
       name: "Script example"
-      description: |
-        "## Example of flow diagram usage
+      description: |-
+        ## Example of flow diagram usage
         
-        This script builds a simple flow diagram and adds some components" 
+        This script builds a simple flow diagram and adds some components 
       tags: [data-structure, example]
       scenes:
         - name: Scene name
@@ -94,7 +94,7 @@ const validRawScriptYaml = """
             - background: ["https://images.pexels.com/photos/159627/pencils-clips-colour-pencils-foam-rubber-159627.jpeg", cover]
           transitions:
             - show-banner: 
-              - |  
+              - |-  
                  "# Banner at center position
                  
                  
@@ -119,12 +119,12 @@ const validRawScriptYaml = """
             - show-popup: "Showing a nice message"
             - nop
             - show-popup: |  
-                 "# Final pop up
+                 # Final pop up
                  
                  with **multiple** lines
                  
                  
-                 and markdown format"
+                 and markdown format
             - nop
             - background: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Thats_all_folks.svg/1589px-Thats_all_folks.svg.png?20150104034840", fill]
     """;

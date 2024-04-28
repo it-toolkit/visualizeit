@@ -8,8 +8,10 @@ import 'package:visualizeit/scripting/ui/script_view_widget.dart';
 import '../../common/ui/base_page.dart';
 
 class ScriptEditorPage extends StatefulBasePage {
+  static const RouteName = "script-editor";
+
   const ScriptEditorPage(
-      {super.key, required this.scriptId, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed, this.onPlayPressed});
+      {super.key, required this.scriptId, this.onPlayPressed}) : super(RouteName);
 
   final String scriptId;
   final Function(String)? onPlayPressed;

@@ -4,7 +4,9 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 
 class HelpPage extends StatefulBasePage {
-  const HelpPage({super.key, super.onHelpPressed});
+  static const RouteName = "help";
+
+  const HelpPage({super.key}): super(RouteName);
 
   @override
   State<StatefulWidget> createState() {

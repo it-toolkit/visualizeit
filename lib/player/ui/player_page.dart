@@ -12,7 +12,9 @@ import '../domain/player_timer.dart';
 
 
 class PlayerPage extends StatefulBasePage {
-  const PlayerPage({super.key, required this.script, super.onSignInPressed, super.onHelpPressed, super.onExtensionsPressed});
+  static const RouteName = "player";
+
+  const PlayerPage({super.key, required this.script}) : super(RouteName);
 
   final Script script;
 
