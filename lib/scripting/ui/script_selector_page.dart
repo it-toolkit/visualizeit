@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
+import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 
 import '../../common/ui/adaptive_container_widget.dart';
@@ -196,12 +197,13 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   }
 
   ButtonBar buildButtonBar(BuildContext context) {
+    final selectedScriptRef = _getSelectedScript()?.key;
     return ButtonBar(
       children: [
-        TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script")}, child: const Text("Clone")),
-        TextButton(onPressed: () => {widget.onViewPressed?.call(_getSelectedScript()!.key)}, child: const Text("View")),
-        ElevatedButton(onPressed: () => {widget.onPlayPressed?.call(_getSelectedScript()!.key)}, child: const Text("Play")),
-      ],
+        TextButton(onPressed: (() => {_showConfirmDialog(context, "clone the script")}).takeIfDef(selectedScriptRef), child: const Text("Clone")),
+        TextButton(onPressed: (() => {widget.onViewPressed?.call(selectedScriptRef!)}).takeIfDef(selectedScriptRef), child: const Text("View")),
+        ElevatedButton(onPressed: (() => {widget.onPlayPressed?.call(selectedScriptRef!)}).takeIfDef(selectedScriptRef), child: const Text("Play")),
+      ].nonNulls.toList(),
     );
   }
 
