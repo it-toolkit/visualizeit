@@ -81,7 +81,7 @@ class ScriptParser {
           .nonNulls
           .single; //TODO handle too many or none
     } catch (e) {
-      print("Error parsing command: ${[rawCommand, extensions]}");
+      print("Error parsing command: ${[rawCommand, extensions]}, error: $e");
       rethrow;
     }
   }

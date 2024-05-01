@@ -46,8 +46,8 @@ dependencies:
   visualizeit_extensions:
     path: ../visualizeit_extensions
 
-#  visualizeit_extension_template:
-#    path: ../visualizeit_extension_template
+  visualizeit_extension_template:
+    path: ../visualizeit_extension_template
 
 
 dev_dependencies:
@@ -82,6 +82,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
      - assets/docs/help.md
+     - assets/script_examples/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

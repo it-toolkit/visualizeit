@@ -621,6 +621,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  visualizeit_extension_template:
+    dependency: "direct main"
+    description:
+      path: "../visualizeit_extension_template"
+      relative: true
+    source: path
+    version: "0.0.1"
   visualizeit_extensions:
     dependency: "direct main"
     description:

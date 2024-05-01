@@ -1,0 +1,57 @@
+name: "Global commands example"
+description: |-
+  ## Global commands example
+  
+  This simple script uses some global commands like show-banner, show-popup and background
+  
+  ### show-banner
+  This commands shows a floating banner in a customizable position and during a custom time frame.
+  
+  ### show-pop
+  This command shows a popup that stops the scripts visualization until it is closed and the resumes
+  the execution (if script was playing previously).
+  
+  ### background
+  This command setups the scene background image.
+  
+  ### nop
+  This NO-OP command is used just to wait some time.
+
+tags: [global-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: []
+    description: Scene showing some global commands usage
+    initial-state:
+      - background: ["https://images.pexels.com/photos/159627/pencils-clips-colour-pencils-foam-rubber-159627.jpeg", cover]
+    transitions:
+      - show-banner:
+          - |-
+            "# This is a Banner at center position
+            
+            ![Argentina](https://pbs.twimg.com/profile_banners/507419507/1705687945/1500x500)
+            with an image and **multiple** lines<br>
+            markdown format"
+          - center
+          - 3
+      - nop
+      - show-banner: ["Banner at top position", topCenter, 3]
+      - nop
+      - show-banner: ["Banner at left position", centerLeft, 3]
+      - nop
+      - show-banner: ["Banner at right position", centerRight, 3]
+      - nop
+      - show-banner: ["Banner at bottom position", bottomCenter, 3]
+      - nop
+      - show-popup: "Showing a nice message"
+      - nop
+      - show-popup:
+          - |-
+            "# Final pop up
+            
+            with **multiple** lines
+            
+            
+            and markdown format"
+      - nop
+      - background: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Thats_all_folks.svg/1589px-Thats_all_folks.svg.png?20150104034840", fill]

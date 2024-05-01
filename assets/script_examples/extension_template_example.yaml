@@ -1,0 +1,17 @@
+name: "Extension template example"
+description: |-
+  ## Extension template example
+  
+  This simple script uses some fake commands provided by the extension template package
+tags: [fake-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: ['fake-extension']
+    description: Scene showing some fake commands usage
+    initial-state:
+      # Dietmar Rabich (https://commons.wikimedia.org/wiki/File:Papierkanten_--_2020_--_9535.jpg), https://creativecommons.org/licenses/by-sa/4.0/legalcode
+      - background: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Papierkanten_--_2020_--_9535.jpg/1024px-Papierkanten_--_2020_--_9535.jpg", cover]
+    transitions:
+      - fake-command
+      - nop
+      - nop

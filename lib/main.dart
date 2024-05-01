@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit/router.dart';
@@ -18,8 +21,7 @@ class VisualizeItApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<RawScriptRepository>(
-              create: (context) => InMemoryRawScriptRepository(rawScripts: [RawScript("1", validRawScriptYaml)])),
+          RepositoryProvider<RawScriptRepository>(create: (context) => buildRawScriptRepository()),
           RepositoryProvider<GetExtensionById>(create: (context) => GetExtensionById()),
         ],
         child: MultiBlocProvider(
@@ -39,4 +41,22 @@ class VisualizeItApp extends StatelessWidget {
               );
             })));
   }
+}
+
+
+RawScriptRepository buildRawScriptRepository() {
+  if(kReleaseMode) {
+    //TODO use remote repository
+    return InMemoryRawScriptRepository();
+  } else {
+    return InMemoryRawScriptRepository(initialRawScriptsLoader: _loadExampleScriptsFromAssets());
+  }
+}
+
+Future<List<RawScript>> _loadExampleScriptsFromAssets() async {
+  final assetKeys = [
+    "assets/script_examples/extension_template_example.yaml",
+    "assets/script_examples/global_commands_example.yaml"
+  ];
+  return Future.wait(assetKeys.map((key) async => RawScript(key.hashCode.toString(), await rootBundle.loadString(key))));
 }
