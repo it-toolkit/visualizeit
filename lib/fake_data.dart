@@ -2,6 +2,12 @@ import 'package:visualizeit/common/utils/extensions.dart';
 
 import 'extension/ui/extension_page.dart';
 
+//TODO tags widget!!
+const fakeSelectedTags = ["database"];
+
+// ---------------------------------
+//TODO use repository at script editor page
+
 const fakeScriptNames = [
   "B# Tree values manipulation",
   "B# Tree underflow",
@@ -9,15 +15,12 @@ const fakeScriptNames = [
   "Merge sort",
 ];
 
-const fakeSelectedScriptId = "0";
-
 final fakeSelectedScriptDetails = """
   ## B# Tree values manipulation
   This script creates B# trees and perform some operations on it.
   """
     .trimIndent();
 
-const fakeSelectedTags = ["database"];
 
 const fakeScenes = [
   'Add some sequential\nvalues',
@@ -73,11 +76,14 @@ final fakeFullScriptExample = """
       """
     .trimIndent();
 
+//TODO lookup for available / registered extensions
 final fakeExtensions = [
   Extension('B# Tree', "B# Tree implementation for academic purposes"),
   Extension('Flow diagram', "Flow diagram implementation supporting partial Mermaid syntax"),
   Extension('Merge Sort', "Merge Sort implementation for academic purposes"),
 ];
+
+//Script repository examples for in memory raw script repository
 
 const validRawScriptYaml = """
       name: "Script example"
