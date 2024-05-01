@@ -190,6 +190,14 @@ class GlobalModel extends Model {
   }
 }
 
+
+class DefaultExtensionBuilder implements ExtensionBuilder {
+  @override
+  Extension build() {
+    return buildDefaultExtension();
+  }
+}
+
 Extension buildDefaultExtension() {
   final component = _DefaultExtensionComponents();
   return Extension(DefaultExtensionConsts.Id, component, component);

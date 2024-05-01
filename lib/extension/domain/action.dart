@@ -1,12 +1,15 @@
 
 
-import 'package:visualizeit/extension/domain/default/default_extension.dart';
 import 'package:visualizeit_extensions/extension.dart';
 
+import '../build/available_extensions.g.dart';
+
 class GetExtensionById {
-  final Map<String, Extension> _extensions = {
-    DefaultExtensionConsts.Id : buildDefaultExtension()
-  };
+  final Map<String, Extension> _extensions = Map.fromIterable(
+    buildAllAvailableExtensions(),
+    key : (e) => e.extensionId,
+    value: (e) => e,
+  );
 
   GetExtensionById({Map<String, Extension> extensions = const {} }) {
     _extensions.addAll(extensions);

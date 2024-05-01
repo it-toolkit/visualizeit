@@ -30,19 +30,25 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  build:
+  source_gen:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   go_router: ^13.1.0
   flutter_markdown: ^0.6.18+2
-  visualizeit_extensions:
-    path: ../visualizeit_extensions
   yaml: ^3.1.2
   mocktail: ^1.0.3
   flutter_bloc: ^8.1.4
   json2yaml: ^3.0.1
+
+  visualizeit_extensions:
+    path: ../visualizeit_extensions
+
+#  visualizeit_extension_template:
+#    path: ../visualizeit_extension_template
+
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +66,7 @@ dev_dependencies:
   git_hooks: ^1.0.1
 
   dlcov: ^4.2.1
+  build_runner:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

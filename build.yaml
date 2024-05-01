@@ -1,0 +1,24 @@
+targets:
+  $default:
+    builders:
+      visualizeit|available_extensions:
+        enabled: true
+      visualizeit|available_extensions_list:
+        enabled: true
+
+builders:
+  visualizeit|available_extensions:
+    import: "package:visualizeit/extension/build/generator.dart"
+    builder_factories: ["generateAvailableExtensionsRegistration"]
+    build_extensions: { ".dart": [".extension_list"] }
+    auto_apply: all_packages
+    runs_before: ["visualizeit|available_extensions_list"]
+
+  visualizeit|available_extensions_list:
+    import: "package:visualizeit/extension/build/generator.dart"
+    builder_factories: ["generateAvailableExtensionsRegistrationList"]
+    build_extensions: { ".dart": ["extension/build/available_extensions.g.dart"] }
+    auto_apply: all_packages
+    build_to: source
+    applies_builders:
+      - "source_gen|combining_builder"
