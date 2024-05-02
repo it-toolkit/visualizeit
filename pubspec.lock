@@ -626,8 +626,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "9807982992738c6a0dfd5d4bd03a45bd1ae1fb65"
-      url: "git@github.com:it-toolkit/visualizeit_extension_template.git"
+      resolved-ref: "98bc808a977313a651e15dcdc76dbdaf4f71f2d1"
+      url: "https://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@github.com/it-toolkit/visualizeit_extension_template.git"
     source: git
     version: "0.0.1"
   visualizeit_extensions:
@@ -636,7 +636,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "77bb8d3c19352129b7c5c3219ecfc1acea54af43"
-      url: "git@github.com:it-toolkit/visualizeit_extensions.git"
+      url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
     source: git
     version: "0.0.1"
   watcher:
@@ -672,5 +672,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.2.2 <4.0.0"
+  dart: ">=3.2.6 <4.0.0"
   flutter: ">=3.10.0"
