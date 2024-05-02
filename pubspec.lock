@@ -624,16 +624,20 @@ packages:
   visualizeit_extension_template:
     dependency: "direct main"
     description:
-      path: "../visualizeit_extension_template"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "9807982992738c6a0dfd5d4bd03a45bd1ae1fb65"
+      url: "git@github.com:it-toolkit/visualizeit_extension_template.git"
+    source: git
     version: "0.0.1"
   visualizeit_extensions:
     dependency: "direct main"
     description:
-      path: "../visualizeit_extensions"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "77bb8d3c19352129b7c5c3219ecfc1acea54af43"
+      url: "git@github.com:it-toolkit/visualizeit_extensions.git"
+    source: git
     version: "0.0.1"
   watcher:
     dependency: transitive
@@ -668,5 +672,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.2.6 <4.0.0"
+  dart: ">=3.2.2 <4.0.0"
   flutter: ">=3.10.0"
