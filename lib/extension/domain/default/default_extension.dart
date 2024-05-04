@@ -192,13 +192,16 @@ class GlobalModel extends Model {
 
 
 class DefaultExtensionBuilder implements ExtensionBuilder {
-  @override
-  Future<Extension> build() {
-    return buildDefaultExtension();
-  }
-}
+  static const _docsLocationPath = "assets/docs/default_extension/";
+  static const _availableDocsLanguages = [LanguageCodes.en];
 
-Future<Extension> buildDefaultExtension() async {
-  final component = _DefaultExtensionComponents();
-  return Extension(DefaultExtensionConsts.Id, component, component, {LanguageCodes.en: "empty docs"});
+  @override
+  Future<Extension> build() async {
+    final markdownDocs = {
+      for (final languageCode in _availableDocsLanguages) languageCode : '$_docsLocationPath/$languageCode.md'
+    };
+
+    final component = _DefaultExtensionComponents();
+    return Extension(DefaultExtensionConsts.Id, component, component, markdownDocs);
+  }
 }
