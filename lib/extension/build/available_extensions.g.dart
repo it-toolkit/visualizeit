@@ -3,7 +3,7 @@ import 'package:visualizeit/extension/domain/default/default_extension.dart';
 import 'package:visualizeit_extensions/extension.dart';
 
 
-List<Extension> buildAllAvailableExtensions() {
+List<Future<Extension>> buildAllAvailableExtensions() {
 	return [
 		FakeExtensionBuilder().build(),
 		DefaultExtensionBuilder().build(),

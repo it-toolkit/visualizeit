@@ -42,7 +42,7 @@ dependencies:
   mocktail: ^1.0.3
   flutter_bloc: ^8.1.4
   json2yaml: ^3.0.1
-
+  get_it: ^7.7.0
 
   visualizeit_extensions:
     git: #Read only token for extensions.. Change to public URL when available

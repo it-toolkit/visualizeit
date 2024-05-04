@@ -80,7 +80,7 @@ class AvailableExtensionsRegistrationListBuilder implements Builder {
 
     //Write buildAllAvailableExtensions function definition
     content.addAll([
-      '\n\nList<Extension> buildAllAvailableExtensions() {',
+      '\n\nFuture<List<Extension>> buildAllAvailableExtensions() {',
       '\treturn ['
     ]);
     //Write extension registration calls

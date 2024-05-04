@@ -193,12 +193,12 @@ class GlobalModel extends Model {
 
 class DefaultExtensionBuilder implements ExtensionBuilder {
   @override
-  Extension build() {
+  Future<Extension> build() {
     return buildDefaultExtension();
   }
 }
 
-Extension buildDefaultExtension() {
+Future<Extension> buildDefaultExtension() async {
   final component = _DefaultExtensionComponents();
-  return Extension(DefaultExtensionConsts.Id, component, component);
+  return Extension(DefaultExtensionConsts.Id, component, component, {LanguageCodes.en: "empty docs"});
 }
