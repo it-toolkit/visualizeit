@@ -2,7 +2,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
-import 'package:visualizeit/extension/domain/action.dart';
+import 'package:visualizeit/extension/action.dart';
 
 import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit_extensions/common.dart';

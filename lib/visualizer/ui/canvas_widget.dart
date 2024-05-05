@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:visualizeit/extension/domain/action.dart';
+import 'package:visualizeit/extension/action.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
 import '../../extension/domain/default/default_extension.dart';

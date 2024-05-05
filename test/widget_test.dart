@@ -6,15 +6,27 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 
 import 'package:visualizeit/main.dart';
 
 void main() {
+  setUp(() {
+    try {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      setupGetIt();
+    } catch (e) {
+      print('Failed to initialize dependencies: $e');
+    }
+  });
+
+  tearDown(() => GetIt.I.reset());
+
   testWidgets('App title is shown', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const VisualizeItApp());
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
     expect(find.text('Visualize IT'), findsOneWidget);
   });
 }

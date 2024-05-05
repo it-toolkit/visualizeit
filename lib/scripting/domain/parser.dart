@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:json2yaml/json2yaml.dart';
-import 'package:visualizeit/extension/domain/action.dart';
+import 'package:visualizeit/extension/action.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit_extensions/common.dart';

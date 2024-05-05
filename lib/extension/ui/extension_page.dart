@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/extension/domain/extension_repository.dart';
 
 import '../../common/ui/adaptive_container_widget.dart';
 import '../../fake_data.dart';
@@ -8,7 +9,9 @@ import '../../fake_data.dart';
 class ExtensionPage extends StatefulBasePage {
   static const RouteName = "extensions";
 
-  const ExtensionPage({super.key}): super(RouteName);
+  final ExtensionRepository _repository;
+
+  const ExtensionPage(ExtensionRepository repository, {super.key}): this._repository = repository, super(RouteName);
 
   @override
   State<StatefulWidget> createState() {

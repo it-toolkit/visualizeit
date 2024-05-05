@@ -1,18 +1,17 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart' show rootBundle;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:visualizeit/router.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
-import 'package:visualizeit/scripting/infrastructure/script_repository.dart';
+import 'package:visualizeit/wiring/actions.dart';
+import 'package:visualizeit/wiring/repositories.dart';
+import 'package:visualizeit/wiring/ui.dart';
 
-import 'extension/domain/action.dart';
+import 'extension/action.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   setupGetIt();
-
   runApp(const VisualizeItApp());
 }
 
@@ -27,10 +26,12 @@ class VisualizeItApp extends StatelessWidget {
         future: GetIt.I.allReady(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            final a = GetIt.I.get<RawScriptRepository>();
+            final b = GetIt.I.get<GetExtensionById>();
             return MultiRepositoryProvider(
                 providers: [
-                  RepositoryProvider<RawScriptRepository>(create: (context) => buildRawScriptRepository()),
-                  RepositoryProvider<GetExtensionById>(create: (context) => GetIt.I.get<GetExtensionById>()),
+                  RepositoryProvider<RawScriptRepository>(create: (context) => a), //TODO use only getit
+                  RepositoryProvider<GetExtensionById>(create: (context) => b),
                 ],
                 child: MultiBlocProvider(
                     providers: [BlocProvider<AppBloc>(create: (context) => AppBloc())],
@@ -56,23 +57,8 @@ class VisualizeItApp extends StatelessWidget {
 }
 
 void setupGetIt() {
-  final getIt = GetIt.instance;
-
-  getIt.registerSingletonAsync(() async {
-    return GetExtensionById.withAvailableExtensions();
-  });
-}
-
-RawScriptRepository buildRawScriptRepository() {
-  if (kReleaseMode) {
-    //TODO use remote repository
-    return InMemoryRawScriptRepository();
-  } else {
-    return InMemoryRawScriptRepository(initialRawScriptsLoader: _loadExampleScriptsFromAssets());
-  }
-}
-
-Future<List<RawScript>> _loadExampleScriptsFromAssets() async {
-  final assetKeys = ["assets/script_examples/extension_template_example.yaml", "assets/script_examples/global_commands_example.yaml"];
-  return Future.wait(assetKeys.map((key) async => RawScript(key.hashCode.toString(), await rootBundle.loadString(key))));
+  final getIt = GetIt.I;
+  getIt.registerRepositories();
+  getIt.registerActions();
+  getIt.registerWidgets();
 }

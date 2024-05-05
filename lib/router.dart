@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:visualizeit/player/ui/player_page.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
@@ -11,7 +12,7 @@ import 'package:visualizeit/scripting/ui/script_selector_page.dart';
 import 'package:visualizeit/user/ui/signin_page.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
-import 'extension/domain/action.dart';
+import 'extension/action.dart';
 import 'extension/ui/extension_page.dart';
 import 'misc/ui/help_page.dart';
 
@@ -75,7 +76,7 @@ final GoRouter _router = GoRouter(
         GoRoute(
           name: ExtensionPage.RouteName,
           path: 'extensions',
-          builder: (BuildContext context, GoRouterState state) => ExtensionPage(),
+          builder: (BuildContext context, GoRouterState state) => GetIt.I.get<ExtensionPage>(param1: context, param2: state),
         ),
         GoRoute(
           name: SignInPage.RouteName,
