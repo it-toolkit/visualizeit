@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
+import 'package:visualizeit_extensions/extension.dart';
 
 import '../../common/ui/adaptive_container_widget.dart';
-import '../../fake_data.dart';
 
 class ExtensionPage extends StatefulBasePage {
   static const RouteName = "extensions";
@@ -19,17 +20,8 @@ class ExtensionPage extends StatefulBasePage {
   }
 }
 
-class Extension {
-  final String name;
-  final String documentation;
-
-  Extension(this.name, this.documentation);
-}
-
 class _ExtensionPageState extends BasePageState<ExtensionPage> {
   //TODO implement extensions model
-  final List<Extension> _extensions = fakeExtensions;
-
   List<Extension> _filteredExtensions = [];
   int? _selectedIndex;
   String _query = '';
@@ -38,7 +30,7 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
     setState(
       () {
         _query = query;
-        _filteredExtensions = _extensions.where((item) => item.name.toLowerCase().contains(query.toLowerCase())).toList();
+        _filteredExtensions = getAllExtensions().where((item) => item.extensionId.toLowerCase().contains(query.toLowerCase())).toList();
         if (_filteredExtensions.length == 1) {
           _selectedIndex = 0;
         } else {
@@ -47,6 +39,8 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
       },
     );
   }
+
+  List<Extension> getAllExtensions() => widget._repository.getAll();
 
   @override
   Widget buildBody(BuildContext context) {
@@ -72,7 +66,7 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
                             ? _filteredExtensions.isEmpty
                                 ? const Center(child: Text('No Results Found', style: TextStyle(fontSize: 18)))
                                 : _buildListView(_filteredExtensions)
-                            : _buildListView(_extensions)))),
+                            : _buildListView(getAllExtensions())))),
           ],
         ));
   }
@@ -85,7 +79,7 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
         return ListTile(
           dense: true,
           titleAlignment: ListTileTitleAlignment.top,
-          title: Text(extensions[index].name),
+          title: Text(extensions[index].extensionId),
           selectedTileColor: Colors.blue.shade200,
           onTap: () {
             setState(() {
@@ -115,14 +109,29 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
         ));
   }
 
+  Widget markdownFromAsset(String assetLocation) {
+    return FutureBuilder(
+        future: rootBundle.loadString(assetLocation),
+        builder: (context, snapshot) {
+          if(snapshot.hasData) {
+            return MarkdownBody(data: snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Text("Error loading docs: ${snapshot.error}");
+          } else {
+            return CircularProgressIndicator();
+          }
+        }
+    );
+  }
+
   Expanded buildDetailsSection(BuildContext context) {
     final selectedExtension = _selectedIndex != null
         ? _filteredExtensions.isEmpty
-            ? _extensions[_selectedIndex!]
+            ? getAllExtensions()[_selectedIndex!]
             : _filteredExtensions[_selectedIndex!]
         : null;
     final detailsWidget = selectedExtension != null
-        ? SingleChildScrollView(physics: const ClampingScrollPhysics(), child: MarkdownBody(data: selectedExtension.documentation))
+        ? SingleChildScrollView(physics: const ClampingScrollPhysics(), child: markdownFromAsset(selectedExtension.markdownDocs["en"]!) )//TODO load bundle
         : null;
 
     return Expanded(

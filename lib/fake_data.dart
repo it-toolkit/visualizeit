@@ -76,13 +76,6 @@ final fakeFullScriptExample = """
       """
     .trimIndent();
 
-//TODO lookup for available / registered extensions
-final fakeExtensions = [
-  Extension('B# Tree', "B# Tree implementation for academic purposes"),
-  Extension('Flow diagram', "Flow diagram implementation supporting partial Mermaid syntax"),
-  Extension('Merge Sort', "Merge Sort implementation for academic purposes"),
-];
-
 //Script repository examples for in memory raw script repository
 
 const validRawScriptYaml = """

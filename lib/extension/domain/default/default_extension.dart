@@ -192,7 +192,7 @@ class GlobalModel extends Model {
 
 
 class DefaultExtensionBuilder implements ExtensionBuilder {
-  static const _docsLocationPath = "assets/docs/default_extension/";
+  static const _docsLocationPath = "assets/docs/default_extension";
   static const _availableDocsLanguages = [LanguageCodes.en];
 
   @override
