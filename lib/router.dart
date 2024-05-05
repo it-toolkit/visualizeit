@@ -53,25 +53,12 @@ final GoRouter _router = GoRouter(
     GoRoute(
       name: ScriptSelectorPage.RouteName,
       path: '/',
-      builder: (BuildContext context, GoRouterState state) {
-        final rawScriptRepository = context.read<RawScriptRepository>();
-        return ScriptSelectorPage(
-          rawScriptRepository,
-          onPlayPressed: (scriptId) => {context.go("/scripts/$scriptId/play")},
-          onViewPressed: (scriptId) => {context.go("/scripts/$scriptId/edit")},
-        );
-      },
+      builder: (context, state) => GetIt.I.get<ScriptSelectorPage>(param1: context, param2: state),
       routes: <RouteBase>[
         GoRoute(
           name: ScriptEditorPage.RouteName,
           path: 'scripts/:sid/edit',
-          builder: (BuildContext context, GoRouterState state) {
-            final scriptId = state.pathParameters['sid']!;
-            return ScriptEditorPage(
-              scriptId: scriptId,
-              onPlayPressed: (scriptId) => {context.go("/scripts/$scriptId/play")},
-            );
-          },
+          builder: (context, state) => GetIt.I.get<ScriptEditorPage>(param1: context, param2: state),
         ),
         GoRoute(
           name: ExtensionPage.RouteName,
