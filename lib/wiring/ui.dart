@@ -24,26 +24,9 @@ extension GetItWidgets on GetIt {
       );
     });
 
-    // registerFactoryParam<PlayerPage, BuildContext, GoRouterState>((context, state) {
-    //   final scriptId = state.pathParameters['sid']!;
-    //   final rawScriptRepository = context.read<RawScriptRepository>();
-    //   final rawScriptFuture = rawScriptRepository.get(scriptId);
-    //
-    //   return FutureBuilder<RawScript>( future: rawScriptFuture, builder: (BuildContext context, AsyncSnapshot<RawScript> rawScript) {
-    //     if(rawScript.hasError) {
-    //       //TODO handle error Ferman
-    //       // context.go("/");
-    //       return Text("Error: ${rawScript.error.toString()}");
-    //     } else if (!rawScript.hasData) {
-    //       return CircularProgressIndicator();
-    //     } else {
-    //       String contentAsYaml = rawScript.data!.contentAsYaml;
-    //       final getExtensionById = context.read<GetExtensionById>();
-    //       var script = ScriptParser(getExtensionById).parse(contentAsYaml);
-    //
-    //       return PlayerPage(script: script);
-    //     }
-    //   });
-    // });
+    registerFactoryParam<PlayerPage, BuildContext, GoRouterState>((context, state) {
+      final scriptId = state.pathParameters['sid']!;
+      return PlayerPage(get(), get(), scriptId: scriptId);
+    });
   }
 }

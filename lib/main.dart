@@ -5,6 +5,7 @@ import 'package:visualizeit/router.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/wiring/actions.dart';
 import 'package:visualizeit/wiring/repositories.dart';
+import 'package:visualizeit/wiring/services.dart';
 import 'package:visualizeit/wiring/ui.dart';
 
 import 'extension/action.dart';
@@ -59,6 +60,7 @@ class VisualizeItApp extends StatelessWidget {
 void setupGetIt() {
   final getIt = GetIt.I;
   getIt.registerRepositories();
+  getIt.registerServices();
   getIt.registerActions();
   getIt.registerWidgets();
 }

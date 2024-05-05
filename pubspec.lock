@@ -288,6 +288,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
+  get_it:
+    dependency: "direct main"
+    description:
+      name: get_it
+      sha256: d85128a5dae4ea777324730dc65edd9c9f43155c109d5cc0a69cab74139fbac1
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.7.0"
   git_hooks:
     dependency: "direct dev"
     description:
@@ -650,7 +658,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "98bc808a977313a651e15dcdc76dbdaf4f71f2d1"
+      resolved-ref: e6333b8865887e95a5a4a4bd22e25e72cefeab5a
       url: "https://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@github.com/it-toolkit/visualizeit_extension_template.git"
     source: git
     version: "0.0.1"
@@ -659,7 +667,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "77bb8d3c19352129b7c5c3219ecfc1acea54af43"
+      resolved-ref: "0599af67dc1e1baa5cdba0ef52b4dbc7296eb354"
       url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
     source: git
     version: "0.0.1"

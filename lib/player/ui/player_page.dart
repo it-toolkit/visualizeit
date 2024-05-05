@@ -4,9 +4,12 @@ import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 
+import '../../scripting/action.dart';
 import '../../scripting/domain/script.dart';
+import '../../scripting/domain/script_repository.dart';
 import '../domain/player.dart';
 import '../domain/player_timer.dart';
 
@@ -14,9 +17,12 @@ import '../domain/player_timer.dart';
 class PlayerPage extends StatefulBasePage {
   static const RouteName = "player";
 
-  const PlayerPage({super.key, required this.script}) : super(RouteName);
+  final GetRawScriptById _getRawScriptById;
+  final ScriptParser _scriptParser;
+  final ScriptRef scriptId;
 
-  final Script script;
+  const PlayerPage(GetRawScriptById getRawScriptById, ScriptParser scriptParser, {super.key, required this.scriptId})
+      : this._getRawScriptById = getRawScriptById, this._scriptParser = scriptParser, super(RouteName);
 
   @override
   State<StatefulWidget> createState() {
@@ -25,13 +31,18 @@ class PlayerPage extends StatefulBasePage {
 }
 
 class PlayerPageState extends BasePageState<PlayerPage> {
+
+  RawScript? rawScript = null;
+  Script? script = null;
+
   bool graphicalMode = true;
   final PlayerTimer _timer = PlayerTimer();
 
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
+
     return customBarWithModeSwitch(
-      "> ${widget.script.metadata.name}",
+      "> ${script?.metadata.name ?? "unknown"}",
       (bool it) {
         debugPrint("Mode updated: $it");
         setState(() {
@@ -46,7 +57,10 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   Widget buildBody(BuildContext context) {
     final canvas = CanvasWidget();
     final playerButtonBar = buildPlayerButtonBar(context);
-    final scriptEditor = buildScriptWidget(context, buildButtonBar(context), widget.script.scenes[0].metadata.rawYaml);
+
+    if(script == null) return Container(child: Text("Not ready"));
+
+    final scriptEditor = buildScriptWidget(context, buildButtonBar(context), script!.scenes[0].metadata.rawYaml);
 
     return graphicalMode
         ? buildPresentationModeContent(context, playerButtonBar, canvas)
@@ -55,14 +69,21 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    var initialPlayerState = PlayerState(widget.script);
-
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState)),
-        ],
-        child: Builder(builder: (context) => super.build(context))
-    );
+    return FutureBuilder(
+        future: widget._getRawScriptById(widget.scriptId),
+        builder: (context, snapshot) {
+          if(snapshot.hasError) { //TODO
+            return Text("Error loading script: ${snapshot.error}");
+          }else if (snapshot.hasData) {
+            rawScript = snapshot.data!;
+            script = widget._scriptParser.parse(rawScript!.contentAsYaml);
+            var initialPlayerState = PlayerState(script!);
+            return MultiBlocProvider(providers: [
+              BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState)),
+            ], child: Builder(builder: (context) => super.build(context)));
+          } else
+            return CircularProgressIndicator();
+        });
   }
 
   ButtonBar buildButtonBar(BuildContext context) {

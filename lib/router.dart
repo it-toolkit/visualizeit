@@ -1,21 +1,14 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:visualizeit/extension/ui/extension_page.dart';
+import 'package:visualizeit/misc/ui/help_page.dart';
 import 'package:visualizeit/player/ui/player_page.dart';
-import 'package:visualizeit/scripting/domain/parser.dart';
-import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/scripting/ui/script_editor_page.dart';
 import 'package:visualizeit/scripting/ui/script_selector_page.dart';
 import 'package:visualizeit/user/ui/signin_page.dart';
 import 'package:visualizeit_extensions/logging.dart';
-
-import 'extension/action.dart';
-import 'extension/ui/extension_page.dart';
-import 'misc/ui/help_page.dart';
-
 
 final _logger = Logger("base.ui");
 
@@ -34,7 +27,6 @@ class AppState {
 }
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-
   AppBloc() : super(AppState(_router)) {
     on<NavigationEvent>((event, emit) {
       state.router.goNamed(event.destinationName);
@@ -72,27 +64,7 @@ final GoRouter _router = GoRouter(
         ),
         GoRoute(
           path: 'scripts/:sid/play',
-          builder: (BuildContext context, GoRouterState state) {
-            final scriptId = state.pathParameters['sid']!;
-            final rawScriptRepository = context.read<RawScriptRepository>();
-            final rawScriptFuture = rawScriptRepository.get(scriptId);
-
-            return FutureBuilder<RawScript>( future: rawScriptFuture, builder: (BuildContext context, AsyncSnapshot<RawScript> rawScript) {
-              if(rawScript.hasError) {
-                //TODO handle error Ferman
-                // context.go("/");
-                return Text("Error: ${rawScript.error.toString()}");
-              } else if (!rawScript.hasData) {
-                return CircularProgressIndicator();
-              } else {
-                String contentAsYaml = rawScript.data!.contentAsYaml;
-                final getExtensionById = context.read<GetExtensionById>();
-                var script = ScriptParser(getExtensionById).parse(contentAsYaml);
-
-                return PlayerPage(script: script);
-              }
-            });
-          },
+          builder: (context, state) => GetIt.I.get<PlayerPage>(param1: context, param2: state),
         ),
         GoRoute(
           name: HelpPage.RouteName,
