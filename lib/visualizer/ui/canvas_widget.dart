@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/extension/action.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
 import '../../extension/domain/default/default_extension.dart';
 import '../../player/domain/player.dart';
+import 'dialog.dart';
 
 final _logger = Logger("visualizer.ui.canvas");
 
@@ -43,33 +43,17 @@ class CanvasWidget extends StatelessWidget {
             return Stack(fit: StackFit.expand, children: widgets);
           },
     ),);
-
-    // return Container(
-    //   decoration: BoxDecoration(color: Colors.blue.shade100),
-    //   child: const Center(
-    //     child: Icon(
-    //       Icons.play_circle,
-    //       size: 48,
-    //     ),
-    //   ),
-    // );
   }
 
   void _showAlertDialog(BuildContext context, PlayerBloc playerBloc, {String? title, required String message}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: title != null ? Text(title) : null,
-          content: MarkdownBody(data: message),
-          actions: [
-            TextButton(child: const Text("Close"), onPressed: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              playerBloc.add(StartPlaybackEvent(waitingAction: true));
-            }),
-          ],
-        );
+    InformationDialog.show(
+      context,
+      () {
+        Navigator.of(context, rootNavigator: true).pop();
+        playerBloc.add(StartPlaybackEvent(waitingAction: true));
       },
+      title: title,
+      message: message,
     );
   }
 }
