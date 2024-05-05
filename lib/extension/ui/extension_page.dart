@@ -4,8 +4,11 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit_extensions/extension.dart';
+import 'package:visualizeit_extensions/logging.dart';
 
 import '../../common/ui/adaptive_container_widget.dart';
+
+final _logger = Logger("extension.ui");
 
 class ExtensionPage extends StatefulBasePage {
   static const RouteName = "extensions";
@@ -116,7 +119,8 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
           if(snapshot.hasData) {
             return MarkdownBody(data: snapshot.data!);
           } else if (snapshot.hasError) {
-            return Text("Error loading docs: ${snapshot.error}");
+            _logger.error(() => "Error loading docs from location [${assetLocation}]: ${snapshot.error}");
+            return const Text("Error loading docs");
           } else {
             return CircularProgressIndicator();
           }
