@@ -12,13 +12,14 @@ import 'extension/action.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  setupLogging();
   setupGetIt();
   runApp(const VisualizeItApp());
 }
 
 /// The main app.
 class VisualizeItApp extends StatelessWidget {
-  /// Constructs a [VisualizeItApp]
+
   const VisualizeItApp();
 
   @override
@@ -55,6 +56,15 @@ class VisualizeItApp extends StatelessWidget {
           }
         });
   }
+}
+
+void setupLogging() {
+  // Logging()
+  //     ..minLogLevel = LogLevel.warn
+  //     ..filter = logCategoriesStartingWith([
+  //       "player",
+  //       "extension"
+  //     ]);
 }
 
 void setupGetIt() {
