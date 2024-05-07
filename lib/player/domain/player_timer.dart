@@ -7,7 +7,7 @@ class PlayerTimer {
   Timer? _timer;
   void Function()? _callback;
   bool _running = false;
-  Duration _frameDuration = const Duration(milliseconds: 500);
+  Duration _frameDuration = const Duration(milliseconds: 1000);
 
   bool get running => _running;
   Duration get frameDuration => _frameDuration;

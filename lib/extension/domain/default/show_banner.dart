@@ -7,7 +7,7 @@ import 'default_extension.dart';
 
 final _logger = Logger("extension.default.banner");
 
-class BannerModel extends Model {
+class BannerModel extends Model with CommandExecutionAware {
   final String message;
   final String alignment;
   final int pendingFrames;
@@ -19,8 +19,8 @@ class BannerModel extends Model {
     return BannerModel(name, message, alignment: alignment, pendingFrames: pendingFrames);
   }
 
-  BannerModel copy(String alignment, int framesDuration)
-    => BannerModel(name, message, alignment: alignment, pendingFrames: framesDuration);
+  BannerModel copy(String alignment, int framesDuration, Duration timeFrame)
+    => BannerModel(name, message, alignment: alignment, pendingFrames: framesDuration)..timeFrame = timeFrame;
 
   @override
   String toString() {
@@ -50,7 +50,7 @@ class ShowBanner extends GlobalCommand {
     Result result;
     if (bannerModel.pendingFrames > 0){
       var nextFrameDuration = bannerModel.pendingFrames - 1;
-      globalModel.models[bannerModelName] = bannerModel.copy(alignment, nextFrameDuration);
+      globalModel.models[bannerModelName] = bannerModel.copy(alignment, nextFrameDuration, context.timeFrame);
       result = Result(model: globalModel, finished: nextFrameDuration < 0);
     }
     else {

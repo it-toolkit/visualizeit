@@ -122,7 +122,7 @@ void main() {
     verify(() => scriptingExtensionMock.buildCommand(any(that: equals('{single-arg-command: my-arg}')))).called(2);
     verify(() => scriptingExtensionMock.buildCommand(any(that: equals('{multi-arg-command: [arg1, arg2]}')))).called(2);
 
-    verifyNever(() => commandMock.call(any<Model>()));
+    verifyNever(() => commandMock.call(any<Model>(), CommandContext()));
   });
 
 }

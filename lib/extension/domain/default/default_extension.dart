@@ -12,6 +12,7 @@ import 'package:visualizeit_extensions/visualizer.dart';
 import 'package:yaml/yaml.dart';
 
 import 'background.dart';
+import 'banner.dart';
 import 'nop.dart';
 import 'show_banner.dart';
 import 'show_popup.dart';
@@ -76,21 +77,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
   Widget buildBannerWidget(BannerModel innerModel) {
     _logger.trace(() => "Building widget for: ${innerModel.toString()}");
 
-    return Positioned.fill(
-      child: Align(
-        alignment: parseAlignment(innerModel.alignment),
-        child: Container(
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5), boxShadow: [
-            BoxShadow(color: Colors.grey.withOpacity(0.5), spreadRadius: 5, blurRadius: 7, offset: const Offset(0, 3)),
-          ]),
-          child: MarkdownBody(
-            data: innerModel.message, //+ " [${innerModel.pendingFrames + 1}]"
-          ),
-        ),
-      ),
-    );
+    return BannerWidget(innerModel);
   }
 
   Widget buildBackgroundWidget(BackgroundModel innerModel) {
