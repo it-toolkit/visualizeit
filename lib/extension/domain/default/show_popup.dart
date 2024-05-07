@@ -1,3 +1,4 @@
+import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
@@ -11,8 +12,14 @@ class ShowPopup extends GlobalCommand {
 
   ShowPopup.build(List<String> args) : message = args.single;
 
+
   @override
-  Result call(Model model) {
+  String toString() {
+    return 'ShowPopup{message: ${message.cap(30)}}';
+  }
+
+  @override
+  Result call(Model model, CommandContext context) {
     var popupMessage = PopupMessage(message: message);
     (model as GlobalModel).pushGlobalStateUpdate(popupMessage);
 

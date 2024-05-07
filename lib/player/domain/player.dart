@@ -12,7 +12,10 @@ final _logger = Logger("player");
 
 abstract class PlayerEvent {}
 
-class NextTransitionEvent extends PlayerEvent {}
+class NextTransitionEvent extends PlayerEvent {
+  final Duration timeFrame;
+  NextTransitionEvent({required this.timeFrame});
+}
 class PreviousTransitionEvent extends PlayerEvent {}
 class StartPlaybackEvent extends PlayerEvent {
   bool waitingAction;
@@ -31,7 +34,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     on<NextTransitionEvent>((event, emit) {
       history.add(state.isPlaying ? state.stopPlayback() : state);
       try {
-        var newState = state.runNextCommand();
+        var newState = state.runNextCommand(timeFrame: event.timeFrame);
         _logger.debug(() => "Going to next state: ${newState.currentSceneIndex} - ${newState.currentCommandIndex}");
         emit(newState);
       } on Exception catch (e) {
@@ -111,15 +114,18 @@ class PlayerState {
     return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying, waitingAction);
   }
 
-  PlayerState runNextCommand() {
+  PlayerState runNextCommand({Duration timeFrame = Duration.zero}) {
+
     var nextCommandIndex = currentCommandIndex + 1;
     var scene = script.scenes[currentSceneIndex];
 
     if (nextCommandIndex >= scene.transitionCommands.length) return stopPlayback(); //TODO advance scene?
 
-    _logger.debug(() => "Running command $nextCommandIndex: ${scene.transitionCommands[nextCommandIndex]}");
+    var command = scene.transitionCommands[nextCommandIndex];
+    var commandContext = CommandContext(timeFrame: timeFrame);
+    _logger.debug(() => "Running command [#$nextCommandIndex] $command on $commandContext");
 
-    var result = _runCommand(scene.transitionCommands[nextCommandIndex], currentSceneModels);
+    var result = _runCommand(command, currentSceneModels, commandContext);
 
     _logger.debug(() => "Command result: updated models: ${result.models}, finished: ${result.finished}");
     return copy(
@@ -151,11 +157,12 @@ class PlayerState {
   }
 
   Map<String, Model> _buildInitialState(List<Command> commands) {
+    var commandContext = CommandContext();
     var sceneModels = commands.fold(<String, Model>{globalModelName: GlobalModel()}, (models, command) {
       _RunCommandResult result;
       do {
         _logger.debug(() => "Running command: $command");
-        result = _runCommand(command, models);
+        result = _runCommand(command, models, commandContext);
       } while (!result.finished);
       return result.models;
     });
@@ -163,17 +170,17 @@ class PlayerState {
     return sceneModels;
   }
 
-  _RunCommandResult _runCommand(Command command, Map<String, Model> baseModels) {
+  _RunCommandResult _runCommand(Command command, Map<String, Model> baseModels, CommandContext context) {
     final result = _RunCommandResult(Map.of(baseModels), true);
     if (command is ModelBuilderCommand) {
-      Model model = command();
+      Model model = command(context);
       result.models[model.name] = model;
 
     } else if (command is ModelCommand) {
       var model = result.models[command.modelName];
       if (model == null) throw Exception("Unknown model: ${command.modelName}"); //TODO define custom exception for linter
 
-      var cmdResult = command(model);
+      var cmdResult = command(model, context);
       final updatedModel = cmdResult.model;
       if (updatedModel == null){
         result.models.remove(command.modelName);

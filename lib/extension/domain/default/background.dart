@@ -32,7 +32,12 @@ class ShowBackground extends GlobalCommand {
   ShowBackground.build(List<String> args) : imageUrl = args[0], scaling = args[1];
 
   @override
-  Result call(Model model) {
+  String toString() {
+    return 'ShowBackground{imageUrl: $imageUrl, scaling: $scaling}';
+  }
+
+  @override
+  Result call(Model model, CommandContext context) {
     final globalModel = (model as GlobalModel).clone(); //TODO fail if cannot cast
     final backgroundModel = BackgroundModel(backgroundModelName, imageUrl, scaling);
 

@@ -117,12 +117,13 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           playerBloc.add(PreviousTransitionEvent());
         },
         onNextPressed: () {
-          playerBloc.add(NextTransitionEvent());
+          playerBloc.add(NextTransitionEvent(timeFrame: _timer.frameDuration));
         },
         onPlayPausePressed: () {
           if (!_timer.isInitialized) {
             _timer.init(() {
-              playerBloc.add(NextTransitionEvent());
+              playerBloc.add(NextTransitionEvent(timeFrame: _timer.frameDuration));
+              //TODO bloquear botones durante el frame rate para permitir animaciones (al ir hacie adelante)
             });
             _timer.start();
             playerBloc.add(StartPlaybackEvent());
