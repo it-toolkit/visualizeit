@@ -134,6 +134,9 @@ class PlayerPageState extends BasePageState<PlayerPage> {
             }
           }
         },
+        onSpeedChanged: (speedFactor) {
+          _timer.changeSpeed(speedFactor);
+        },
       );
     });
   }

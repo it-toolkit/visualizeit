@@ -3,7 +3,6 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/logging.dart';
@@ -59,14 +58,9 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
       default:
         if (model is GlobalModel) {
           return Stack(fit: StackFit.expand, children: model.models.values.map((innerModel) {
-              switch (innerModel) {
-                case BannerModel():
-                  return buildBannerWidget(innerModel);
-                case BackgroundModel():
-                  return buildBackgroundWidget(innerModel);
-                default:
-                  return null;
-              }
+            if (innerModel is BannerModel) return buildBannerWidget(innerModel);
+            else if (innerModel is BackgroundModel) return buildBackgroundWidget(innerModel);
+            else return null;
           }).nonNulls.toList());
         }
 
