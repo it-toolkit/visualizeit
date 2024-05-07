@@ -11,6 +11,7 @@ class BannerModel extends Model with CommandExecutionAware {
   final String message;
   final String alignment;
   final int pendingFrames;
+  final bool freeSize = false;
 
   BannerModel(name, this.message, {this.alignment = "center", this.pendingFrames = 1}): super(DefaultExtensionConsts.Id, name);
 

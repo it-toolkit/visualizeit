@@ -1,7 +1,7 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import 'package:visualizeit/extension/domain/default/show_banner.dart';
 
 class BannerWidget extends StatefulWidget {
@@ -35,28 +35,34 @@ class _BannerState extends State<BannerWidget> {
   @override
   Widget build(BuildContext context) {
     var frameDuration = widget.model.timeFrame;
+    var alignment = parseAlignment(widget.model.alignment);
 
     final bannerContainer = frameDuration == Duration.zero
-        ? buildBannerWidget(widget.model)
+        ? buildBannerWidget(widget.model, alignment)
         : AnimatedOpacity(
             opacity: _isVisible ? 1.0 : 0.0,
             duration: Duration(milliseconds: (frameDuration.inMilliseconds / 3).round()),
-            child: buildBannerWidget(widget.model),
+            child: buildBannerWidget(widget.model, alignment),
           );
 
-    return Positioned.fill(child: Align(alignment: parseAlignment(widget.model.alignment), child: bannerContainer));
+
+    return Positioned.fill(child: Align(alignment: alignment, child: bannerContainer));
   }
 
-  Widget buildBannerWidget(BannerModel innerModel) {
+  Widget buildBannerWidget(BannerModel innerModel, Alignment alignment) {
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5), boxShadow: [
         BoxShadow(color: Colors.grey.withOpacity(0.5), spreadRadius: 5, blurRadius: 7, offset: const Offset(0, 3)),
       ]),
-      child: MarkdownBody(
-        data: innerModel.message,
-      ),
+      child: innerModel.freeSize
+          ? MarkdownBlock(data: innerModel.message)
+          : FractionallySizedBox(
+              widthFactor: alignment == Alignment.center ? 0.75 : 1 - alignment.x.abs() * 0.75,
+              heightFactor: alignment == Alignment.center ? 0.75 : 1 - alignment.y.abs() * 0.75,
+              child: SingleChildScrollView(child: MarkdownBlock(data: innerModel.message)),
+          ),
     );
   }
 

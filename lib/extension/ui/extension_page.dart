@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit_extensions/extension.dart';
@@ -117,7 +117,7 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
         future: rootBundle.loadString(assetLocation),
         builder: (context, snapshot) {
           if(snapshot.hasData) {
-            return MarkdownBody(data: snapshot.data!);
+            return MarkdownBlock(data: snapshot.data!);
           } else if (snapshot.hasError) {
             _logger.error(() => "Error loading docs from location [${assetLocation}]: ${snapshot.error}");
             return const Text("Error loading docs");

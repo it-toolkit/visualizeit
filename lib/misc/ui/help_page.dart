@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown_widget/widget/all.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 
 class HelpPage extends StatefulBasePage {
@@ -23,7 +23,7 @@ class HelpPageState extends BasePageState<HelpPage> {
       future: _helpAsMarkdownString,
       builder: (BuildContext context, AsyncSnapshot<String> doc) {
         if (doc.hasData) {
-          return Markdown(data: doc.data ?? 'Help was not found');
+          return MarkdownWidget(data: doc.data ?? 'Help was not found');
         } else if (doc.hasError) {
           return const Text("Error loading help");
         } else {
