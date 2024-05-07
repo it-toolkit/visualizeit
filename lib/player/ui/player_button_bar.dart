@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:visualizeit/common/utils/extensions.dart';
 
 class PlayerButtonBar extends StatelessWidget {
   final VoidCallback? onRestartPressed;
@@ -29,10 +30,10 @@ class PlayerButtonBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(icon: const Icon(Icons.restart_alt), onPressed: onRestartPressed),
-          IconButton(icon: const Icon(Icons.skip_previous), onPressed: onPreviousPressed),
+          IconButton(icon: const Icon(Icons.restart_alt), onPressed: onRestartPressed?.takeIf(!isPlaying)),
+          IconButton(icon: const Icon(Icons.skip_previous), onPressed: onPreviousPressed?.takeIf(!isPlaying)),
           IconButton(icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow), onPressed: onPlayPausePressed),
-          IconButton(icon: const Icon(Icons.skip_next), onPressed: onNextPressed),
+          IconButton(icon: const Icon(Icons.skip_next), onPressed: onNextPressed?.takeIf(!isPlaying)),
           SpeedSelector(onSpeedChanged: onSpeedChanged),
           Expanded(
             child: Padding(
