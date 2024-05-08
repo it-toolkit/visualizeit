@@ -1,7 +1,7 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:markdown_widget/markdown_widget.dart';
+import 'package:visualizeit/common/markdown/markdown.dart';
 import 'package:visualizeit/extension/domain/default/show_banner.dart';
 
 class BannerWidget extends StatefulWidget {
@@ -57,11 +57,11 @@ class _BannerState extends State<BannerWidget> {
         BoxShadow(color: Colors.grey.withOpacity(0.5), spreadRadius: 5, blurRadius: 7, offset: const Offset(0, 3)),
       ]),
       child: innerModel.freeSize
-          ? MarkdownBlock(data: innerModel.message)
+          ? ExtendedMarkdownBlock(data: innerModel.message)
           : FractionallySizedBox(
               widthFactor: alignment == Alignment.center ? 0.75 : 1 - alignment.x.abs() * 0.75,
               heightFactor: alignment == Alignment.center ? 0.75 : 1 - alignment.y.abs() * 0.75,
-              child: SingleChildScrollView(child: MarkdownBlock(data: innerModel.message)),
+              child: SingleChildScrollView(child: ExtendedMarkdownBlock(data: innerModel.message)),
           ),
     );
   }

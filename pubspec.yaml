@@ -37,12 +37,17 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   go_router: ^14.0.2
-#  flutter_markdown: ^0.6.18+2
-  markdown_widget: ^2.3.2+6
   yaml: ^3.1.2
   flutter_bloc: ^8.1.4
   json2yaml: ^3.0.1
   get_it: ^7.7.0
+
+  # Markdown dependencies
+  markdown_widget: ^2.3.2+6
+  #math equation rendering
+  flutter_math_fork: ^0.7.1
+  # for 'video' tag
+  video_player: ^2.8.6
 
   visualizeit_extensions:
     git: #Read only token for extensions.. Change to public URL when available

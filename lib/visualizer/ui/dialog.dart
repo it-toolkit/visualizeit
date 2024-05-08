@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:markdown_widget/markdown_widget.dart';
+
+import '../../common/markdown/markdown.dart';
 
 abstract class InformationDialog {
   static void show(BuildContext context, void onClose(), {String? title, required String message}) {
@@ -61,7 +62,13 @@ abstract class InformationDialog {
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                child: Center(child: MarkdownBlock(data: message)),
+                child: Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width / 2,
+                    height: MediaQuery.of(context).size.height / 2,
+                   child: ExtendedMarkdownWidget(data: message)
+                  ),
+                ), //Sized
               )
             ],
           ),

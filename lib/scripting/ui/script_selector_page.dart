@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:markdown_widget/widget/all.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 
+import '../../common/markdown/markdown.dart';
 import '../../common/ui/adaptive_container_widget.dart';
 import '../domain/script_def.dart';
 
@@ -186,9 +186,9 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                   color: Color.fromRGBO(171, 197, 212, 0.3),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
-                child: SingleChildScrollView(physics: const ClampingScrollPhysics(), child: MarkdownBlock(
+                child: ExtendedMarkdownWidget(
                     data: _getSelectedScript()?.value.description ?? ""
-                )),
+                ),
               ),
             ),
             buttonBar
