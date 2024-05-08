@@ -1,7 +1,7 @@
 name: "Global commands example"
 description: |-
   ## Global commands example
-  
+    
   This simple script uses some global commands like show-banner, show-popup and background
   
   ### show-banner
@@ -16,7 +16,6 @@ description: |-
   
   ### nop
   This NO-OP command is used just to wait some time.
-
 tags: [global-extension, dev-example]
 scenes:
   - name: First scene
@@ -30,28 +29,30 @@ scenes:
             "# This is a Banner at center position
             
             ![Argentina](https://pbs.twimg.com/profile_banners/507419507/1705687945/1500x500)
-            with an image and **multiple** lines<br>
-            markdown format"
+            with an image\nand **multiple** lines\nmarkdown format
+            extra line"
           - center
           - 3
       - nop
-      - show-banner: ["Banner at top position", topCenter, 3]
+      - show-banner: ["Banner at topLeft position", topLeft, 2]
       - nop
-      - show-banner: ["Banner at left position", centerLeft, 3]
+      - show-banner: ["Banner at bottomRight position", bottomRight, 2]
       - nop
-      - show-banner: ["Banner at right position", centerRight, 3]
+      - show-banner: ["Banner at left position", centerLeft, 2]
       - nop
-      - show-banner: ["Banner at bottom position", bottomCenter, 3]
+      - show-banner: ["Banner at right position", centerRight, 2]
       - nop
-      - show-popup: "Showing a nice message"
+      - show-banner: ["Banner at top position", topCenter, 2]
+      - nop
+      - show-banner: ["Banner at bottom position", bottomCenter, 2]
       - nop
       - show-popup:
           - |-
-            "# Final pop up
+            "# This is the end...
             
-            with **multiple** lines
+            Now relax a little watching a video
             
-            
-            and markdown format"
+            <video src=\"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4\">
+            "
       - nop
       - background: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Thats_all_folks.svg/1589px-Thats_all_folks.svg.png?20150104034840", fill]
