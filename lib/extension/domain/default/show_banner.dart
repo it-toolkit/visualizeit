@@ -2,6 +2,7 @@
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
+import 'package:visualizeit_extensions/scripting.dart';
 
 import 'default_extension.dart';
 
@@ -30,13 +31,17 @@ class BannerModel extends Model with CommandExecutionAware {
 }
 
 class ShowBanner extends GlobalCommand {
+  static final commandDefinition = CommandDefinition(DefaultExtensionConsts.Id, "show-banner", [CommandArgDef("message", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]);
 
   final String alignment;
   final int framesDuration;
   final String message;
   final String bannerModelName = "${new DateTime.now().millisecondsSinceEpoch}"; //TODO usar uuid
 
-  ShowBanner.build(List<String> args) : message = args[0], alignment = args[1], framesDuration = int.parse(args[2]);
+  ShowBanner.build(RawCommand rawCommand) :
+    message = commandDefinition.getArg(name: "message", from: rawCommand),
+    alignment = commandDefinition.getArg(name: "position", from: rawCommand),
+    framesDuration = commandDefinition.getArg(name: "duration", from: rawCommand);
 
   @override
   String toString() {

@@ -25,30 +25,32 @@ abstract class DefaultExtensionConsts {
 
 class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExtension {
   @override
-  Command? buildCommand(String rawCommand) {
-    MapEntry<String, List<String>> commandParts = _parseCommandNode(rawCommand);
-    CommandDefinition? def = getAllCommandDefinitions()
-        .where((it) => commandParts.key == it.name && commandParts.value.length == it.args.length)
-        .singleOrNull;
-
+  Command? buildCommand(RawCommand rawCommand) {
+    final def = getMatchingCommandDefinition(rawCommand);
     if(def ==null) return null;
-
+//TODO include command def ad commmand member
     switch (def.name) {
       case "nop": return NoOp.build();
-      case "show-popup": return ShowPopup.build(commandParts.value);
-      case "show-banner": return ShowBanner.build(commandParts.value);
-      case "background": return ShowBackground.build(commandParts.value);
+      case "show-popup" : return ShowPopup.build(rawCommand);
+      case "show-banner": return ShowBanner.build(rawCommand);
+      case "background": return ShowBackground.build(rawCommand);
       default: return null;
     }
+  }
+
+  CommandDefinition? getMatchingCommandDefinition(RawCommand rawCommand) {
+    return getAllCommandDefinitions()
+        .where((it) => rawCommand.name == it.name && rawCommand.argsLength() == it.args.length)
+        .singleOrNull;
   }
 
   @override
   List<CommandDefinition> getAllCommandDefinitions() {
     return [
-      CommandDefinition(DefaultExtensionConsts.Id, "show-popup", [CommandArgDef("message", ArgType.string)]),
-      CommandDefinition(DefaultExtensionConsts.Id, "background", [CommandArgDef("imageUrl", ArgType.string), CommandArgDef("scaling", ArgType.string)]),
-      CommandDefinition(DefaultExtensionConsts.Id, "show-banner", [CommandArgDef("message", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]),
-      CommandDefinition(DefaultExtensionConsts.Id, "nop", [])
+      ShowPopup.commandDefinition,
+      ShowBackground.commandDefinition,
+      ShowBanner.commandDefinition,
+      NoOp.commandDefinition
     ];
   }
 
@@ -89,26 +91,6 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
       case "contain": return BoxFit.contain;
       case "cover": return BoxFit.cover;
       default: throw Exception("Unknown image scaling strategy value"); //TODO handle error properly
-    }
-  }
-
-  MapEntry<String, List<String>> _parseCommandNode(rawCommand) {
-    YamlNode commandNode = loadYamlNode(rawCommand);
-
-    if (commandNode is YamlScalar || commandNode is String) { //TODO improve
-      return MapEntry(commandNode.toString(), []);
-    } else if (commandNode is YamlMap) {
-      var key = commandNode.keys.single;
-      var value = commandNode.values.single;
-      if (value is YamlScalar || value is String) {  //TODO improve to other scalars
-        return MapEntry(key.toString(), [value.toString()]);
-      } else if (value is YamlList) {
-        return MapEntry(key.toString(), value.map((it) => it.toString()).toList());
-      } else {
-        throw Exception("Unknown command value type"); //TODO improve error handling
-      }
-    } else {
-      throw Exception("Unknown command"); //TODO improve error handling
     }
   }
 

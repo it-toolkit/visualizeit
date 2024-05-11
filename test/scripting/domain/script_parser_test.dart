@@ -26,6 +26,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(modelMock);
+    registerFallbackValue(RawCommand.withPositionalArgs("single-arg-command", ["my-arg"]));
   });
 
   tearDown(() {
@@ -118,9 +119,11 @@ void main() {
     expect(script.scenes.single.initialStateBuilderCommands.length, equals(3));
     expect(script.scenes.single.transitionCommands.length, equals(3));
 
-    verify(() => scriptingExtensionMock.buildCommand(any(that: equals('no-arg-command')))).called(2);
-    verify(() => scriptingExtensionMock.buildCommand(any(that: equals('{single-arg-command: my-arg}')))).called(2);
-    verify(() => scriptingExtensionMock.buildCommand(any(that: equals('{multi-arg-command: [arg1, arg2]}')))).called(2);
+    final capturedRawCommands = verify(() => scriptingExtensionMock.buildCommand(captureAny<RawCommand>())).captured;
+
+    expect(capturedRawCommands.where((e) => e.name == 'no-arg-command').length, equals(2));
+    expect(capturedRawCommands.where((e) => e.name == 'single-arg-command').length, equals(2));
+    expect(capturedRawCommands.where((e) => e.name == 'multi-arg-command').length, equals(2));
 
     verifyNever(() => commandMock.call(any<Model>(), CommandContext()));
   });

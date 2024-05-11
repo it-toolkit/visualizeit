@@ -1,17 +1,17 @@
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
+import 'package:visualizeit_extensions/scripting.dart';
 
 import 'default_extension.dart';
 
 final _logger = Logger("extension.default.popup");
 
 class ShowPopup extends GlobalCommand {
-
+  static final commandDefinition = CommandDefinition(DefaultExtensionConsts.Id, "show-popup", [CommandArgDef("message", ArgType.string)]);
   final String message;
 
-  ShowPopup.build(List<String> args) : message = args.single;
-
+  ShowPopup.build(RawCommand rawCommand) : message = commandDefinition.getArg(name: "message", from: rawCommand);
 
   @override
   String toString() {

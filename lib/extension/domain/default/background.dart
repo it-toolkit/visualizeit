@@ -1,6 +1,7 @@
 
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
+import 'package:visualizeit_extensions/scripting.dart';
 
 import 'default_extension.dart';
 
@@ -24,12 +25,15 @@ class BackgroundModel extends Model {
 }
 
 class ShowBackground extends GlobalCommand {
+  static final commandDefinition = CommandDefinition(DefaultExtensionConsts.Id, "background", [CommandArgDef("imageUrl", ArgType.string), CommandArgDef("scaling", ArgType.string)]);
 
   final String imageUrl;
   final String scaling;
   final String backgroundModelName = "default.background";
 
-  ShowBackground.build(List<String> args) : imageUrl = args[0], scaling = args[1];
+  ShowBackground.build(RawCommand rawCommand):
+    imageUrl = commandDefinition.getArg(name: "imageUrl", from: rawCommand),
+    scaling = commandDefinition.getArg(name: "scaling", from: rawCommand);
 
   @override
   String toString() {
