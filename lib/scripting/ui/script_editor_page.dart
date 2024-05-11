@@ -27,8 +27,10 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
 
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
+    //TODO use script repository
     return customBarWithModeSwitch(
-        "> ${fakeScriptNames[int.tryParse(widget.scriptId) ?? 0]}",
+        // "> ${fakeScriptNames[int.tryParse(widget.scriptId) ?? 0]}",
+        "> ${fakeScriptNames[0]}",
         (bool it) => {
               debugPrint("Mode updated: $it"),
               setState(() {
