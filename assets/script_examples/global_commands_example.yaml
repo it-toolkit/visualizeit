@@ -28,9 +28,10 @@ scenes:
           - |-
             "# This is a Banner at center position
             
-            ![Argentina](https://pbs.twimg.com/profile_banners/507419507/1705687945/1500x500)
-            with an image\nand **multiple** lines\nmarkdown format
-            extra line"
+            <img width=\"400\" height=\"200\" src=\"https://pbs.twimg.com/profile_banners/507419507/1705687945/1500x500\"/>
+            
+            
+            with an image\nand **multiple** lines\nusing markdown format"
           - center
           - 3
       - nop
@@ -52,7 +53,7 @@ scenes:
             
             Now relax a little watching a video
             
-            <video src=\"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4\">
+            <video width=\"340\" height=\"255\" src=\"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4\">
             "
       - nop
       - background: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Thats_all_folks.svg/1589px-Thats_all_folks.svg.png?20150104034840", fill]
