@@ -24,18 +24,22 @@ abstract class DefaultExtensionConsts {
 
 
 class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExtension {
+
+  final Map<CommandDefinition, Command Function(RawCommand)> _config = {
+    ShowPopup.commandDefinition: ShowPopup.build,
+    ShowBackground.commandDefinition: ShowBackground.build,
+    ShowBanner.commandDefinition: ShowBanner.build,
+    NoOp.commandDefinition: NoOp.build
+  };
+
+  List<CommandDefinition>? _allCommandDefinitions;
+
   @override
   Command? buildCommand(RawCommand rawCommand) {
     final def = getMatchingCommandDefinition(rawCommand);
     if(def ==null) return null;
-//TODO include command def ad commmand member
-    switch (def.name) {
-      case "nop": return NoOp.build();
-      case "show-popup" : return ShowPopup.build(rawCommand);
-      case "show-banner": return ShowBanner.build(rawCommand);
-      case "background": return ShowBackground.build(rawCommand);
-      default: return null;
-    }
+
+    return _config[def]?.call(rawCommand);
   }
 
   CommandDefinition? getMatchingCommandDefinition(RawCommand rawCommand) {
@@ -46,12 +50,7 @@ class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExten
 
   @override
   List<CommandDefinition> getAllCommandDefinitions() {
-    return [
-      ShowPopup.commandDefinition,
-      ShowBackground.commandDefinition,
-      ShowBanner.commandDefinition,
-      NoOp.commandDefinition
-    ];
+    return _allCommandDefinitions ??= _config.keys.toList();
   }
 
   @override

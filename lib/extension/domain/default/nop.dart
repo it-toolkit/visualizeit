@@ -10,7 +10,7 @@ class NoOp extends GlobalCommand {
   static final commandDefinition = CommandDefinition(DefaultExtensionConsts.Id, "nop", []);
 
 
-  NoOp.build();
+  NoOp.build(RawCommand rawCommand);
 
   @override
   Result call(Model model, CommandContext context) {
