@@ -8,7 +8,6 @@ import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/logging.dart';
 import 'package:visualizeit_extensions/scripting.dart';
 import 'package:visualizeit_extensions/visualizer.dart';
-import 'package:yaml/yaml.dart';
 
 import 'background.dart';
 import 'banner.dart';
@@ -23,35 +22,14 @@ abstract class DefaultExtensionConsts {
 }
 
 
-class _DefaultExtensionComponents implements ScriptingExtension, VisualizerExtension {
+class _DefaultExtensionComponents extends DefaultScriptingExtension implements ScriptingExtension, VisualizerExtension {
 
-  final Map<CommandDefinition, Command Function(RawCommand)> _config = {
+  _DefaultExtensionComponents(): super({
     ShowPopup.commandDefinition: ShowPopup.build,
     ShowBackground.commandDefinition: ShowBackground.build,
     ShowBanner.commandDefinition: ShowBanner.build,
     NoOp.commandDefinition: NoOp.build
-  };
-
-  List<CommandDefinition>? _allCommandDefinitions;
-
-  @override
-  Command? buildCommand(RawCommand rawCommand) {
-    final def = getMatchingCommandDefinition(rawCommand);
-    if(def ==null) return null;
-
-    return _config[def]?.call(rawCommand);
-  }
-
-  CommandDefinition? getMatchingCommandDefinition(RawCommand rawCommand) {
-    return getAllCommandDefinitions()
-        .where((it) => rawCommand.name == it.name && rawCommand.argsLength() == it.args.length)
-        .singleOrNull;
-  }
-
-  @override
-  List<CommandDefinition> getAllCommandDefinitions() {
-    return _allCommandDefinitions ??= _config.keys.toList();
-  }
+  });
 
   @override
   Widget? render(Model model, BuildContext context) {
