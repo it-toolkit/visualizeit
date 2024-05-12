@@ -11,18 +11,15 @@ final _logger = Logger("extension.default.banner");
 class BannerModel extends Model with CommandExecutionAware {
   final String message;
   final String alignment;
-  final int pendingFrames;
   final bool freeSize = false;
 
-  BannerModel(name, this.message, {this.alignment = "center", this.pendingFrames = 1}): super(DefaultExtensionConsts.Id, name);
+  BannerModel(name, this.message, {this.alignment = "center"}): super(DefaultExtensionConsts.Id, name);
 
   @override
-  Model clone() {
-    return BannerModel(name, message, alignment: alignment, pendingFrames: pendingFrames);
+  BannerModel clone() {
+    return BannerModel(name, message, alignment: alignment)
+      ..withCommandExecutionStateFrom(this);
   }
-
-  BannerModel copy(String alignment, int framesDuration, Duration timeFrame)
-    => BannerModel(name, message, alignment: alignment, pendingFrames: framesDuration)..timeFrame = timeFrame;
 
   @override
   String toString() {
@@ -51,15 +48,21 @@ class ShowBanner extends GlobalCommand {
   @override
   Result call(Model model, CommandContext context) {
     final globalModel = (model as GlobalModel).clone(); //TODO fail if cannot cast
-    final bannerModel = globalModel.models[bannerModelName] as BannerModel? ?? BannerModel(bannerModelName, message, pendingFrames: framesDuration);
+    final bannerModel = (
+        globalModel.models[bannerModelName]
+        ?? BannerModel(bannerModelName, message).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal
+    ) as BannerModel;
 
     Result result;
-    if (bannerModel.pendingFrames > 0){
-      var nextFrameDuration = bannerModel.pendingFrames - 1;
-      globalModel.models[bannerModelName] = bannerModel.copy(alignment, nextFrameDuration, context.timeFrame);
-      result = Result(model: globalModel, finished: nextFrameDuration < 0);
+
+    if (bannerModel.pendingFrames > 1) {
+      var updatedModel = bannerModel.clone()
+        ..consumePendingFrame(context);
+
+      globalModel.models[bannerModelName] = updatedModel;
+      result = Result(model: globalModel, finished: false);
     }
-    else {
+    else { //Use last frame for model disposal
       globalModel.models.remove(bannerModelName);
       result = Result(model: globalModel, finished: true); //Return null model to force deletion
     }
