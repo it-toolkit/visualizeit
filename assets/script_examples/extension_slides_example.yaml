@@ -1,0 +1,13 @@
+name: "Slides example"
+description: |-
+  ## Slides example
+  
+tags: [slides-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: ['slides-extension']
+    description: Scene showing some fake commands usage
+    initial-state:
+      - create-slideshow
+    transitions:
+      - show-slides
