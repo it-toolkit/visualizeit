@@ -80,7 +80,10 @@ class _SpeedSelectorState extends State<SpeedSelector> {
       items: _speeds.map<DropdownMenuItem<double>>((double value) {
         return DropdownMenuItem<double>(
           value: value,
-          child: Text("${value}x"),
+          child: Tooltip(
+            message: '${(1/value).toStringAsPrecision(2)} seconds per frame',
+            child: Text("${value}x"),
+          ),
         );
       }).toList(),
     );
