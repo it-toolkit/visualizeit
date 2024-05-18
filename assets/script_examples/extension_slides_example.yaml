@@ -1,7 +1,7 @@
 name: "Slides example"
 description: |-
   ## Slides example
-  
+
 tags: [slides-extension, dev-example]
 scenes:
   - name: First scene
@@ -9,5 +9,45 @@ scenes:
     description: Scene showing some fake commands usage
     initial-state:
       - create-slideshow
+      - add-title-slide: { title: "Title slide", subtitle: "With subtitle..." }
+      - add-fullscreen-image-slide:
+          title: "Fullscreen image slide"
+          subtitle: "Image from url"
+          imageUrl: 'https://lh3.googleusercontent.com/d/1uizdXqCdZBQ4cM_ha8Wsw3PNrDt0arqf=w1000'
+      - add-bullets-slide:
+          title: "Bullets slide"
+          subtitle: "With 3 bullets"
+          bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
+            - "‣ Bullet 1"
+            - "‣ Bullet 2"
+            - "\u00A0\t\t• with sub line"
+            - |+
+              "‣ Bullet 3
+              \n\t\t\t• with two
+              \n\t\t\t• sub lines"
+          imageUrl: 'gdrive:1uizdXqCdZBQ4cM_ha8Wsw3PNrDt0arqf'
+      - add-code-slide:
+          title: "Code slide"
+          subtitle: "With 3 code steps with highlighted lines"
+          language: "yaml"
+          formatted-code:
+            - |
+              "
+              attribute_1: value_1\n
+              attribute_2: value_2"
+            - |
+              "###2###
+              attribute_1: value_1\n
+              attribute_2: value_2\n
+              attribute_3: value_3"
+            - |
+              "###1###
+              attribute_1: value_1\n
+              \n
+              attribute_3: value_3"
+            - |
+              "
+              attribute_1: value_1\n
+              attribute_3: value_3"
     transitions:
       - show-slides
