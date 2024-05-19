@@ -1,0 +1,130 @@
+name: "Visualize IT introduction"
+description: >
+  ## Visualize IT introduction
+  
+  
+  Welcome to our presentation on VisualizeIT, an innovative app designed to visualize animated 
+  algorithm and data structure operations. We'll explore its customizable scripting language, 
+  extension capabilities, and multi-platform support through Flutter. 
+  Let's dive into its exciting features!
+tags: [slides-extension]
+scenes:
+  - name: General introduction
+    extensions: ['slides-extension']
+    description: "-"
+    initial-state:
+      - create-slideshow
+      - add-fullscreen-image-slide:
+          title: 'VisualizeIT'
+          subtitle: "Enhancing Learning through\n\nVisual and Interactive Tools"
+          alignment: '0.6/0.0'
+          imageUrl: 'gdrive:14feYVBx8IOQK56uMF4vGPDrYOAWkFy0a'
+      - add-bullets-slide:
+          title: "What is VisualizeIT?"
+          bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
+            - '‣ VisualizeIT is an innovative app designed to help users understand algorithms and data structures through animated visualizations'
+            - "‣ Core Features"
+            - "\u00A0  • Animated operations of algorithms and data structures."
+            - "\u00A0  • Customizable scripting language for creating unique visualizations."
+            - "\u00A0  • Extension support for adding new functionalities"
+      - add-bullets-slide:
+          title: "Key Features and Benefits"
+          bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
+            - |
+              "‣ Customizable Scripting Language
+              \n   • Define and customize algorithm visualizations.
+              \n   • Simple syntax for easy learning and implementation."
+            - |
+              "‣ Extension Support
+              \n   • Develop and integrate new features.
+              \n   • Follow clear development guidelines."
+            - |
+              "‣ Multi-platform Support
+              \n   • Built with Flutter for compatibility across iOS, Android, and web platforms."
+            - |
+              "‣ Educational Value
+              \n   • Ideal for students and educators.
+              \n   •  Enhances understanding of complex concepts through interactive learning."
+      - add-bullets-slide:
+          title: "Technical Details"
+          bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
+            - |
+              "‣ Technology Stack
+              \n   • Developed using Flutter, ensuring a consistent experience across all platforms."
+            - |
+              "‣ Customization and Extensibility
+              \n   • Easily extend the app with new functionalities.
+              \n   • Comprehensive development guidelines available."
+            - |
+              "‣ User Interface
+              \n   • Intuitive and user-friendly design.
+              \n   • Smooth animations for better visual understanding."
+      - add-bullets-slide:
+          title: "Meet the team"
+          imageUrl: "https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg"
+          bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
+            - "Team"
+            - "\u00A0  ‣ Anibal Irrera"
+            - "\u00A0  ‣ Fernando Mansilla"
+            - "\u00A0  ‣ Osiris Argüello"
+            - "Tutor"
+            - "\u00A0  ‣ Arturo Servetto"
+      - add-code-slide:
+          title: "Simple script example"
+          language: "yaml"
+          formatted-code:
+            - |
+              "
+              \nname: Global commands example
+              \ndescription: |-
+              \n  ## Global commands example
+              \n
+              \n  This simple script uses some global commands like show-banner, show-popup and background
+              \ntags: [global-extension, dev-example]
+              "
+            - |
+              "###7###
+              \nname: Global commands example
+              \ndescription: |-
+              \n  ## Global commands example
+              \n
+              \n  This simple script uses some global commands like show-banner, show-popup and background
+              \ntags: [global-extension, dev-example]
+              \nscenes:
+              "
+            - |
+              "###8,9,10###
+              \nname: Global commands example
+              \ndescription: |-
+              \n  ## Global commands example
+              \n
+              \n  This simple script uses some global commands like show-banner, show-popup and background
+              \ntags: [global-extension, dev-example]
+              \nscenes:
+              \n  - name: First scene
+              \n    extensions: []
+              \n    description: Scene showing some global commands usage
+              "
+            - |
+              "###11,12,13,14,15,16,17###
+              \nname: Global commands example
+              \ndescription: |-
+              \n  ## Global commands example
+              \n
+              \n  This simple script uses some global commands like show-banner, show-popup and background
+              \ntags: [global-extension, dev-example]
+              \nscenes:
+              \n  - name: First scene
+              \n    extensions: []
+              \n    description: Scene showing some global commands usage
+              \n    initial-state:
+              \n      - background: ['https://a-background-image-location', cover]
+              \n    transitions:
+              \n      - show-banner:
+              \n          message: 'Banner example'
+              \n          position: center
+              \n          duration: 2
+              "
+      - add-title-slide: { title: "Enjoy Visualize IT!" }
+    transitions:
+      - show-slides
