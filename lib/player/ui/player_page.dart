@@ -39,6 +39,12 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   final PlayerTimer _timer = PlayerTimer();
 
   @override
+  void dispose() {
+    _timer.stop();
+    super.dispose();
+  }
+
+  @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
 
     return customBarWithModeSwitch(
