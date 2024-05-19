@@ -68,3 +68,16 @@ The file `pubspec_overrides.yaml` won't be pushed to the git repository (it is a
 .gitignore)
 
 See `pubspec_overrides.yaml.bk` for an example.
+
+
+### Adding new extensions
+
+When a new extension package is configured in `pubspec.yaml` the ExtensionBuilders provided in it
+must be instantiated in function defined at `/extension/build/available_extensions.g.dart`.
+This can be done automatically running the following command at project root:
+
+```bash
+dart run build_runner clean && dart run build_runner build --delete-conflicting-outputs
+```
+
+
