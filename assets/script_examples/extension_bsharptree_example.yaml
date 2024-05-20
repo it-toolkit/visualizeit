@@ -1,0 +1,16 @@
+name: "B# Tree example"
+description: |-
+  ## B\# Tree example
+  
+tags: [bsharp-tree-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: ['bsharp-tree-extension']
+    description: Tree creation
+    initial-state:
+      - bsharptree-create: [3, ["12", "15"]]
+    transitions:
+      - bsharptree-insert: [25]
+      - bsharptree-insert: [4]
+      - bsharptree-insert: [60]
+      - bsharptree-insert: [44]

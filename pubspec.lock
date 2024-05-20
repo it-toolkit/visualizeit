@@ -350,6 +350,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  flutter_markdown:
+    dependency: transitive
+    description:
+      name: flutter_markdown
+      sha256: "04c4722cc36ec5af38acc38ece70d22d3c2123c61305d555750a091517bbe504"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.23"
   flutter_math_fork:
     dependency: "direct main"
     description:
@@ -1053,23 +1061,26 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.0+2"
+  visualizeit_bsharptree_extension:
+    dependency: "direct main"
+    description:
+      path: "../visualizeit_bsharptree_extension"
+      relative: true
+    source: path
+    version: "1.0.0+1"
   visualizeit_extension_template:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: ae37d81fdcfe8d946582f7b011c68b8b74ba583d
-      url: "https://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@github.com/it-toolkit/visualizeit_extension_template.git"
-    source: git
+      path: "../visualizeit_extension_template"
+      relative: true
+    source: path
     version: "0.0.1"
   visualizeit_extensions:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: df56d2c4587b829ef7533535148be19cb57aab20
-      url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
-    source: git
+      path: "../visualizeit_extensions"
+      relative: true
+    source: path
     version: "0.0.1"
   visualizeit_slides_extension:
     dependency: "direct main"
@@ -1112,6 +1123,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.5"
+  widget_arrows:
+    dependency: transitive
+    description:
+      name: widget_arrows
+      sha256: bbac0e0a309ed75d195747e7f932c43bce55f645f6a657a9e70b2fe8f9f80926
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   win32:
     dependency: transitive
     description:
