@@ -41,6 +41,7 @@ dependencies:
   flutter_bloc: ^8.1.4
   json2yaml: ^3.0.1
   get_it: ^7.7.0
+  re_editor: ^0.3.0
 
   # Markdown dependencies
   markdown_widget: ^2.3.2+6
