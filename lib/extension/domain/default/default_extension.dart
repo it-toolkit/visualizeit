@@ -3,6 +3,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/logging.dart';
@@ -102,7 +103,7 @@ class PopupMessage extends GlobalStateUpdate {
 
   @override
   String toString() {
-    return 'PopupMessage{title: $title, message: $message}';
+    return 'PopupMessage{title: $title, message: ${message.cap(30, addRealLengthSuffix: true)}}';
   }
 }
 

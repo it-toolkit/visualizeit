@@ -67,7 +67,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
     if(script == null) return Container(child: Text("Not ready"));
 
-    final scriptEditor = buildScriptWidget(context, buildButtonBar(context), rawScript!.contentAsYaml);//TODO script!.scenes[0].metadata.rawYaml);
+    final scriptEditor = buildScriptWidget(context, buildButtonBar(context), script!, rawScript!);//TODO script!.scenes[0].metadata.rawYaml);
 
     return graphicalMode
         ? buildPresentationModeContent(context, playerButtonBar, canvas)
@@ -178,18 +178,21 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     ]);
   }
 
-  Expanded buildScriptWidget(BuildContext context, ButtonBar buttonBar, String scriptText) {
-    return Expanded(
-        flex: 58,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text("Scene 1 script"),
-            Expanded(
-              child: PlayerScriptEditorWidget(script: scriptText),
-            ),
-            buttonBar
-          ],
-        ));
+  Widget buildScriptWidget(BuildContext context, ButtonBar buttonBar, Script script, RawScript rawScript) {
+      return Expanded(
+          flex: 58,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BlocBuilder<PlayerBloc, PlayerState>(builder: (context, playerState) {
+                return Text(script.scenes[playerState.currentSceneIndex].metadata.name);
+              }),
+              Expanded(
+                child: ScriptEditorWidget(script: rawScript.contentAsYaml, listenPlayerEvents: true),
+              ),
+              buttonBar
+            ],
+          ));
+    // });
   }
 }
