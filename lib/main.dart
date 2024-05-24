@@ -19,7 +19,6 @@ void main() {
 
 /// The main app.
 class VisualizeItApp extends StatelessWidget {
-
   const VisualizeItApp();
 
   @override
@@ -32,13 +31,17 @@ class VisualizeItApp extends StatelessWidget {
             final b = GetIt.I.get<GetExtensionById>();
             return MultiRepositoryProvider(
                 providers: [
-                  RepositoryProvider<RawScriptRepository>(create: (context) => a), //TODO use only getit
+                  RepositoryProvider<RawScriptRepository>(
+                      create: (context) => a), //TODO use only getit
                   RepositoryProvider<GetExtensionById>(create: (context) => b),
                 ],
                 child: MultiBlocProvider(
-                    providers: [BlocProvider<AppBloc>(create: (context) => AppBloc())],
+                    providers: [
+                      BlocProvider<AppBloc>(create: (context) => AppBloc())
+                    ],
                     child: Builder(builder: (context) {
-                      final _router = BlocProvider.of<AppBloc>(context).state.router;
+                      final _router =
+                          BlocProvider.of<AppBloc>(context).state.router;
 
                       return MaterialApp.router(
                         routerConfig: _router,
@@ -47,7 +50,8 @@ class VisualizeItApp extends StatelessWidget {
                             colorScheme: const ColorScheme.light(),
                             useMaterial3: true,
                             scrollbarTheme: ScrollbarThemeData(
-                              thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
+                              thumbVisibility: MaterialStateProperty.all(
+                                  true), //Always show scrollbar
                             )),
                       );
                     })));

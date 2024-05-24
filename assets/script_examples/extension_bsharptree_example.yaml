@@ -1,6 +1,18 @@
 name: "B# Tree example"
 description: |-
   ## B\# Tree example
+
+  In this example a B\# tree is created, some keys are added and then one key is removed. All these commands cause changes in the tree,
+  like new node creations, overflows and balancing the keys between nodes
+
+  ### bsharptree-create
+  It's used to create the tree with a maximum capacity for a node. It may receive a list of keys to initialize the tree
+
+  ### bsharptree-insert
+  This command adds a key to the tree, searching for the correct node to add it to, and rebalancing the tree, if necesary
+
+  ### bsharptree-remove
+  This command deletes a key from the tree, finding it and removing it from the node, and rebalancing the tree in case of an underflow
   
 tags: [bsharp-tree-extension, dev-example]
 scenes:
@@ -14,3 +26,4 @@ scenes:
       - bsharptree-insert: [4]
       - bsharptree-insert: [60]
       - bsharptree-insert: [44]
+      - bsharptree-remove: [12]
