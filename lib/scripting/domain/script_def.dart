@@ -1,5 +1,7 @@
 
 
+import 'package:yaml/yaml.dart';
+
 class ScriptMetadata {
   String name;
   String description;
@@ -18,14 +20,15 @@ class SceneMetadata {
   String description;
   Set<String> extensionIds;
   String rawYaml;
+  int scriptLineIndex;
 
-  SceneMetadata(this.name, this.description, this.extensionIds, this.rawYaml);
+  SceneMetadata(this.name, this.description, this.extensionIds, this.rawYaml, this.scriptLineIndex);
 }
 
 class SceneDef {
   SceneMetadata metadata;
-  List<String> initialStateBuilderCommands;
-  List<String> transitionCommands;
+  YamlList initialStateBuilderCommands;
+  YamlList transitionCommands;
 
   SceneDef(this.metadata, this.initialStateBuilderCommands, this.transitionCommands);
 }
