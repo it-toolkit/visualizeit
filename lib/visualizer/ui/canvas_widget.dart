@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit/extension/action.dart';
+import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
 import '../../extension/domain/default/default_extension.dart';
@@ -37,12 +38,24 @@ class CanvasWidget extends StatelessWidget {
 
             final getExtensionById = context.read<GetExtensionById>();
 
-            List<Widget> widgets = playerState.currentSceneModels.values
-                .map((model) => getExtensionById(model.extensionId).visualizer.render(model, context)).nonNulls.toList();
+            List<Widget> widgets = getModelsOrderedByPriority(playerState)
+                .map((model) => getExtensionById(model.extensionId).visualizer.render(model, context))
+                .nonNulls.toList();
 
             return Stack(fit: StackFit.expand, children: widgets);
           },
     ),);
+  }
+
+  Iterable<Model> getModelsOrderedByPriority(PlayerState playerState) {
+    List<Model> topModels = [];
+    List<Model> bottomModels = [];
+
+    playerState.currentSceneModels.values.forEach((model) {
+        (model.extensionId == DefaultExtensionConsts.Id ? topModels : bottomModels).add(model);
+    });
+
+    return bottomModels.followedBy(topModels);
   }
 
   void _showAlertDialog(BuildContext context, PlayerBloc playerBloc, {String? title, required String message}) {
