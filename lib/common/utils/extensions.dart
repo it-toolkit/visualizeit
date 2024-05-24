@@ -26,13 +26,13 @@ extension StringExtensions on String {
 
   /// Cuts the string to a maximum [maxLength] and appends "..." if the original
   /// string was longer.
-  String cap(int maxLength) {
+  String cap(int maxLength, {bool addRealLengthSuffix = false}) {
     if (maxLength < 3) {
       throw ArgumentError('maxLength must be at least 3 to accommodate ellipsis.');
     }
 
     if (this.length > maxLength) {
-      return '${this.substring(0, maxLength - 3)}...';
+      return '${this.substring(0, maxLength - 3)}...${addRealLengthSuffix ? "{${this.length}}": ""}}';
     }
     return this;
   }

@@ -51,11 +51,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     });
 
     on<StartPlaybackEvent>((event, emit) {
-        emit(state.startPlayback());
+        emit(state.startPlayback(waitingAction: event.waitingAction));
     });
 
     on<StopPlaybackEvent>((event, emit) {
-      emit(state.stopPlayback());
+      emit(state.stopPlayback(waitingAction: event.waitingAction));
     });
 
     on<RestartPlaybackEvent>((event, emit) {

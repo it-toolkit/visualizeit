@@ -23,6 +23,7 @@ scenes:
       - bsharptree-create: [3, ["12", "15"]]
     transitions:
       - bsharptree-insert: [25]
+      #- show-banner: ["i just inserted 25", centerRight, 2]
       - bsharptree-insert: [4]
       - bsharptree-insert: [60]
       - bsharptree-insert: [44]

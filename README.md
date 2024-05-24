@@ -55,4 +55,29 @@ sh setup-git-hooks.sh
 
 This is required to enable Code Coverage on git pre-commit hook.
 
-To analyze test covera we use the tool https://pub.dev/packages/dlcov
+To analyze test coverage we use the tool https://pub.dev/packages/dlcov
+
+### Dependency management
+
+#### Override dependencies
+
+In order to override dependencies during development you can create a file called
+`pubspec_overrides.yaml` at project root. All the dependencies defined in this file will override
+the configuration available in `pubspec.yaml` file.
+The file `pubspec_overrides.yaml` won't be pushed to the git repository (it is already ignored using
+.gitignore)
+
+See `pubspec_overrides.yaml.bk` for an example.
+
+
+### Adding new extensions
+
+When a new extension package is configured in `pubspec.yaml` the ExtensionBuilders provided in it
+must be instantiated in function defined at `/extension/build/available_extensions.g.dart`.
+This can be done automatically running the following command at project root:
+
+```bash
+dart run build_runner clean && dart run build_runner build --delete-conflicting-outputs
+```
+
+

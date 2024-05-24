@@ -15,7 +15,7 @@ class ShowPopup extends GlobalCommand {
 
   @override
   String toString() {
-    return 'ShowPopup{message: ${message.cap(30)}}';
+    return 'ShowPopup{message: ${message.cap(30, addRealLengthSuffix: true)}}';
   }
 
   @override

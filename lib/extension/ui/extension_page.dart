@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:markdown_widget/markdown_widget.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
+import '../../common/markdown/markdown.dart';
 import '../../common/ui/adaptive_container_widget.dart';
 
 final _logger = Logger("extension.ui");
@@ -117,7 +117,7 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
         future: rootBundle.loadString(assetLocation),
         builder: (context, snapshot) {
           if(snapshot.hasData) {
-            return MarkdownBlock(data: snapshot.data!);
+            return ExtendedMarkdownWidget(data: snapshot.data!);
           } else if (snapshot.hasError) {
             _logger.error(() => "Error loading docs from location [${assetLocation}]: ${snapshot.error}");
             return const Text("Error loading docs");
@@ -135,7 +135,7 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
             : _filteredExtensions[_selectedIndex!]
         : null;
     final detailsWidget = selectedExtension != null
-        ? SingleChildScrollView(physics: const ClampingScrollPhysics(), child: markdownFromAsset(selectedExtension.markdownDocs["en"]!) )//TODO load bundle
+        ? markdownFromAsset(selectedExtension.markdownDocs["en"]!)
         : null;
 
     return Expanded(

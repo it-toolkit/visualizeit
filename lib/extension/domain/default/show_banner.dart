@@ -23,7 +23,7 @@ class BannerModel extends Model with CommandExecutionAware {
 
   @override
   String toString() {
-    return "BannerModel($message, $alignment, $pendingFrames)";
+    return "BannerModel(${message.cap(30, addRealLengthSuffix: true)}, $alignment, $pendingFrames)";
   }
 }
 
@@ -42,7 +42,7 @@ class ShowBanner extends GlobalCommand {
 
   @override
   String toString() {
-    return 'ShowBanner{framesDuration: $framesDuration, alignment: $alignment, message: ${message.cap(30)}}';
+    return 'ShowBanner{framesDuration: $framesDuration, alignment: $alignment, message: ${message.cap(30, addRealLengthSuffix: true)}}';
   }
 
   @override
@@ -50,7 +50,7 @@ class ShowBanner extends GlobalCommand {
     final globalModel = (model as GlobalModel).clone(); //TODO fail if cannot cast
     final bannerModel = (
         globalModel.models[bannerModelName]
-        ?? BannerModel(bannerModelName, message).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal
+        ?? BannerModel(bannerModelName, message, alignment: alignment).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal
     ) as BannerModel;
 
     Result result;

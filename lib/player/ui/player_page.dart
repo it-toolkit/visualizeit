@@ -10,6 +10,7 @@ import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 import '../../scripting/action.dart';
 import '../../scripting/domain/script.dart';
 import '../../scripting/domain/script_repository.dart';
+import '../../scripting/ui/script_editor_widget.dart';
 import '../domain/player.dart';
 import '../domain/player_timer.dart';
 
@@ -39,6 +40,12 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   final PlayerTimer _timer = PlayerTimer();
 
   @override
+  void dispose() {
+    _timer.stop();
+    super.dispose();
+  }
+
+  @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
 
     return customBarWithModeSwitch(
@@ -60,7 +67,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
     if(script == null) return Container(child: Text("Not ready"));
 
-    final scriptEditor = buildScriptWidget(context, buildButtonBar(context), script!.scenes[0].metadata.rawYaml);
+    final scriptEditor = buildScriptWidget(context, buildButtonBar(context), script!, rawScript!);//TODO script!.scenes[0].metadata.rawYaml);
 
     return graphicalMode
         ? buildPresentationModeContent(context, playerButtonBar, canvas)
@@ -171,30 +178,21 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     ]);
   }
 
-  //TODO replace with Script widget from scripting module
-  Expanded buildScriptWidget(BuildContext context, ButtonBar buttonBar, String sampleText) {
-    return Expanded(
-        flex: 58,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text("Scene 1 script"),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(15.0),
-                decoration: BoxDecoration(color: Colors.blue.shade50),
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    child: Text(sampleText),
-                  ),
-                ),
+  Widget buildScriptWidget(BuildContext context, ButtonBar buttonBar, Script script, RawScript rawScript) {
+      return Expanded(
+          flex: 58,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BlocBuilder<PlayerBloc, PlayerState>(builder: (context, playerState) {
+                return Text(script.scenes[playerState.currentSceneIndex].metadata.name);
+              }),
+              Expanded(
+                child: ScriptEditorWidget(script: rawScript.contentAsYaml, listenPlayerEvents: true),
               ),
-            ),
-            buttonBar
-          ],
-        ));
+              buttonBar
+            ],
+          ));
+    // });
   }
 }

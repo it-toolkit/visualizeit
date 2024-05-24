@@ -3,7 +3,7 @@ import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
 import 'package:visualizeit/fake_data.dart';
-import 'package:visualizeit/scripting/ui/script_view_widget.dart';
+import 'package:visualizeit/scripting/ui/script_editor_widget.dart';
 
 import '../../common/ui/base_page.dart';
 
@@ -23,7 +23,7 @@ class ScriptEditorPage extends StatefulBasePage {
 }
 
 class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
-  bool graphicalMode = true;
+  bool graphicalMode = false;
 
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
@@ -158,7 +158,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
           children: [
             const Text("Scene 1 script"),
             Expanded(
-              child: ScriptViewWidget(script: sampleText),
+              child: ScriptEditorWidget(script: sampleText),
             ),
             buttonBar
           ],

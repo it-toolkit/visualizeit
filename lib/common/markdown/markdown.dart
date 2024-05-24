@@ -14,11 +14,8 @@ class ExtendedMarkdownBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return MarkdownBlock(
       data: data,
-      generator: MarkdownGenerator(
-        generators: [latexGenerator, videoGeneratorWithTag],
-        inlineSyntaxList: [LatexSyntax()],
-        textGenerator: (node, config, visitor) => CustomTextNode(node.textContent, config, visitor),
-      ),
+      config: _buildMarkdownConfig(),
+      generator: _buildMarkdownGenerator(),
     );
   }
 }
@@ -32,11 +29,24 @@ class ExtendedMarkdownWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MarkdownWidget(
       data: data,
-      markdownGenerator: MarkdownGenerator(
-        generators: [latexGenerator, videoGeneratorWithTag],
-        inlineSyntaxList: [LatexSyntax()],
-        textGenerator: (node, config, visitor) => CustomTextNode(node.textContent, config, visitor),
-      ),
+      config: _buildMarkdownConfig(),
+      markdownGenerator: _buildMarkdownGenerator(),
     );
   }
+}
+
+MarkdownConfig _buildMarkdownConfig() {
+  return MarkdownConfig(
+    configs: [
+      TableConfig(wrapper: (child) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: child))
+    ],
+  );
+}
+
+MarkdownGenerator _buildMarkdownGenerator() {
+  return MarkdownGenerator(
+    generators: [latexGenerator, videoGeneratorWithTag],
+    inlineSyntaxList: [LatexSyntax()],
+    textGenerator: (node, config, visitor) => CustomTextNode(node.textContent, config, visitor),
+  );
 }

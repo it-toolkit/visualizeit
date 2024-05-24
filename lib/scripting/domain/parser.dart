@@ -30,10 +30,10 @@ class ScriptDefParser {
       final extensionIds = (sceneNode['extensions'] as YamlList).value.map((e) => e.toString()).toSet();
 
       final rawSceneYaml = json2yaml(json.decode(json.encode(sceneNode)));
-      final metadata = SceneMetadata(name, description, extensionIds, rawSceneYaml);
+      final metadata = SceneMetadata(name, description, extensionIds, rawSceneYaml, sceneNode.span.start.line);
 
-      final initialStateCommands = (sceneNode['initial-state'] as YamlList?)?.map((commandNode) => commandNode.toString()).toList() ?? List.empty();
-      final transitionCommands = (sceneNode['transitions'] as YamlList?)?.map((commandNode) => commandNode.toString()).toList() ?? List.empty();
+      final initialStateCommands = (sceneNode['initial-state'] as YamlList?) ?? YamlList.wrap(List.empty());
+      final transitionCommands = (sceneNode['transitions'] as YamlList?) ?? YamlList.wrap(List.empty());
 
       return SceneDef(metadata, initialStateCommands, transitionCommands);
     }).toList() ?? List.empty();
@@ -76,7 +76,7 @@ class ScriptParser {
 
 
   ///Throws error if command cannot be parsed
-  Command _parseCommand(String rawCommand, Map<String, Extension> extensions) {
+  Command _parseCommand(dynamic rawCommand, Map<String, Extension> extensions) {
     try {
       return extensions.values
           .map((extension) {
@@ -91,15 +91,16 @@ class ScriptParser {
     }
   }
 
-  List<Command> _parseRawCommands(List<String> rawCommands, Map<String, Extension> extensions) {
-    return rawCommands.map((rawCommand) => _parseCommand(rawCommand, extensions)).toList();
+  List<Command> _parseRawCommands(YamlList rawCommands, Map<String, Extension> extensions) {
+    return rawCommands.nodes.map((rawCommand) => _parseCommand(rawCommand, extensions)).toList();
   }
 
-  RawCommand _parseCommandNode(rawCommand) {
-    YamlNode commandNode = loadYamlNode(rawCommand);
+  RawCommand _parseCommandNode(YamlNode rawCommand) {
+    YamlNode commandNode = rawCommand;
+    final commandMetadata = CommandMetadata(commandNode.span.start.line);
 
-    if (commandNode is YamlScalar || commandNode is String) { //TODO improve
-      return RawCommand.literal(commandNode.toString());
+    if (commandNode is YamlScalar || commandNode is String) {
+      return RawCommand.literal(commandNode.toString(), metadata: commandMetadata);
     } else if (commandNode is YamlMap) {
       if(commandNode.length > 1) throw Exception("Single key map required");
 
@@ -107,13 +108,13 @@ class ScriptParser {
       var valueYamlNode = commandNode.values.single;
 
       if (valueYamlNode is YamlScalar) {
-        return RawCommand.withPositionalArgs(commandName, [valueYamlNode.value]);
+        return RawCommand.withPositionalArgs(commandName, [valueYamlNode.value], metadata: commandMetadata);
       } else if (valueYamlNode is YamlList) {
-        return RawCommand.withPositionalArgs(commandName, YamlUtils.unwrapScalarsInList(valueYamlNode));
+        return RawCommand.withPositionalArgs(commandName, YamlUtils.unwrapScalarsInList(valueYamlNode), metadata: commandMetadata);
       } else if (valueYamlNode is YamlMap) {
-        return RawCommand.withNamedArgs(commandName, YamlUtils.unwrapScalarsInMap(valueYamlNode));
+        return RawCommand.withNamedArgs(commandName, YamlUtils.unwrapScalarsInMap(valueYamlNode), metadata: commandMetadata);
       }else if (valueYamlNode is String || valueYamlNode is num || valueYamlNode is bool) {
-          return RawCommand.withPositionalArgs(commandName, [valueYamlNode]);
+          return RawCommand.withPositionalArgs(commandName, [valueYamlNode], metadata: commandMetadata);
       } else {
         throw Exception("Unknown command value type"); //TODO improve error handling
       }
