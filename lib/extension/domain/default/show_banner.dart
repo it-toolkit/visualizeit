@@ -50,7 +50,7 @@ class ShowBanner extends GlobalCommand {
     final globalModel = (model as GlobalModel).clone(); //TODO fail if cannot cast
     final bannerModel = (
         globalModel.models[bannerModelName]
-        ?? BannerModel(bannerModelName, message).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal
+        ?? BannerModel(bannerModelName, message, alignment: alignment).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal
     ) as BannerModel;
 
     Result result;
