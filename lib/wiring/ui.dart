@@ -18,15 +18,17 @@ extension GetItWidgets on GetIt {
     ));
 
     registerFactoryParam<ScriptEditorPage, BuildContext, GoRouterState>((context, state) {
+      final scriptId = state.pathParameters['sid']!;
       return ScriptEditorPage(
-        scriptId: state.pathParameters['sid']!,
+        get(), get(), get(),
+        scriptId: scriptId,
         onPlayPressed: (scriptId) => {context.go("/scripts/$scriptId/play")}
       );
     });
 
     registerFactoryParam<PlayerPage, BuildContext, GoRouterState>((context, state) {
       final scriptId = state.pathParameters['sid']!;
-      return PlayerPage(get(), get(), scriptId: scriptId);
+      return PlayerPage(get(), get(), get(), scriptId: scriptId);
     });
   }
 }

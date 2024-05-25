@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
+import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit/fake_data.dart';
+import 'package:visualizeit/scripting/action.dart';
+import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/scripting/ui/script_editor_widget.dart';
 
 import '../../common/ui/base_page.dart';
@@ -10,11 +13,19 @@ import '../../common/ui/base_page.dart';
 class ScriptEditorPage extends StatefulBasePage {
   static const RouteName = "script-editor";
 
-  const ScriptEditorPage(
-      {super.key, required this.scriptId, this.onPlayPressed}) : super(RouteName);
+  const ScriptEditorPage(GetRawScriptById getRawScriptById, ScriptParser scriptParser, ExtensionRepository extensionRepository,
+      {super.key, required this.scriptId, this.onPlayPressed}) :
+      this._getRawScriptById = getRawScriptById,
+      this._scriptParser = scriptParser,
+      this._extensionRepository = extensionRepository,
+      super(RouteName);
 
   final String scriptId;
   final Function(String)? onPlayPressed;
+
+  final GetRawScriptById _getRawScriptById;
+  final ScriptParser _scriptParser;
+  final ExtensionRepository _extensionRepository;
 
   @override
   State<StatefulWidget> createState() {
@@ -158,7 +169,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
           children: [
             const Text("Scene 1 script"),
             Expanded(
-              child: ScriptEditorWidget(script: sampleText),
+              child: ScriptEditorWidget(script: sampleText, availableExtensions: widget._extensionRepository.getAll()),
             ),
             buttonBar
           ],

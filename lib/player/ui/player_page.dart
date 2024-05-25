@@ -7,6 +7,7 @@ import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 
+import '../../extension/domain/extension_repository.dart';
 import '../../scripting/action.dart';
 import '../../scripting/domain/script.dart';
 import '../../scripting/domain/script_repository.dart';
@@ -21,9 +22,13 @@ class PlayerPage extends StatefulBasePage {
   final GetRawScriptById _getRawScriptById;
   final ScriptParser _scriptParser;
   final ScriptRef scriptId;
+  final ExtensionRepository _extensionRepository;
 
-  const PlayerPage(GetRawScriptById getRawScriptById, ScriptParser scriptParser, {super.key, required this.scriptId})
-      : this._getRawScriptById = getRawScriptById, this._scriptParser = scriptParser, super(RouteName);
+  const PlayerPage(GetRawScriptById getRawScriptById, ScriptParser scriptParser, ExtensionRepository extensionRepository, {super.key, required this.scriptId})
+      : this._getRawScriptById = getRawScriptById,
+        this._scriptParser = scriptParser,
+        this._extensionRepository = extensionRepository,
+        super(RouteName);
 
   @override
   State<StatefulWidget> createState() {
@@ -188,7 +193,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
                 return Text(script.scenes[playerState.currentSceneIndex].metadata.name);
               }),
               Expanded(
-                child: ScriptEditorWidget(script: rawScript.contentAsYaml, listenPlayerEvents: true),
+                child: ScriptEditorWidget(script: rawScript.contentAsYaml, availableExtensions: widget._extensionRepository.getAll(), listenPlayerEvents: true),
               ),
               buttonBar
             ],

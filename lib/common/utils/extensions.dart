@@ -1,7 +1,7 @@
 extension ObjectExtensions<T extends Object> on T {
   T? takeIf(bool condition) => condition ? this : null;
   T? takeIfDef(Object? object) => object != null ? this : null;
-  R? let<R>(R Function(T) map) => map(this);
+  R let<R>(R Function(T) map) => map(this);
 }
 
 extension StringExtensions on String {
