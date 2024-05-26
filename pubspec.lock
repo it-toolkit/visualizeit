@@ -350,6 +350,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  flutter_markdown:
+    dependency: transitive
+    description:
+      name: flutter_markdown
+      sha256: "04c4722cc36ec5af38acc38ece70d22d3c2123c61305d555750a091517bbe504"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.23"
   flutter_math_fork:
     dependency: "direct main"
     description:
@@ -480,6 +488,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  isolate_contactor:
+    dependency: transitive
+    description:
+      name: isolate_contactor
+      sha256: f1be0a90f91e4309ef37cc45280b2a84e769e848aae378318dd3dd263cfc482a
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.0"
+  isolate_manager:
+    dependency: transitive
+    description:
+      name: isolate_manager
+      sha256: "8fb916c4444fd408f089448f904f083ac3e169ea1789fd4d987b25809af92188"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.3.1"
   js:
     dependency: transitive
     description:
@@ -744,6 +768,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
+  re_editor:
+    dependency: "direct main"
+    description:
+      name: re_editor
+      sha256: db7a82e95f0f74301e85d4d5c805a8b8a5ba43d6c0d26673b7e35dc011f06635
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
+  re_highlight:
+    dependency: transitive
+    description:
+      name: re_highlight
+      sha256: "6c4ac3f76f939fb7ca9df013df98526634e17d8f7460e028bd23a035870024f2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   riverpod:
     dependency: transitive
     description:
@@ -1053,12 +1093,21 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.0+2"
+  visualizeit_bsharptree_extension:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "77efd471707193ee590fdc1276467d598cc630b6"
+      url: "https://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@github.com/it-toolkit/visualizeit_bsharptree_extension.git"
+    source: git
+    version: "1.0.0+1"
   visualizeit_extension_template:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: ae37d81fdcfe8d946582f7b011c68b8b74ba583d
+      resolved-ref: bcade7f25cdf5403b7bc3638a758a32e54963325
       url: "https://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@github.com/it-toolkit/visualizeit_extension_template.git"
     source: git
     version: "0.0.1"
@@ -1067,7 +1116,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: df56d2c4587b829ef7533535148be19cb57aab20
+      resolved-ref: "3c18e23725564154945abf1f88c1d5f27b36f3f0"
       url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
     source: git
     version: "0.0.1"
@@ -1112,6 +1161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.5"
+  widget_arrows:
+    dependency: transitive
+    description:
+      name: widget_arrows
+      sha256: bbac0e0a309ed75d195747e7f932c43bce55f645f6a657a9e70b2fe8f9f80926
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   win32:
     dependency: transitive
     description:

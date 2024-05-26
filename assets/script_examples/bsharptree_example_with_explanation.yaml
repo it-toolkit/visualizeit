@@ -1,0 +1,25 @@
+name: "B# Tree example with explanations"
+description: |-
+  ## B\# Tree example
+
+  An example, showing how can you use VisualizeIt to explain complex subjects like underflows in B\# trees
+  
+tags: [bsharp-tree-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: ['bsharp-tree-extension']
+    description: Tree creation
+    initial-state:
+      - bsharptree-create: [3, [22, 36, 150, 166, 210, 121, 75, 17, 45, 99, 122]]
+    transitions:
+      - show-banner: ["While inserting the value 365, there's an ****overflow**** on node **3** that can't be balanced, so the node 6 is created.", bottomCenter, 5]
+      - bsharptree-insert: [365]
+      - show-banner: ["When the value 588 is inserted there's another ***overflow*** on node **3** but now the values can be balanced with node **6**.", bottomCenter, 5]
+      - bsharptree-insert: [588]
+      - show-banner: ["Once again there's an ***overflow*** on node **3** with the insertion of value 777. This time it causes an ***overflow*** on the root node, causing it to split in two new nodes **8** and **9**.", bottomCenter, 6]
+      - bsharptree-insert: [777]
+      - nop
+      - show-banner: ["With the removal of the value 166 there's an ***underflow*** on node **7** that causes a balancing between node **3** and **7**.", bottomRight, 5]
+      - bsharptree-remove: [166]
+      - show-banner: ["Finally when value 210 is removed there's a new ***underflow*** that causes a fusion between nodes **6, 3** and **7**, releasing node **7**. <br>This causes an ***underflow*** on node **9** that ends up requiring a fusion with node **8** decreasing the height of the tree.", centerRight, 7]
+      - bsharptree-remove: [210]
