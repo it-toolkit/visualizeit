@@ -1,0 +1,15 @@
+dependency_overrides:
+#  visualizeit_extensions:
+#    path: ../visualizeit_extensions
+#    git:
+#      url: git@github.com:it-toolkit/visualizeit_extensions.git
+
+#  visualizeit_bsharptree_extension:
+#    path: ../visualizeit_bsharptree_extension
+#    git:
+#      url: git@github.com:it-toolkit/visualizeit_extensions.git
+
+#  visualizeit_extension_template:
+#    path: ../visualizeit_extension_template
+#    git:
+#      url: git@github.com:it-toolkit/visualizeit_extension_template.git

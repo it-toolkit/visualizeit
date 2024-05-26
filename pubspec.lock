@@ -1096,23 +1096,29 @@ packages:
   visualizeit_bsharptree_extension:
     dependency: "direct main"
     description:
-      path: "../visualizeit_bsharptree_extension"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "77efd471707193ee590fdc1276467d598cc630b6"
+      url: "https://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@github.com/it-toolkit/visualizeit_bsharptree_extension.git"
+    source: git
     version: "1.0.0+1"
   visualizeit_extension_template:
     dependency: "direct main"
     description:
-      path: "../visualizeit_extension_template"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: bcade7f25cdf5403b7bc3638a758a32e54963325
+      url: "https://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@github.com/it-toolkit/visualizeit_extension_template.git"
+    source: git
     version: "0.0.1"
   visualizeit_extensions:
     dependency: "direct main"
     description:
-      path: "../visualizeit_extensions"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "3c18e23725564154945abf1f88c1d5f27b36f3f0"
+      url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
+    source: git
     version: "0.0.1"
   visualizeit_slides_extension:
     dependency: "direct main"
