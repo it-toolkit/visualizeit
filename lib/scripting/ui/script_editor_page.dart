@@ -169,7 +169,14 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
           children: [
             const Text("Scene 1 script"),
             Expanded(
-              child: ScriptEditorWidget(script: sampleText, availableExtensions: widget._extensionRepository.getAll()),
+              child: ScriptEditorWidget(
+                script: sampleText,
+                availableExtensions: widget._extensionRepository.getAll(),
+                onCodeChange: (String ) {
+                  //TODO
+                  print("editing text");
+                },
+              ),
             ),
             buttonBar
           ],

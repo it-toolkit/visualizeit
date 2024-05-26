@@ -40,6 +40,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   RawScript? rawScript = null;
   Script? script = null;
+  String? currentEditorText = null;
 
   bool graphicalMode = true;
   final PlayerTimer _timer = PlayerTimer();
@@ -79,16 +80,27 @@ class PlayerPageState extends BasePageState<PlayerPage> {
         : buildExplorationModeContent(context, playerButtonBar, canvas, scriptEditor);
   }
 
+  Future<RawScript> resolveRawScript() async {
+    if(rawScript == null){
+      rawScript = await widget._getRawScriptById(widget.scriptId);
+    }
+
+    if (currentEditorText == null) {
+      currentEditorText = rawScript!.contentAsYaml;
+    }
+    script = widget._scriptParser.parse(rawScript!.contentAsYaml);
+
+    return Future.value(rawScript);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: widget._getRawScriptById(widget.scriptId),
+        future: resolveRawScript(),
         builder: (context, snapshot) {
           if(snapshot.hasError) { //TODO
             return Text("Error loading script: ${snapshot.error}");
           }else if (snapshot.hasData) {
-            rawScript = snapshot.data!;
-            script = widget._scriptParser.parse(rawScript!.contentAsYaml);
             var initialPlayerState = PlayerState(script!);
             return MultiBlocProvider(providers: [
               BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState)),
@@ -101,8 +113,21 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   ButtonBar buildButtonBar(BuildContext context) {
     return ButtonBar(
       children: [
-        TextButton(onPressed: () => {}, child: const Text("Discard")),
-        ElevatedButton(onPressed: () => {}, child: const Text("Apply")),
+        TextButton(
+          onPressed: () {
+            setState(() { currentEditorText = rawScript!.contentAsYaml; });
+          },
+          child: const Text("Discard")),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              rawScript!.contentAsYaml = currentEditorText!;
+              script = widget._scriptParser.parse(currentEditorText!);
+              BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(script!)));
+            });
+          },
+          child: const Text("Apply"),
+        ),
       ],
     );
   }
@@ -193,7 +218,14 @@ class PlayerPageState extends BasePageState<PlayerPage> {
                 return Text(script.scenes[playerState.currentSceneIndex].metadata.name);
               }),
               Expanded(
-                child: ScriptEditorWidget(script: rawScript.contentAsYaml, availableExtensions: widget._extensionRepository.getAll(), listenPlayerEvents: true),
+                child: ScriptEditorWidget(
+                  script: rawScript.contentAsYaml,
+                  availableExtensions: widget._extensionRepository.getAll(),
+                  listenPlayerEvents: true,
+                  onCodeChange: (String text ) {
+                    currentEditorText = text;
+                  },
+                ),
               ),
               buttonBar
             ],

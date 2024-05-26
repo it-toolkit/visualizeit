@@ -27,10 +27,19 @@ class StopPlaybackEvent extends PlayerEvent {
 }
 class RestartPlaybackEvent extends PlayerEvent {}
 
+class OverrideEvent extends PlayerEvent {
+  PlayerState state;
+  OverrideEvent(this.state);
+}
+
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   Queue<PlayerState> history = Queue();
 
   PlayerBloc(super.playerState) {
+    on<OverrideEvent>((event, emit) {
+      emit(event.state);
+    });
+
     on<NextTransitionEvent>((event, emit) {
       history.add(state.isPlaying ? state.stopPlayback() : state);
       try {
@@ -42,6 +51,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         emit(state.restartPlayback());
       }
     });
+
     on<PreviousTransitionEvent>((event, emit) {
       if(history.isNotEmpty) {
         var previousState = history.removeLast();
@@ -87,6 +97,7 @@ class PlayerState {
   late final bool waitingAction;
   late final copyCounter = 0;
 
+  Scene get currentScene => script.scenes[currentSceneIndex];
 
   @override
   String toString() {

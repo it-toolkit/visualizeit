@@ -14,11 +14,17 @@ import 'package:visualizeit/player/domain/player.dart';
 final _logger = Logger("scripting.ui.script_editor_widget");
 
 class ScriptEditorWidget extends StatelessWidget {
-  const ScriptEditorWidget({super.key, required this.script, this.availableExtensions = const [], this.listenPlayerEvents = false});
+  const ScriptEditorWidget({
+    super.key, required this.script,
+    required this.onCodeChange,
+    this.availableExtensions = const [],
+    this.listenPlayerEvents = false
+  });
 
   final List<Extension> availableExtensions;
   final String script;
   final bool listenPlayerEvents;
+  final Function(String) onCodeChange;
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +56,7 @@ class ScriptEditorWidget extends StatelessWidget {
         scrollController: scrollController,
         padding: EdgeInsets.all(15),
         readOnly: false,
-        onChanged: (CodeLineEditingValue value) {
-          //TODO print("Updated: \n${controller.selectedText}");
-        },
+        onChanged: (CodeLineEditingValue value) => onCodeChange(controller.text),
         controller: controller,
         wordWrap: false,
         chunkAnalyzer: NonCodeChunkAnalyzer(),
