@@ -6,6 +6,8 @@ import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit/fake_data.dart';
 import 'package:visualizeit/scripting/action.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
+import 'package:visualizeit/scripting/domain/script.dart';
+import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/scripting/ui/script_editor_widget.dart';
 
 import '../../common/ui/base_page.dart';
@@ -34,36 +36,61 @@ class ScriptEditorPage extends StatefulBasePage {
 }
 
 class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
+
+  RawScript? rawScript = null;
+  Script? script = null;
+  String? currentEditorText = null;
+
   bool graphicalMode = false;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: resolveRawScript(),
+        builder: (context, snapshot) {
+          if(snapshot.hasError) { //TODO
+            return Text("Error loading script: ${snapshot.error}");
+          }else if (snapshot.hasData) {
+            return Builder(builder: (context) => super.build(context));
+          } else
+            return CircularProgressIndicator();
+        });
+  }
 
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
-    //TODO use script repository
     return customBarWithModeSwitch(
-        // "> ${fakeScriptNames[int.tryParse(widget.scriptId) ?? 0]}",
-        "> ${fakeScriptNames[0]}",
-        (bool it) => {
-              debugPrint("Mode updated: $it"),
-              setState(() {
-                graphicalMode = it;
-              })
-            },
-        (bool it) => it ? "GUI" : "Text",
-        titleActionIcon: Icons.edit, onTitleActionIconPressed: () {
-      debugPrint("perform title edit");
-    });
+      "> ${script?.metadata.name ?? "unknown"}",
+      // modeSwitch: ModeSwitch(
+      //   initialState: false,
+      //   enabledModeName: "GUI",
+      //   disabledModeName: "Text",
+      //   onModeChanged: (bool it) => setState(() => graphicalMode = it),
+      // ),
+      // titleAction: TitleAction(Icons.edit, () { debugPrint("perform title edit"); })
+    );
   }
 
   @override
   Widget buildBody(BuildContext context) {
-    return graphicalMode ? buildGraphicalScriptEditorContent(context) : buildTextScriptEditorContent(context);
+    return graphicalMode
+        ? buildGraphicalScriptEditorContent(context)
+        : buildTextScriptEditorContent(context, rawScript!);
   }
 
   ButtonBar buildButtonBar(BuildContext context) {
     return ButtonBar(
       children: [
-        TextButton(onPressed: () => {}, child: const Text("Delete")),
-        TextButton(onPressed: () => {}, child: const Text("Edit")),
+        TextButton(onPressed: () {
+        setState(() { currentEditorText = rawScript!.contentAsYaml; });
+        }, child: const Text("Discard")),
+        TextButton(onPressed: () {
+          setState(() {
+            rawScript!.contentAsYaml = currentEditorText!;
+            script = widget._scriptParser.parse(currentEditorText!);
+          });
+        }, child: const Text("Save")),
         ElevatedButton(
             onPressed: () {
               widget.onPlayPressed?.call(widget.scriptId);
@@ -71,6 +98,19 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
             child: const Text("Play")),
       ],
     );
+  }
+
+  Future<RawScript> resolveRawScript() async {
+    if(rawScript == null){
+      rawScript = await widget._getRawScriptById(widget.scriptId);
+    }
+
+    if (currentEditorText == null) {
+      currentEditorText = rawScript!.contentAsYaml;
+    }
+    script = widget._scriptParser.parse(rawScript!.contentAsYaml);
+
+    return Future.value(rawScript);
   }
 
   Widget buildGraphicalScriptEditorContent(BuildContext context) {
@@ -85,11 +125,11 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
     );
   }
 
-  Widget buildTextScriptEditorContent(BuildContext context) {
+  Widget buildTextScriptEditorContent(BuildContext context, RawScript rawScript) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        buildScriptWidget(context, buildButtonBar(context), fakeFullScriptExample),
+        buildScriptWidget(context, buildButtonBar(context), rawScript.contentAsYaml),
       ],
     );
   }
@@ -172,9 +212,8 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
               child: ScriptEditorWidget(
                 script: sampleText,
                 availableExtensions: widget._extensionRepository.getAll(),
-                onCodeChange: (String ) {
-                  //TODO
-                  print("editing text");
+                onCodeChange: (String text ) {
+                  currentEditorText = text;
                 },
               ),
             ),

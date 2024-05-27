@@ -53,16 +53,14 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
-
     return customBarWithModeSwitch(
       "> ${script?.metadata.name ?? "unknown"}",
-      (bool it) {
-        debugPrint("Mode updated: $it");
-        setState(() {
-          graphicalMode = it;
-        });
-      },
-      (bool it) => it ? "View" : "Exploration",
+      modeSwitch: ModeSwitch(
+        initialState: graphicalMode,
+        enabledModeName: "View",
+        disabledModeName: "Exploration",
+        onModeChanged: (bool enabled) => setState(() => graphicalMode = enabled),
+      ),
     );
   }
 
