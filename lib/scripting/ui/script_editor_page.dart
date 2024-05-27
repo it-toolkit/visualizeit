@@ -61,7 +61,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "> ${script?.metadata.name ?? "unknown"}",
+      "${script?.metadata.name ?? "Unknown script name"}",
       // modeSwitch: ModeSwitch(
       //   initialState: false,
       //   enabledModeName: "GUI",
@@ -207,7 +207,6 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text("Scene 1 script"),
             Expanded(
               child: ScriptEditorWidget(
                 script: sampleText,

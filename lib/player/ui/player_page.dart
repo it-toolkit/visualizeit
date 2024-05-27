@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
+import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
@@ -54,7 +55,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "> ${script?.metadata.name ?? "unknown"}",
+      "${script?.metadata.name ?? "Unknown script name"}",
       modeSwitch: ModeSwitch(
         initialState: graphicalMode,
         enabledModeName: "View",
@@ -213,7 +214,13 @@ class PlayerPageState extends BasePageState<PlayerPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BlocBuilder<PlayerBloc, PlayerState>(builder: (context, playerState) {
-                return Text(script.scenes[playerState.currentSceneIndex].metadata.name);
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Scene #${playerState.currentSceneIndex + 1}"),
+                    Text("Playing line: ${playerState.currentCommand?.metadata?.scriptLineIndex.let((it) => it+1) ?? "?"}")
+                  ],
+                );
               }),
               Expanded(
                 child: ScriptEditorWidget(

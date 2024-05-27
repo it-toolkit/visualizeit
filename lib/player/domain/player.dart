@@ -1,5 +1,6 @@
 
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit_extensions/common.dart';
@@ -98,6 +99,10 @@ class PlayerState {
   late final copyCounter = 0;
 
   Scene get currentScene => script.scenes[currentSceneIndex];
+
+  Command? get currentCommand => currentCommandIndex >= -1
+      ? currentScene.transitionCommands[min(currentCommandIndex + 1, currentScene.transitionCommands.length - 1)]
+      : null;
 
   @override
   String toString() {
