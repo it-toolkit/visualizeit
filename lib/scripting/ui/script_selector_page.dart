@@ -114,14 +114,15 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
               ]),
               Expanded(
                   child: Container(
-                    decoration:
-                    const BoxDecoration(color: Color.fromRGBO(171, 197, 212, 0.3), borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: _filteredScripts.isNotEmpty || _query.isNotEmpty
+                    decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child:_filteredScripts.isNotEmpty || _query.isNotEmpty
                         ? (_filteredScripts.isEmpty
                           ? const Center(child: Text('No Results Found', style: TextStyle(fontSize: 18)))
                           : _buildListView(_filteredScripts.map((e) => e.value).toList()))
                         : _buildListView(_availableScripts.map((e) => e.value).toList()),
-                  )),
+                  ))),
             ],
           ));
   }
@@ -182,8 +183,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(15.0),
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(171, 197, 212, 0.3),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
                 child: ExtendedMarkdownWidget(
