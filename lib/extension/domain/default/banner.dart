@@ -56,7 +56,7 @@ class _BannerState extends State<BannerWidget> {
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5), boxShadow: [
         BoxShadow(color: Colors.grey.withOpacity(0.5), spreadRadius: 5, blurRadius: 7, offset: const Offset(0, 3)),
       ]),
-      child: innerModel.freeSize
+      child: innerModel.adjustSize
           ? ExtendedMarkdownBlock(data: innerModel.message)
           : FractionallySizedBox(
               widthFactor: alignment == Alignment.center ? 0.75 : 1 - alignment.x.abs() * 0.75,

@@ -11,38 +11,47 @@ final _logger = Logger("extension.default.banner");
 class BannerModel extends Model with CommandExecutionAware {
   final String message;
   final String alignment;
-  final bool freeSize = false;
+  final bool adjustSize;
 
-  BannerModel(name, this.message, {this.alignment = "center"}): super(DefaultExtensionConsts.Id, name);
+  BannerModel(name, this.message, {this.alignment = "center", this.adjustSize = false}): super(DefaultExtensionConsts.Id, name);
 
   @override
   BannerModel clone() {
-    return BannerModel(name, message, alignment: alignment)
+    return BannerModel(name, message, alignment: alignment, adjustSize: adjustSize)
       ..withCommandExecutionStateFrom(this);
   }
 
   @override
   String toString() {
-    return "BannerModel(${message.cap(30, addRealLengthSuffix: true)}, $alignment, $pendingFrames)";
+    return "BannerModel(${message.cap(30, addRealLengthSuffix: true)}, $alignment, $pendingFrames, $adjustSize)";
   }
 }
 
 class ShowBanner extends GlobalCommand {
-  static final commandDefinition = CommandDefinition(DefaultExtensionConsts.Id, "show-banner", [CommandArgDef("message", ArgType.string), CommandArgDef("position", ArgType.string), CommandArgDef("duration", ArgType.int)]);
+  static final commandDefinition = CommandDefinition(DefaultExtensionConsts.Id, "show-banner",
+      [
+        CommandArgDef("message", ArgType.string),
+        CommandArgDef("position", ArgType.string, required: false, defaultValue: "center"),
+        CommandArgDef("duration", ArgType.int, required: false, defaultValue: "1"),
+        CommandArgDef("adjustSize", ArgType.boolean, required: false, defaultValue: "false"),
+      ]
+  );
 
   final String alignment;
   final int framesDuration;
   final String message;
+  final bool adjustSize;
   final String bannerModelName = "${new DateTime.now().millisecondsSinceEpoch}"; //TODO usar uuid
 
   ShowBanner.build(RawCommand rawCommand) :
     message = commandDefinition.getArg(name: "message", from: rawCommand),
     alignment = commandDefinition.getArg(name: "position", from: rawCommand),
-    framesDuration = commandDefinition.getArg(name: "duration", from: rawCommand);
+    framesDuration = commandDefinition.getArg(name: "duration", from: rawCommand),
+    adjustSize = commandDefinition.getArg(name: "adjustSize", from: rawCommand);
 
   @override
   String toString() {
-    return 'ShowBanner{framesDuration: $framesDuration, alignment: $alignment, message: ${message.cap(30, addRealLengthSuffix: true)}}';
+    return 'ShowBanner{framesDuration: $framesDuration, alignment: $alignment, adjustSize: $adjustSize, message: ${message.cap(30, addRealLengthSuffix: true)}}';
   }
 
   @override
@@ -50,7 +59,7 @@ class ShowBanner extends GlobalCommand {
     final globalModel = (model as GlobalModel).clone(); //TODO fail if cannot cast
     final bannerModel = (
         globalModel.models[bannerModelName]
-        ?? BannerModel(bannerModelName, message, alignment: alignment).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal
+        ?? BannerModel(bannerModelName, message, alignment: alignment, adjustSize: adjustSize).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal
     ) as BannerModel;
 
     Result result;
