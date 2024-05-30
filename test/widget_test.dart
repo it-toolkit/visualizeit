@@ -11,16 +11,17 @@ import 'package:get_it/get_it.dart';
 import 'package:visualizeit/main.dart';
 
 void main() {
-  setUp(() {
+  setUp(() async {
     try {
       TestWidgetsFlutterBinding.ensureInitialized();
       setupGetIt();
+      await GetIt.I.allReady();
     } catch (e) {
       print('Failed to initialize dependencies: $e');
     }
   });
 
-  tearDown(() => GetIt.I.reset());
+  tearDown(() async => await GetIt.I.reset());
 
   testWidgets('App title is shown', (WidgetTester tester) async {
     // Build our app and trigger a frame.
