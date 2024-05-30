@@ -100,7 +100,7 @@ class PlayerState {
 
   Scene get currentScene => script.scenes[currentSceneIndex];
 
-  Command? get currentCommand => currentCommandIndex >= -1
+  Command? get currentCommand => currentScene.transitionCommands.isNotEmpty && currentCommandIndex >= -1
       ? currentScene.transitionCommands[min(currentCommandIndex + 1, currentScene.transitionCommands.length - 1)]
       : null;
 
@@ -175,10 +175,10 @@ class PlayerState {
   Map<String, Model> _buildInitialState(List<Command> commands) {
     var commandContext = CommandContext();
     var sceneModels = commands.fold(<String, Model>{globalModelName: GlobalModel()}, (models, command) {
-      _RunCommandResult result;
+      _RunCommandResult result = _RunCommandResult(models, false);
       do {
         _logger.debug(() => "Running command: $command");
-        result = _runCommand(command, models, commandContext);
+        result = _runCommand(command, result.models, commandContext);
       } while (!result.finished);
       return result.models;
     });
