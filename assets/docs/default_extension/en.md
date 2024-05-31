@@ -35,11 +35,13 @@ This command shows a banner in top of current visualization state.
 
 #### Arguments
 
-| Name     | Type   | Position | Required | Default value | Description                                            |
-|----------|--------|----------|----------|---------------|--------------------------------------------------------|
-| message  | string | 0        | true     | -             | -                                                      |
-| position | string | 1        | true     | -             | -                                                      |
-| duration | int    | 2        | true     | -             | Amount of frames to show the banner before removing it |
+| Name       | Type    | Position | Required | Default value | Description                                               |
+|------------|---------|----------|----------|---------------|-----------------------------------------------------------|
+| message    | string  | 0        | true     | -             | -                                                         |
+| position   | string  | 1        | false    | center        | -                                                         |
+| duration   | int     | 2        | false    | 1             | Amount of frames to show the banner before removing it    |
+| adjustSize | boolean | 3        | false    | false         | If 'true' the banner size will be adjusted to its content |
+
 
 ### nop
 
