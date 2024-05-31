@@ -20,7 +20,7 @@ description: |-
 tags: [fake-extension, dev-example]
 scenes:
   - name: First scene
-    extensions: ['fake-extension']
+    extensions: ['fake_extension']
     description: Scene showing some fake commands usage
     initial-state:
       # Dietmar Rabich (https://commons.wikimedia.org/wiki/File:Papierkanten_--_2020_--_9535.jpg), https://creativecommons.org/licenses/by-sa/4.0/legalcode
