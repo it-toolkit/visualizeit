@@ -134,9 +134,14 @@ class ScriptEditorWidget extends StatelessWidget {
                   - nop
             """.trimIndent())
     ];
-    List<CodePrompt> commandPrompts = availableExtensions.expand(
-      (e) => e.scripting.getAllCommandDefinitions().map((def) => CodeExtensionCommandPrompt(def)),
-    ).toList();
+
+    Map<String, List<CodePrompt>> relatedCommandPrompts = {
+      for (var e in availableExtensions)
+        e.extensionId : e.scripting.getAllCommandDefinitions().map((def) => CodeExtensionCommandPrompt(def)).toList()
+          ..sort((a,b) => a.commandDefinition.name.compareTo(b.commandDefinition.name))
+    };
+
+    List<CodePrompt> commandPrompts = relatedCommandPrompts.values.expand((e) => e).toList();
 
     return CodeAutocomplete(
         viewBuilder: (context, notifier, onSelected) {
@@ -149,6 +154,7 @@ class ScriptEditorWidget extends StatelessWidget {
           language: langYaml,
           directPrompts: templatePrompts + commandPrompts,
           keywordPrompts: keywordPrompts,
+          relatedPrompts: relatedCommandPrompts
         ),
         child: child);
   }
