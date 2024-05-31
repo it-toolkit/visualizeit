@@ -5,8 +5,8 @@ description: |-
 tags: [slides-extension, dev-example]
 scenes:
   - name: First scene
-    extensions: ['slides-extension']
-    description: Scene showing some fake commands usage
+    extensions: ['slides']
+    description: Scene showing how to use some slide types
     initial-state:
       - create-slideshow
       - add-title-slide: { title: "Title slide", subtitle: "With subtitle..." }
@@ -22,9 +22,9 @@ scenes:
             - "‣ Bullet 2"
             - "\u00A0\t\t• with sub line"
             - |+
-              "‣ Bullet 3
-              \n\t\t\t• with two
-              \n\t\t\t• sub lines"
+              ‣ Bullet 3
+                • with two
+                • sub lines
           imageUrl: 'gdrive:1uizdXqCdZBQ4cM_ha8Wsw3PNrDt0arqf'
       - add-code-slide:
           title: "Code slide"
@@ -32,22 +32,22 @@ scenes:
           language: "yaml"
           formatted-code:
             - |
-              "
-              attribute_1: value_1\n
-              attribute_2: value_2"
+              
+              attribute_1: value_1
+              attribute_2: value_2
             - |
-              "###2###
-              attribute_1: value_1\n
-              attribute_2: value_2\n
-              attribute_3: value_3"
+              ###2###
+              attribute_1: value_1
+              attribute_2: value_2
+              attribute_3: value_3
             - |
-              "###1###
-              attribute_1: value_1\n
-              \n
-              attribute_3: value_3"
+              ###1###
+              attribute_1: value_1
+              
+              attribute_3: value_3
             - |
-              "
-              attribute_1: value_1\n
-              attribute_3: value_3"
+              
+              attribute_1: value_1
+              attribute_3: value_3
     transitions:
       - show-slides

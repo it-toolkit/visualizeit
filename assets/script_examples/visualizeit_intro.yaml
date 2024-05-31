@@ -10,7 +10,7 @@ description: >
 tags: [slides-extension]
 scenes:
   - name: General introduction
-    extensions: ['slides-extension']
+    extensions: ['slides']
     description: "-"
     initial-state:
       - create-slideshow
@@ -31,34 +31,34 @@ scenes:
           title: "Key Features and Benefits"
           bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
             - |
-              "‣ Customizable Scripting Language
-              \n   • Define and customize algorithm visualizations.
-              \n   • Simple syntax for easy learning and implementation."
+              ‣ Customizable Scripting Language
+                 • Define and customize algorithm visualizations.
+                 • Simple syntax for easy learning and implementation.
             - |
-              "‣ Extension Support
-              \n   • Develop and integrate new features.
-              \n   • Follow clear development guidelines."
+              ‣ Extension Support
+                 • Develop and integrate new features.
+                 • Follow clear development guidelines.
             - |
-              "‣ Multi-platform Support
-              \n   • Built with Flutter for compatibility across iOS, Android, and web platforms."
+              ‣ Multi-platform Support
+                 • Built with Flutter for compatibility across iOS, Android, and web platforms.
             - |
-              "‣ Educational Value
-              \n   • Ideal for students and educators.
-              \n   •  Enhances understanding of complex concepts through interactive learning."
+              ‣ Educational Value
+                 • Ideal for students and educators.
+                 •  Enhances understanding of complex concepts through interactive learning.
       - add-bullets-slide:
           title: "Technical Details"
           bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
             - |
-              "‣ Technology Stack
-              \n   • Developed using Flutter, ensuring a consistent experience across all platforms."
+              ‣ Technology Stack
+                 • Developed using Flutter, ensuring a consistent experience across all platforms.
             - |
-              "‣ Customization and Extensibility
-              \n   • Easily extend the app with new functionalities.
-              \n   • Comprehensive development guidelines available."
+              ‣ Customization and Extensibility
+                 • Easily extend the app with new functionalities.
+                 • Comprehensive development guidelines available.
             - |
-              "‣ User Interface
-              \n   • Intuitive and user-friendly design.
-              \n   • Smooth animations for better visual understanding."
+              ‣ User Interface
+                 • Intuitive and user-friendly design.
+                 • Smooth animations for better visual understanding.
       - add-bullets-slide:
           title: "Meet the team"
           imageUrl: "https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg"
@@ -74,57 +74,53 @@ scenes:
           language: "yaml"
           formatted-code:
             - |
-              "
-              \nname: Global commands example
-              \ndescription: |-
-              \n  ## Global commands example
-              \n
-              \n  This simple script uses some global commands like show-banner, show-popup and background
-              \ntags: [global-extension, dev-example]
-              "
+              
+              name: Global commands example
+              description: |-
+                ## Global commands example
+              
+                This simple script uses some global commands like show-banner, show-popup and background
+              tags: [global-extension, dev-example]
             - |
-              "###7###
-              \nname: Global commands example
-              \ndescription: |-
-              \n  ## Global commands example
-              \n
-              \n  This simple script uses some global commands like show-banner, show-popup and background
-              \ntags: [global-extension, dev-example]
-              \nscenes:
-              "
+              ###7###
+              name: Global commands example
+              description: |-
+                ## Global commands example
+              
+                This simple script uses some global commands like show-banner, show-popup and background
+              tags: [global-extension, dev-example]
+              scenes:
             - |
-              "###8,9,10###
-              \nname: Global commands example
-              \ndescription: |-
-              \n  ## Global commands example
-              \n
-              \n  This simple script uses some global commands like show-banner, show-popup and background
-              \ntags: [global-extension, dev-example]
-              \nscenes:
-              \n  - name: First scene
-              \n    extensions: []
-              \n    description: Scene showing some global commands usage
-              "
+              ###8,9,10###
+              name: Global commands example
+              description: |-
+                ## Global commands example
+              
+                This simple script uses some global commands like show-banner, show-popup and background
+              tags: [global-extension, dev-example]
+              scenes:
+                - name: First scene
+                  extensions: []
+                  description: Scene showing some global commands usage
             - |
-              "###11,12,13,14,15,16,17###
-              \nname: Global commands example
-              \ndescription: |-
-              \n  ## Global commands example
-              \n
-              \n  This simple script uses some global commands like show-banner, show-popup and background
-              \ntags: [global-extension, dev-example]
-              \nscenes:
-              \n  - name: First scene
-              \n    extensions: []
-              \n    description: Scene showing some global commands usage
-              \n    initial-state:
-              \n      - background: ['https://a-background-image-location', cover]
-              \n    transitions:
-              \n      - show-banner:
-              \n          message: 'Banner example'
-              \n          position: center
-              \n          duration: 2
-              "
+              ###11,12,13,14,15,16,17###
+              name: Global commands example
+              description: |-
+                ## Global commands example
+              
+                This simple script uses some global commands like show-banner, show-popup and background
+              tags: [global-extension, dev-example]
+              scenes:
+                - name: First scene
+                  extensions: []
+                  description: Scene showing some global commands usage
+                  initial-state:
+                    - background: ['https://a-background-image-location', cover]
+                  transitions:
+                    - show-banner:
+                        message: 'Banner example'
+                        position: center
+                        duration: 2
       - add-title-slide: { title: "Enjoy Visualize IT!" }
     transitions:
       - show-slides
