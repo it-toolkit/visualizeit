@@ -1,0 +1,28 @@
+name: "External Sort example"
+description: |-
+  ## External Sort example
+
+  In this example an unsorted file (represented by the keys of its registers) that can't be loaded entirely in memory 
+  needs to be sorted. In order to do this an External Merge Sort Algorithm is applied, loading pieces of the file into a buffer
+  and ordering it in an index array. At the moment of replacing a key in the index array a *replacement selection* policy is applied.
+  Finally, after obtaining several fragments from the sort algorithm, the file needs to be merged. It may
+  happen in several runs, as the number of fragments may be larger than the limit available to load in memory.
+
+  ### externalsort-create
+  It's used to create the external sort, indicating the size of the buffer, the fragments limit and the file to sort
+
+  ### externalsort-sort
+  This command applies the sort algorithm to the unsorted file
+
+  ### externalsort-merge
+  This command applies the merge algorithm to the fragments obtained from the sort algorithm
+ 
+tags: [externalsort-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: ['externalsort-extension']
+    description: Tree creation
+    initial-state:
+      - externalsort-create: [5, 3, ["410","425","656","427","434","446","973","264","453","466","717","738","477","221","486","497","503","62","985","220","508","481","514","515","529","538","552","144","414","202"]]
+    transitions:
+      - externalsort-sort

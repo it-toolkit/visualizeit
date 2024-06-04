@@ -9,6 +9,11 @@ dependency_overrides:
 #    git:
 #      url: git@github.com:it-toolkit/visualizeit_extensions.git
 
+#  visualizeit_external_sort_extension:
+#    path: ../visualizeit_external_sort_extension
+#    git:
+#      url: git@github.com:it-toolkit/visualizeit_extensions.git
+
 #  visualizeit_extension_template:
 #    path: ../visualizeit_extension_template
 #    git:
