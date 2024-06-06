@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.4.1"
+  animated_tree_view:
+    dependency: "direct main"
+    description:
+      name: animated_tree_view
+      sha256: "577a59e2c9dfca433b7c3bb4e516a3834ea11edb49827f7cfb19ec72dcccf991"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   args:
     dependency: transitive
     description:
@@ -281,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.1"
+  diffutil_dart:
+    dependency: transitive
+    description:
+      name: diffutil_dart
+      sha256: "5e74883aedf87f3b703cb85e815bdc1ed9208b33501556e4a8a5572af9845c81"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
   dlcov:
     dependency: "direct dev"
     description:
@@ -1105,20 +1121,16 @@ packages:
   visualizeit_extension_template:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: d23fdd136568602020f736568709547598f3e13a
-      url: "https://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@github.com/it-toolkit/visualizeit_extension_template.git"
-    source: git
+      path: "../visualizeit_extension_template"
+      relative: true
+    source: path
     version: "0.0.1"
   visualizeit_extensions:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "361301fcda5c58b65263abfc56eca0e9620a015d"
-      url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
-    source: git
+      path: "../visualizeit_extensions"
+      relative: true
+    source: path
     version: "0.0.1"
   visualizeit_external_sort_extension:
     dependency: "direct main"
@@ -1132,11 +1144,9 @@ packages:
   visualizeit_slides_extension:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "5f9b78c6a0a85aad3e83bb07555a769a55dbf7b2"
-      url: "https://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@github.com/it-toolkit/visualizeit_slides_extension.git"
-    source: git
+      path: "../visualizeit_slides_extension"
+      relative: true
+    source: path
     version: "0.0.1"
   vm_service:
     dependency: transitive
