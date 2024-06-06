@@ -56,7 +56,7 @@ class VisualizeItApp extends StatelessWidget {
                       );
                     })));
           } else {
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           }
         });
   }
