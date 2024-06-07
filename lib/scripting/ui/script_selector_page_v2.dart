@@ -96,6 +96,11 @@ class AvailableScript {
 
   @override
   int get hashCode => scriptRef.hashCode ^ metadata.hashCode;
+
+  @override
+  String toString() {
+    return 'AvailableScript{name: ${metadata.name}}';
+  }
 }
 
 class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
@@ -210,7 +215,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                       type: MaterialType.transparency,
                       child: _loadingScripts
                                 ? Center(child: CircularProgressIndicator())
-                                : _treeData.length == 1 //Only root node
+                                : availableScripts.values.length == 0 //Only root node
                                     ?  const Center(child: Text('No Results Found', style: TextStyle(fontSize: 18)))
                                     : _buildListView(availableScripts.values),
                   ))),
