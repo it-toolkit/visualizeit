@@ -6,12 +6,13 @@ class ScriptMetadata {
   String name;
   String description;
   Set<String> tags;
+  String? group;
 
-  ScriptMetadata(this.name, this.description, this.tags);
+  ScriptMetadata(this.name, this.description, this.tags, {this.group});
 
   @override
   String toString() {
-    return 'ScriptMetadata{name: $name, description: $description, tags: $tags}';
+    return 'ScriptMetadata{name: $name, description: $description, tags: $tags, group: $group}';
   }
 }
 

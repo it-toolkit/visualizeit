@@ -21,6 +21,7 @@ class ScriptDefParser {
 
     final name = root['name'];
     final description = root['description'];
+    final group = root['group'];
     final tags = (root['tags'] as YamlList).value.map((e) => e.toString()).toSet();
 
     final scenes = (root['scenes'] as YamlList?)?.map((sceneNode) {
@@ -39,7 +40,7 @@ class ScriptDefParser {
     }).toList() ?? List.empty();
 
     return ScriptDef(
-      ScriptMetadata(name, description, tags),
+      ScriptMetadata(name, description, tags, group: group),
       scenes,
     );
   }

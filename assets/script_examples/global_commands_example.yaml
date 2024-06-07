@@ -1,4 +1,5 @@
-name: "Global commands example"
+name: Global commands example
+group: Extension examples
 description: |-
   ## Global commands example
     

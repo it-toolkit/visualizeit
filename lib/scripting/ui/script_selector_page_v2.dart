@@ -37,8 +37,9 @@ class SearchableList<T> {
   List<T> values = [];
   T? selected = null;
   bool _dirty = true;
+  void Function(List<T> values)? onValuesUpdated;
 
-  SearchableList(List<T> initialItems, this._queryMatcher): this._allItems = initialItems {
+  SearchableList(List<T> initialItems, this._queryMatcher, {this.onValuesUpdated}): this._allItems = initialItems {
     search(query);
   }
 
@@ -63,6 +64,8 @@ class SearchableList<T> {
     values = _allItems.where((item) => _queryMatcher(query, item)).toList();
     selected = values.length == 1 ? values.first : null;
     _dirty = false;
+
+    onValuesUpdated?.call(values);
   }
 
   @override
@@ -96,11 +99,36 @@ class AvailableScript {
 }
 
 class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
+  IndexedTreeNode<AvailableScript> _treeData = IndexedTreeNode.root();
+
   SearchableList<AvailableScript> availableScripts = SearchableList<AvailableScript>(
     <AvailableScript>[],
     (query, availableScript) => availableScript.metadata.name.toLowerCase().contains(query.toLowerCase()),
   );
   bool _loadingScripts = true;
+
+  void updateTreeData(List<AvailableScript> values) {
+    _logger.debug(() => "Updating tree data from ${values.length} values");
+    IndexedTreeNode<AvailableScript> updatedTreeData = IndexedTreeNode.root();
+    values.forEach((availableScript) {
+       final parentNode = _getOrCreateParentNode(updatedTreeData, availableScript);
+       parentNode.add(IndexedTreeNode<AvailableScript>(key: availableScript.metadata.name, data: availableScript));
+    });
+
+    _treeData = updatedTreeData;
+  }
+
+  IndexedTreeNode _getOrCreateParentNode(IndexedTreeNode<AvailableScript> rootNode, AvailableScript availableScript) {
+    final group = availableScript.metadata.group;
+    if(group == null) return rootNode;
+
+    var parentNode = rootNode.children.firstWhereOrNull((node) => node.key == group) as IndexedTreeNode?;
+    if(parentNode == null) {
+      parentNode = IndexedTreeNode<AvailableScript>(key: group);
+      rootNode.add(parentNode);
+    }
+    return parentNode;
+  }
 
   void search(String query) => setState(() => availableScripts.search(query));
 
@@ -108,6 +136,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
 
   @override
   void initState() {
+    availableScripts.onValuesUpdated = (values) => updateTreeData(values);
+
     widget._rawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
       this.availableScripts.setAllItems(value.entries.map((e) => AvailableScript(e.key, e.value)).toList())
     ).whenComplete(() => setState(() {
@@ -180,7 +210,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                       type: MaterialType.transparency,
                       child: _loadingScripts
                                 ? Center(child: CircularProgressIndicator())
-                                : availableScripts.values.isEmpty
+                                : _treeData.length == 1 //Only root node
                                     ?  const Center(child: Text('No Results Found', style: TextStyle(fontSize: 18)))
                                     : _buildListView(availableScripts.values),
                   ))),
@@ -190,9 +220,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
 
   Widget _buildListView(List<AvailableScript> scripts) {
     return TreeView.indexed(showRootNode: false,
-      tree: IndexedTreeNode.root()
-        ..addAll([for(var script in scripts) IndexedTreeNode<AvailableScript>(key: script.metadata.name, data: script)]
-      ),
+      tree: _treeData,
       builder: (context, node) {
         return ListTile(
           dense: true,
@@ -200,9 +228,11 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
           title: Text(node.key),
           selectedTileColor: Colors.blue.shade200,
           onTap: () {
+            var data = node.data;
+            if (data == null) return;
             setState(() {
-              _logger.debug(() => "Tap on: ${(node.data as AvailableScript?)?.metadata.name}");
-              availableScripts.select(node.data);
+              _logger.debug(() => "Tap on: ${data.metadata.name}");
+              availableScripts.select(data);
             });
           },
           hoverColor: Colors.blue.shade100,

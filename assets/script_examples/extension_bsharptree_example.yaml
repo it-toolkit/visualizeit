@@ -1,4 +1,5 @@
-name: "B# Tree example"
+name: B# Tree example
+group: Extension examples
 description: |-
   ## B\# Tree example
 
