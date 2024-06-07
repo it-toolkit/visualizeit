@@ -51,6 +51,10 @@ class SearchableList<T> {
     search(query);
   }
 
+  void deselect() {
+    selected = null;
+  }
+
   void select(T selectedItem){
     if (_allItems.indexOf(selectedItem) < 0) throw Exception("Unknown selected item: $selectedItem");
 
@@ -111,6 +115,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     (query, availableScript) => availableScript.metadata.name.toLowerCase().contains(query.toLowerCase()),
   );
   bool _loadingScripts = true;
+
+  TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? _treeController;
 
   void updateTreeData(List<AvailableScript> values) {
     _logger.debug(() => "Updating tree data from ${values.length} values");
@@ -226,6 +232,10 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   Widget _buildListView(List<AvailableScript> scripts) {
     return TreeView.indexed(showRootNode: false,
       tree: _treeData,
+      onTreeReady: (controller) {
+        _treeController = controller;
+        controller.expandAllChildren(_treeData);
+      },
       builder: (context, node) {
         return ListTile(
           dense: true,
@@ -234,7 +244,10 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
           selectedTileColor: Colors.blue.shade200,
           onTap: () {
             var data = node.data;
-            if (data == null) return;
+            if (data == null) {
+              _treeController?.toggleExpansion(node);
+              return;
+            };
             setState(() {
               _logger.debug(() => "Tap on: ${data.metadata.name}");
               availableScripts.select(data);
