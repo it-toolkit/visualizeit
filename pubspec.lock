@@ -1120,6 +1120,15 @@ packages:
       url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
     source: git
     version: "0.0.1"
+  visualizeit_external_sort_extension:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "8e7deecc01e3f4db40c6d50dc5ae8eaef0497430"
+      url: "https://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@github.com/it-toolkit/visualizeit_external_sort_extension.git"
+    source: git
+    version: "0.1.0"
   visualizeit_slides_extension:
     dependency: "direct main"
     description:
@@ -1202,5 +1211,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.3.0 <4.0.0"
+  dart: ">=3.3.4 <4.0.0"
   flutter: ">=3.19.0"
