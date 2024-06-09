@@ -1,5 +1,7 @@
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
@@ -40,6 +42,12 @@ class SearchableList<T> {
   void Function(List<T> values)? onValuesUpdated;
 
   SearchableList(List<T> initialItems, this._queryMatcher, {this.onValuesUpdated}): this._allItems = initialItems {
+    search(query);
+  }
+
+  void addItem(T item) {
+    this._allItems.add(item);
+    _dirty = true;
     search(query);
   }
 
@@ -108,6 +116,8 @@ class AvailableScript {
 }
 
 class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
+  final uuid = Uuid();
+
   IndexedTreeNode<AvailableScript> _treeData = IndexedTreeNode.root();
 
   SearchableList<AvailableScript> availableScripts = SearchableList<AvailableScript>(
@@ -123,10 +133,11 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     IndexedTreeNode<AvailableScript> updatedTreeData = IndexedTreeNode.root();
     values.forEach((availableScript) {
        final parentNode = _getOrCreateParentNode(updatedTreeData, availableScript);
-       parentNode.add(IndexedTreeNode<AvailableScript>(key: availableScript.metadata.name, data: availableScript));
+       parentNode.add(IndexedTreeNode<AvailableScript>(key: availableScript.scriptRef.hashCode.toString(), data: availableScript));
     });
-
-    _treeData = updatedTreeData;
+    setState(() {
+      _treeData = updatedTreeData;
+    });
   }
 
   IndexedTreeNode _getOrCreateParentNode(IndexedTreeNode<AvailableScript> rootNode, AvailableScript availableScript) {
@@ -195,11 +206,38 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   Widget buildTabContent(BuildContext context, bool readOnly, ButtonBar scriptButtonBar) {
     return AdaptiveContainerWidget(
       header: buildSearchBar(),
-      children: [buildScriptsList(readOnly), const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar)],
+      children: [buildScriptsList(context, readOnly), const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar)],
     );
   }
 
-  Widget buildScriptsList(bool readOnly) {
+  String _buildNewScriptInitialContent(String scriptName, String scriptDescription) => """
+    # Write your script here...
+    name: $scriptName
+    description: $scriptDescription 
+    tags: []
+    """.trimIndent();
+
+
+  void _createScript() {
+    var scriptRef = uuid.v4();
+    final  newScriptRegExp = RegExp(r'New script (\d+)');
+
+    widget._rawScriptRepository.fetchAvailableScriptsMetadata()
+        .then((availableScriptsMetadata) {
+          final nextIndex = availableScriptsMetadata.values
+              .map((e) => newScriptRegExp.firstMatch(e.name)?.group(1)).nonNulls
+              .map((e) => int.tryParse(e)).nonNulls.maxOrNull?.let((max) => max + 1) ?? 1;
+
+          var scriptName = "New script $nextIndex";
+          var scriptDescription = "... complete the 'New script $nextIndex' description";
+          widget._rawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
+          return ScriptMetadata(scriptName, scriptDescription, <String>{});
+        })
+        .then((scriptMetadata) => availableScripts.addItem(AvailableScript(scriptRef, scriptMetadata)));
+    context.go("/scripts/$scriptRef/edit");
+  }
+
+  Widget buildScriptsList(BuildContext context, bool readOnly) {
       return Expanded(
           flex: 40,
           child: Column(
@@ -207,10 +245,10 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
             children: [
               readOnly
                   ? const SizedBox(height: 40, child: Align(alignment: Alignment.centerLeft, child: Text("Scripts")))
-                  : const Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
                       Text("Scripts"),
                       Spacer(),
-                      IconButton(onPressed: null, icon: Icon(Icons.add_circle_outline), tooltip: "Create script", iconSize: 20),
+                      IconButton(onPressed: _createScript, icon: Icon(Icons.add_circle_outline), tooltip: "Create script", iconSize: 20),
                       IconButton(onPressed: null, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
                       IconButton(onPressed: null, icon: Icon(Icons.import_export), tooltip: "Export scripts", iconSize: 20),
               ]),
@@ -240,7 +278,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
         return ListTile(
           dense: true,
           visualDensity: VisualDensity(vertical: -3),
-          title: Text(node.key),
+          title: Text(node.data?.metadata.name ?? node.key), //TODO stop using keys.. see how to represent "group" nodes
           selectedTileColor: Colors.blue.shade200,
           onTap: () {
             var data = node.data;
