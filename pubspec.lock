@@ -1022,7 +1022,7 @@ packages:
     source: hosted
     version: "3.1.1"
   uuid:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uuid
       sha256: "814e9e88f21a176ae1359149021870e87f7cddaf633ab678a5d2b0bff7fd1ba8"
@@ -1121,16 +1121,20 @@ packages:
   visualizeit_extension_template:
     dependency: "direct main"
     description:
-      path: "../visualizeit_extension_template"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: d23fdd136568602020f736568709547598f3e13a
+      url: "https://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@github.com/it-toolkit/visualizeit_extension_template.git"
+    source: git
     version: "0.0.1"
   visualizeit_extensions:
     dependency: "direct main"
     description:
-      path: "../visualizeit_extensions"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "361301fcda5c58b65263abfc56eca0e9620a015d"
+      url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
+    source: git
     version: "0.0.1"
   visualizeit_external_sort_extension:
     dependency: "direct main"
@@ -1144,9 +1148,11 @@ packages:
   visualizeit_slides_extension:
     dependency: "direct main"
     description:
-      path: "../visualizeit_slides_extension"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "5f9b78c6a0a85aad3e83bb07555a769a55dbf7b2"
+      url: "https://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@github.com/it-toolkit/visualizeit_slides_extension.git"
+    source: git
     version: "0.0.1"
   vm_service:
     dependency: transitive
