@@ -21,7 +21,7 @@ tags: [externalsort-extension, dev-example]
 scenes:
   - name: First scene
     extensions: ['externalsort-extension']
-    description: Tree creation
+    description: External sort example
     initial-state:
       - externalsort-create: [5, 3, ["410","425","656","427","434","446","973","264","453","466","717","738","477","221","486","497","503","62","985","220","508","481","514","515","529","538","552","144","414","202"]]
     transitions:

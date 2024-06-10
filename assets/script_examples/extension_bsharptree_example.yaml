@@ -17,10 +17,10 @@ description: |-
   ### bsharptree-find
   This command searches through the tree until it finds the node a value should be located, even if it isn't in the tree at the moment
   
-tags: [bsharp-tree-extension, dev-example]
+tags: [bsharptree-extension, dev-example]
 scenes:
   - name: First scene
-    extensions: ['bsharp-tree-extension']
+    extensions: ['bsharptree-extension']
     description: Tree creation
     initial-state:
       - bsharptree-create: [3, ["12", "15", "39", "115"]]

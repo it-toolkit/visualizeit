@@ -4,10 +4,10 @@ description: |-
 
   An example, showing how can you use VisualizeIt to explain complex subjects like underflows in B\# trees
   
-tags: [bsharp-tree-extension, dev-example]
+tags: [bsharptree-extension, dev-example]
 scenes:
   - name: First scene
-    extensions: ['bsharp-tree-extension']
+    extensions: ['bsharptree-extension']
     description: Tree creation
     initial-state:
       - bsharptree-create: [3, [22, 36, 150, 166, 210, 121, 75, 17, 45, 99, 122]]
