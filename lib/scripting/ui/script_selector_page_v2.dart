@@ -1,6 +1,5 @@
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
@@ -266,6 +265,26 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     _openScriptInEditor(scriptRef, readOnly: false);
   }
 
+  void _cloneScript(ScriptRef ref, ScriptMetadata metadata, RawScriptRepository repository) {
+    var scriptRef = uuid.v4();
+    repository.get(ref)
+      .then((rawScript) {
+        widget._myRawScriptRepository.fetchAvailableScriptsMetadata()
+            .then((availableScriptsMetadata) {
+          final nextIndex = availableScriptsMetadata.values
+              .map((e) => e.name.replaceFirst(metadata.name, "").trim()).nonNulls
+              .map((e) => int.tryParse(e)).nonNulls.maxOrNull?.let((max) => max + 1) ?? 1;
+
+          var newScriptName = "${metadata.name} - clone $nextIndex";
+          widget._myRawScriptRepository.save(RawScript(scriptRef, rawScript.contentAsYaml.replaceFirst(metadata.name, newScriptName)));
+
+          return ScriptMetadata(newScriptName, metadata.description, metadata.tags);
+        })
+      .then((scriptMetadata) => _myAvailableScripts.addItem(AvailableScript(scriptRef, scriptMetadata)))
+      .then((value) => _openScriptInEditor(scriptRef, readOnly: false));
+    });
+  }
+
   void _openScriptInEditor(String scriptRef, { bool readOnly = true }) {
     _loadingMyScripts = true;
     widget.openScriptInEditor?.call(scriptRef, readOnly)
@@ -394,7 +413,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     final selectedScriptRef = _getSelectedScript(availableScripts)?.scriptRef;
     return ButtonBar(
       children: [
-        TextButton(onPressed: (() => {_showConfirmDialog(context, "clone the script")}).takeIfDef(selectedScriptRef), child: const Text("Clone")),
+        TextButton(onPressed: (() => {_showConfirmDialog(context, "clone the script", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))}).takeIfDef(selectedScriptRef), child: const Text("Clone")),
         TextButton(onPressed: (() => { _openScriptInEditor(selectedScriptRef!, readOnly: true)}).takeIfDef(selectedScriptRef), child: const Text("View")),
         ElevatedButton(onPressed: (() => {_openScriptInPlayer(selectedScriptRef!, readOnly: true)}).takeIfDef(selectedScriptRef), child: const Text("Play")),
       ].nonNulls.toList(),
@@ -405,15 +424,21 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     final selectedScriptRef = _getSelectedScript(availableScripts)?.scriptRef;
     return ButtonBar(
       children: [
-        TextButton(onPressed: () => {_showConfirmDialog(context, "delete the script")}, child: const Text("Delete")),
-        TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script")}, child: const Text("Clone")),
+        TextButton(onPressed: () => {_showConfirmDialog(context, "delete the script", () {})}, child: const Text("Delete")),
+        TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}, child: const Text("Clone")),
         TextButton(onPressed: () => {_openScriptInEditor(selectedScriptRef!, readOnly: false)}, child: const Text("View")),
         ElevatedButton(onPressed: () => {_openScriptInPlayer(selectedScriptRef!, readOnly: false)}, child: const Text("Play")),
       ],
     );
   }
 
-  Future<void> _showConfirmDialog(BuildContext context, String actionDescription) async {
+  void _cloneSelectedScript(SearchableList<AvailableScript> availableScripts, RawScriptRepository repository){
+    final selectedScript = _getSelectedScript(availableScripts);
+    if (selectedScript == null) return;
+    _cloneScript(selectedScript.scriptRef, selectedScript.metadata, repository);
+  }
+
+  Future<void> _showConfirmDialog(BuildContext context, String actionDescription, void Function() action) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -433,6 +458,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                 child: const Text('Confirm'),
                 onPressed: () {
                   Navigator.of(context).pop();
+                  action.call();
                 }),
             TextButton(
                 child: const Text('Cancel'),
