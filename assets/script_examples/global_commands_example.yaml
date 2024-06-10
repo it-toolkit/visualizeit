@@ -28,7 +28,7 @@ scenes:
       - show-banner:
           - |-
             # This is a Banner at center position
-            <img width=\"400\" height=\"200\" src=\"https://pbs.twimg.com/profile_banners/507419507/1705687945/1500x500\"/>
+            <img width=\"100\" height=\"100\" src=\"https://lh3.googleusercontent.com/d/1uizdXqCdZBQ4cM_ha8Wsw3PNrDt0arqf=w1000\"/>
             
             with an image<br>and **multiple** lines<br>using markdown format
           - center
