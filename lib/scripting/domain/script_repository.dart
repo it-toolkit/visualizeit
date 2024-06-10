@@ -37,3 +37,38 @@ abstract class RawScriptRepository {
 
   Future<void> save(RawScript rawScript);
 }
+
+class CompositeRawScriptRepository implements RawScriptRepository {
+  final List<RawScriptRepository> delegates;
+
+  CompositeRawScriptRepository(this.delegates);
+
+  @override
+  Future<Map<ScriptRef, ScriptMetadata>> fetchAvailableScriptsMetadata() {
+    return Future.wait(delegates.map((r) => r.fetchAvailableScriptsMetadata()))
+        .then((availableScriptsMetadataMaps) {
+      return availableScriptsMetadataMaps.fold<Map<String, ScriptMetadata>>({}, (previousValue, other) => previousValue..addAll(other));
+    });
+  }
+
+  @override
+  Future<RawScript> get(ScriptRef scriptRef) {
+    return Future.wait(delegates.map((r) {
+      return r.get(scriptRef).then((value) => value as RawScript?).catchError((e) => null);
+    })).then((values) {
+      return Future.value(values.firstWhere((script) => script != null, orElse: () => throw ScriptNotFoundException(scriptRef)));
+    });
+  }
+
+  @override
+  Future<List<RawScript>> getAll() {
+    return Future.wait(delegates.map((r) => r.getAll())).then((values) {
+      return Future.value(values.expand((e) => e).toList());
+    });
+  }
+
+  @override
+  Future<void> save(RawScript rawScript) {
+    throw UnimplementedError(); //TODO
+  }
+}

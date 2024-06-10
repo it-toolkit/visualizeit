@@ -12,9 +12,10 @@ extension GetItWidgets on GetIt {
     registerFactoryParam<ExtensionPage, BuildContext, GoRouterState>((context, state) => ExtensionPage(get()));
 
     registerFactoryParam<ScriptSelectorPage, BuildContext, GoRouterState>((context, routerState) => ScriptSelectorPage(
-      get(),
-      onPlayPressed: (scriptId) => {context.go("/scripts/$scriptId/play")},
-      onViewPressed: (scriptId) => {context.go("/scripts/$scriptId/edit")},
+      get(instanceName: "publicScriptsRepository"),
+      get(instanceName: "myScriptsRepository"),
+      openScriptInPlayer: (scriptId) => context.push("/scripts/$scriptId/play"),
+      openScriptInEditor: (scriptId) => context.push("/scripts/$scriptId/edit"),
     ));
 
     registerFactoryParam<ScriptEditorPage, BuildContext, GoRouterState>((context, state) {

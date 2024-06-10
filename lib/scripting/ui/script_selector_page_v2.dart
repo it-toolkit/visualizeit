@@ -18,11 +18,16 @@ final _logger = Logger("scripting.ui.script_selector_page");
 class ScriptSelectorPage extends StatefulBasePage {
   static const RouteName = "script-selector";
 
-  const ScriptSelectorPage(this._rawScriptRepository, {super.key, this.onPlayPressed, this.onViewPressed}): super(RouteName);
+  const ScriptSelectorPage(
+      this._publicRawScriptRepository,
+      this._myRawScriptRepository,
+      {super.key, this.openScriptInPlayer, this.openScriptInEditor}
+  ): super(RouteName);
 
-  final Function(String)? onPlayPressed;
-  final Function(String)? onViewPressed;
-  final RawScriptRepository _rawScriptRepository;
+  final Future<void> Function(String)? openScriptInPlayer;
+  final Future<void> Function(String)? openScriptInEditor;
+  final RawScriptRepository _publicRawScriptRepository;
+  final RawScriptRepository _myRawScriptRepository;
 
   @override
   State<StatefulWidget> createState() {
@@ -118,26 +123,32 @@ class AvailableScript {
 class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   final uuid = Uuid();
 
-  IndexedTreeNode<AvailableScript> _treeData = IndexedTreeNode.root();
-
-  SearchableList<AvailableScript> availableScripts = SearchableList<AvailableScript>(
+  IndexedTreeNode<AvailableScript> _publicScriptsTreeData = IndexedTreeNode.root();
+  SearchableList<AvailableScript> _publicAvailableScripts = SearchableList<AvailableScript>(
     <AvailableScript>[],
     (query, availableScript) => availableScript.metadata.name.toLowerCase().contains(query.toLowerCase()),
   );
-  bool _loadingScripts = true;
+  bool _loadingPublicScripts = true;
+  TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? _publicScriptsTreeController;
+  TextEditingController _publicScriptsTextEditingController = TextEditingController();
 
-  TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? _treeController;
+  IndexedTreeNode<AvailableScript> _myScriptsTreeData = IndexedTreeNode.root();
+  SearchableList<AvailableScript> _myAvailableScripts = SearchableList<AvailableScript>(
+    <AvailableScript>[],
+        (query, availableScript) => availableScript.metadata.name.toLowerCase().contains(query.toLowerCase()),
+  );
+  bool _loadingMyScripts = true;
+  TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? _myScriptsTreeController;
+  TextEditingController _myScriptsTextEditingController = TextEditingController();
 
-  void updateTreeData(List<AvailableScript> values) {
-    _logger.debug(() => "Updating tree data from ${values.length} values");
-    IndexedTreeNode<AvailableScript> updatedTreeData = IndexedTreeNode.root();
+  IndexedTreeNode<AvailableScript> _buildTreeData(List<AvailableScript> values) {
+    _logger.debug(() => "Building tree data from ${values.length} values");
+    IndexedTreeNode<AvailableScript> treeData = IndexedTreeNode.root();
     values.forEach((availableScript) {
-       final parentNode = _getOrCreateParentNode(updatedTreeData, availableScript);
+       final parentNode = _getOrCreateParentNode(treeData, availableScript);
        parentNode.add(IndexedTreeNode<AvailableScript>(key: availableScript.scriptRef.hashCode.toString(), data: availableScript));
     });
-    setState(() {
-      _treeData = updatedTreeData;
-    });
+    return treeData;
   }
 
   IndexedTreeNode _getOrCreateParentNode(IndexedTreeNode<AvailableScript> rootNode, AvailableScript availableScript) {
@@ -152,20 +163,32 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     return parentNode;
   }
 
-  void search(String query) => setState(() => availableScripts.search(query));
+  void search(String query, SearchableList<AvailableScript> availableScripts) => setState(() => availableScripts.search(query));
 
-  AvailableScript? _getSelectedScript() => availableScripts.selected;
+  AvailableScript? _getSelectedScript(SearchableList<AvailableScript> availableScripts) => availableScripts.selected;
 
   @override
   void initState() {
-    availableScripts.onValuesUpdated = (values) => updateTreeData(values);
-
-    widget._rawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
-      this.availableScripts.setAllItems(value.entries.map((e) => AvailableScript(e.key, e.value)).toList())
+    _publicAvailableScripts.onValuesUpdated = (values) => setState(() => _publicScriptsTreeData = _buildTreeData(values));
+    widget._publicRawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
+      this._publicAvailableScripts.setAllItems(value.entries.map((e) => AvailableScript(e.key, e.value)).toList())
     ).whenComplete(() => setState(() {
-      _loadingScripts = false;
+      _loadingPublicScripts = false;
     }));
+
+    _myAvailableScripts.onValuesUpdated = (values) => setState(() => _myScriptsTreeData = _buildTreeData(values));
+    loadMyAvailableScripts();
+
     super.initState();
+  }
+
+  Future<void> loadMyAvailableScripts() {
+    _logger.trace(() => "Loading my available scripts");
+    return widget._myRawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
+        this._myAvailableScripts.setAllItems(value.entries.map((e) => AvailableScript(e.key, e.value)).toList())
+    ).whenComplete(() => setState(() {
+      _loadingMyScripts = false;
+    }));
   }
 
   @override
@@ -192,8 +215,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
             ),
             body: TabBarView(
               children: [
-                buildTabContent(context, true, buildButtonBar(context)),
-                _isUserLoggedIn() ? buildTabContent(context, false, buildMyScriptsButtonBar(context)) : buildLoginRequiredTabContent(context),
+                buildTabContent(context, true, buildButtonBar(context, _publicAvailableScripts), _loadingPublicScripts, _publicAvailableScripts, _publicScriptsTreeData, _publicScriptsTreeController, _publicScriptsTextEditingController),
+                _isUserLoggedIn() ? buildTabContent(context, false, buildMyScriptsButtonBar(context, _myAvailableScripts), _loadingMyScripts, _myAvailableScripts, _myScriptsTreeData, _myScriptsTreeController, _myScriptsTextEditingController) : buildLoginRequiredTabContent(context),
               ],
             ),
           ),
@@ -203,10 +226,15 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
 
   bool _isUserLoggedIn() => true; //TODO
 
-  Widget buildTabContent(BuildContext context, bool readOnly, ButtonBar scriptButtonBar) {
+  Widget buildTabContent(BuildContext context, bool readOnly, ButtonBar scriptButtonBar, bool loadingScripts,
+      SearchableList<AvailableScript> availableScripts,
+      IndexedTreeNode<AvailableScript> treeData,
+      TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? treeController,
+      TextEditingController textEditingController) {
     return AdaptiveContainerWidget(
-      header: buildSearchBar(),
-      children: [buildScriptsList(context, readOnly), const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar)],
+      header: buildSearchBar(availableScripts, textEditingController),
+      children: [buildScriptsList(context, readOnly, loadingScripts, availableScripts, treeData, treeController),
+        const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar, availableScripts)],
     );
   }
 
@@ -222,7 +250,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     var scriptRef = uuid.v4();
     final  newScriptRegExp = RegExp(r'New script (\d+)');
 
-    widget._rawScriptRepository.fetchAvailableScriptsMetadata()
+    widget._myRawScriptRepository.fetchAvailableScriptsMetadata()
         .then((availableScriptsMetadata) {
           final nextIndex = availableScriptsMetadata.values
               .map((e) => newScriptRegExp.firstMatch(e.name)?.group(1)).nonNulls
@@ -230,14 +258,29 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
 
           var scriptName = "New script $nextIndex";
           var scriptDescription = "... complete the 'New script $nextIndex' description";
-          widget._rawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
+          widget._myRawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
           return ScriptMetadata(scriptName, scriptDescription, <String>{});
         })
-        .then((scriptMetadata) => availableScripts.addItem(AvailableScript(scriptRef, scriptMetadata)));
-    context.go("/scripts/$scriptRef/edit");
+        .then((scriptMetadata) => _myAvailableScripts.addItem(AvailableScript(scriptRef, scriptMetadata)));
+
+    _openScriptInEditor(scriptRef);
   }
 
-  Widget buildScriptsList(BuildContext context, bool readOnly) {
+  void _openScriptInEditor(String scriptRef) {
+    _loadingMyScripts = true;
+    widget.openScriptInEditor?.call(scriptRef)
+        .then((value) => loadMyAvailableScripts())
+        .whenComplete(() => setState((){}));
+  }
+
+  void _openScriptInPlayer(String scriptRef) {
+    _loadingMyScripts = true;
+    widget.openScriptInPlayer?.call(scriptRef)
+        .then((value) => loadMyAvailableScripts())
+        .whenComplete(() => setState((){}));
+  }
+
+  Widget buildScriptsList(BuildContext context, bool readOnly, bool loadingScripts, SearchableList<AvailableScript> availableScripts, IndexedTreeNode<AvailableScript> treeData, TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? treeController) {
       return Expanded(
           flex: 40,
           child: Column(
@@ -257,17 +300,17 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                     decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Material(
                       type: MaterialType.transparency,
-                      child: _loadingScripts
+                      child: loadingScripts
                                 ? Center(child: CircularProgressIndicator())
                                 : availableScripts.values.length == 0 //Only root node
                                     ?  const Center(child: Text('No Results Found', style: TextStyle(fontSize: 18)))
-                                    : _buildListView(availableScripts.values),
+                                    : _buildListView(availableScripts, treeData, treeController),
                   ))),
             ],
           ));
   }
 
-  Widget _buildListView(List<AvailableScript> scripts) {
+  Widget _buildListView(SearchableList<AvailableScript> availableScripts, IndexedTreeNode<AvailableScript> _treeData, _treeController) {
     return TreeView.indexed(showRootNode: false,
       tree: _treeData,
       onTreeReady: (controller) {
@@ -298,7 +341,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     );
   }
 
-  Widget buildSearchBar() {
+  Widget buildSearchBar(SearchableList<AvailableScript> availableScripts, TextEditingController controller) {
     return Container(
         padding: const EdgeInsets.all(10),
         child: Wrap(
@@ -310,7 +353,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
               width: 200,
               height: 40,
               child: TextField(
-                  onChanged: search,
+                  controller: controller,
+                  onChanged: (query) => search(query, availableScripts),
                   style: TextStyle(fontSize: 14),
                   decoration: InputDecoration(suffixIcon: Icon(Icons.search), hintText: 'Search scripts...')),
             ),
@@ -319,7 +363,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
         ));
   }
 
-  Expanded buildDetailsSection(BuildContext context, ButtonBar buttonBar) {
+  Expanded buildDetailsSection(BuildContext context, ButtonBar buttonBar, SearchableList<AvailableScript> availableScripts) {
     return Expanded(
         flex: 58,
         child: Column(
@@ -337,7 +381,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
                 child: ExtendedMarkdownWidget(
-                    data: _getSelectedScript()?.metadata.description ?? ""
+                    data: _getSelectedScript(availableScripts)?.metadata.description ?? ""
                 ),
               ),
             ),
@@ -346,24 +390,25 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
         ));
   }
 
-  ButtonBar buildButtonBar(BuildContext context) {
-    final selectedScriptRef = _getSelectedScript()?.scriptRef;
+  ButtonBar buildButtonBar(BuildContext context, SearchableList<AvailableScript> availableScripts) {
+    final selectedScriptRef = _getSelectedScript(availableScripts)?.scriptRef;
     return ButtonBar(
       children: [
         TextButton(onPressed: (() => {_showConfirmDialog(context, "clone the script")}).takeIfDef(selectedScriptRef), child: const Text("Clone")),
-        TextButton(onPressed: (() => {widget.onViewPressed?.call(selectedScriptRef!)}).takeIfDef(selectedScriptRef), child: const Text("View")),
-        ElevatedButton(onPressed: (() => {widget.onPlayPressed?.call(selectedScriptRef!)}).takeIfDef(selectedScriptRef), child: const Text("Play")),
+        TextButton(onPressed: (() => { _openScriptInEditor(selectedScriptRef!)}).takeIfDef(selectedScriptRef), child: const Text("View")),
+        ElevatedButton(onPressed: (() => {_openScriptInPlayer(selectedScriptRef!)}).takeIfDef(selectedScriptRef), child: const Text("Play")),
       ].nonNulls.toList(),
     );
   }
 
-  ButtonBar buildMyScriptsButtonBar(BuildContext context) {
+  ButtonBar buildMyScriptsButtonBar(BuildContext context, SearchableList<AvailableScript> availableScripts) {
+    final selectedScriptRef = _getSelectedScript(availableScripts)?.scriptRef;
     return ButtonBar(
       children: [
         TextButton(onPressed: () => {_showConfirmDialog(context, "delete the script")}, child: const Text("Delete")),
         TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script")}, child: const Text("Clone")),
-        TextButton(onPressed: () => {widget.onViewPressed?.call(_getSelectedScript()!.scriptRef)}, child: const Text("View")),
-        ElevatedButton(onPressed: () => {widget.onPlayPressed?.call(_getSelectedScript()!.scriptRef)}, child: const Text("Play")),
+        TextButton(onPressed: () => {_openScriptInEditor(selectedScriptRef!)}, child: const Text("View")),
+        ElevatedButton(onPressed: () => {_openScriptInPlayer(selectedScriptRef!)}, child: const Text("Play")),
       ],
     );
   }

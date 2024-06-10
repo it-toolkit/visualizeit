@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -14,7 +12,18 @@ extension GetItRepositories on GetIt {
     registerSingleton<RawScriptRepository>(kReleaseMode
         ? InMemoryRawScriptRepository() //TODO use remote repository
         : InMemoryRawScriptRepository(
-            initialRawScriptsLoader: _loadExampleScriptsFromAssets()));
+            initialRawScriptsLoader: _loadExampleScriptsFromAssets()),
+      instanceName: "publicScriptsRepository"
+    );
+
+    registerSingleton<RawScriptRepository>(
+        InMemoryRawScriptRepository(), //TODO use remote repository
+        instanceName: "myScriptsRepository"
+    );
+
+    registerSingleton<RawScriptRepository>(
+        CompositeRawScriptRepository([get(instanceName: "publicScriptsRepository"), get(instanceName: "myScriptsRepository")])
+    );
 
     registerSingletonAsync<ExtensionRepository>(
         () async => await DefaultExtensionRepository.withAvailableExtensions());
