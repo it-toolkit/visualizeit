@@ -2,6 +2,8 @@ name: Slides example
 group: Extension examples
 description: |-
   ## Slides example
+  
+  A simple example of available slide types and how to use them.
 
 tags: [slides-extension, dev-example]
 scenes:

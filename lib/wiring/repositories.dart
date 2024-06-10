@@ -32,12 +32,12 @@ extension GetItRepositories on GetIt {
   Future<List<RawScript>> _loadExampleScriptsFromAssets() async {
     final assetKeys = [
       "assets/script_examples/visualizeit_intro.yaml",
-      "assets/script_examples/extension_template_example.yaml",
+      "assets/script_examples/bsharptree_example_with_explanation.yaml",
+      "assets/script_examples/extension_externalsort_example.yaml",
       "assets/script_examples/global_commands_example.yaml",
       "assets/script_examples/extension_slides_example.yaml",
       "assets/script_examples/extension_bsharptree_example.yaml",
-      "assets/script_examples/bsharptree_example_with_explanation.yaml",
-      "assets/script_examples/extension_externalsort_example.yaml"
+      "assets/script_examples/extension_template_example.yaml",
     ];
     return Future.wait(assetKeys.map((key) async =>
         RawScript(key.hashCode.toString(), await rootBundle.loadString(key))));
