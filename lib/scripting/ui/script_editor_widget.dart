@@ -18,13 +18,15 @@ class ScriptEditorWidget extends StatelessWidget {
     super.key, required this.script,
     required this.onCodeChange,
     this.availableExtensions = const [],
-    this.listenPlayerEvents = false
+    this.listenPlayerEvents = false,
+    this.readOnly = false
   });
 
   final List<Extension> availableExtensions;
   final String script;
   final bool listenPlayerEvents;
   final Function(String) onCodeChange;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,7 @@ class ScriptEditorWidget extends StatelessWidget {
       child: CodeEditor(
         scrollController: scrollController,
         padding: EdgeInsets.all(15),
-        readOnly: false,
+        readOnly: readOnly,
         onChanged: (CodeLineEditingValue value) => onCodeChange(controller.text),
         controller: controller,
         wordWrap: false,

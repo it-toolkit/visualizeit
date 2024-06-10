@@ -24,8 +24,10 @@ class PlayerPage extends StatefulBasePage {
   final ScriptParser _scriptParser;
   final ScriptRef scriptId;
   final ExtensionRepository _extensionRepository;
+  final bool readOnly;
 
-  const PlayerPage(GetRawScriptById getRawScriptById, ScriptParser scriptParser, ExtensionRepository extensionRepository, {super.key, required this.scriptId})
+  const PlayerPage(GetRawScriptById getRawScriptById, ScriptParser scriptParser, ExtensionRepository extensionRepository,
+      {super.key, required this.scriptId, this.readOnly = false })
       : this._getRawScriptById = getRawScriptById,
         this._scriptParser = scriptParser,
         this._extensionRepository = extensionRepository,
@@ -55,7 +57,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "${script?.metadata.name ?? "Unknown script name"}",
+      "${script?.metadata.name ?? "Unknown script name"}${ widget.readOnly ? " <read only>": ""}",
       modeSwitch: ModeSwitch(
         initialState: graphicalMode,
         enabledModeName: "View",
@@ -81,7 +83,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   Future<RawScript> resolveRawScript() async {
     if(rawScript == null){
-      rawScript = await widget._getRawScriptById(widget.scriptId);
+      rawScript = (await widget._getRawScriptById(widget.scriptId)).clone();
     }
 
     if (currentEditorText == null) {
@@ -225,6 +227,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
               Expanded(
                 child: ScriptEditorWidget(
                   script: rawScript.contentAsYaml,
+                  readOnly: false,
                   availableExtensions: widget._extensionRepository.getAll(),
                   listenPlayerEvents: true,
                   onCodeChange: (String text ) {

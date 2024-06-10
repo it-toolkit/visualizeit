@@ -15,6 +15,8 @@ class RawScript {
 
   @override
   int get hashCode => ref.hashCode;
+
+  RawScript clone() => RawScript(ref, contentAsYaml);
 }
 
 class ScriptNotFoundException implements Exception {

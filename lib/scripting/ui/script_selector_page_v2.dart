@@ -24,8 +24,8 @@ class ScriptSelectorPage extends StatefulBasePage {
       {super.key, this.openScriptInPlayer, this.openScriptInEditor}
   ): super(RouteName);
 
-  final Future<void> Function(String)? openScriptInPlayer;
-  final Future<void> Function(String)? openScriptInEditor;
+  final Future<void> Function(String scriptRef, bool readonly)? openScriptInPlayer;
+  final Future<void> Function(String scriptRef, bool readonly)? openScriptInEditor;
   final RawScriptRepository _publicRawScriptRepository;
   final RawScriptRepository _myRawScriptRepository;
 
@@ -263,19 +263,19 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
         })
         .then((scriptMetadata) => _myAvailableScripts.addItem(AvailableScript(scriptRef, scriptMetadata)));
 
-    _openScriptInEditor(scriptRef);
+    _openScriptInEditor(scriptRef, readOnly: false);
   }
 
-  void _openScriptInEditor(String scriptRef) {
+  void _openScriptInEditor(String scriptRef, { bool readOnly = true }) {
     _loadingMyScripts = true;
-    widget.openScriptInEditor?.call(scriptRef)
+    widget.openScriptInEditor?.call(scriptRef, readOnly)
         .then((value) => loadMyAvailableScripts())
         .whenComplete(() => setState((){}));
   }
 
-  void _openScriptInPlayer(String scriptRef) {
+  void _openScriptInPlayer(String scriptRef, { bool readOnly = true }) {
     _loadingMyScripts = true;
-    widget.openScriptInPlayer?.call(scriptRef)
+    widget.openScriptInPlayer?.call(scriptRef, readOnly)
         .then((value) => loadMyAvailableScripts())
         .whenComplete(() => setState((){}));
   }
@@ -395,8 +395,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     return ButtonBar(
       children: [
         TextButton(onPressed: (() => {_showConfirmDialog(context, "clone the script")}).takeIfDef(selectedScriptRef), child: const Text("Clone")),
-        TextButton(onPressed: (() => { _openScriptInEditor(selectedScriptRef!)}).takeIfDef(selectedScriptRef), child: const Text("View")),
-        ElevatedButton(onPressed: (() => {_openScriptInPlayer(selectedScriptRef!)}).takeIfDef(selectedScriptRef), child: const Text("Play")),
+        TextButton(onPressed: (() => { _openScriptInEditor(selectedScriptRef!, readOnly: true)}).takeIfDef(selectedScriptRef), child: const Text("View")),
+        ElevatedButton(onPressed: (() => {_openScriptInPlayer(selectedScriptRef!, readOnly: true)}).takeIfDef(selectedScriptRef), child: const Text("Play")),
       ].nonNulls.toList(),
     );
   }
@@ -407,8 +407,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
       children: [
         TextButton(onPressed: () => {_showConfirmDialog(context, "delete the script")}, child: const Text("Delete")),
         TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script")}, child: const Text("Clone")),
-        TextButton(onPressed: () => {_openScriptInEditor(selectedScriptRef!)}, child: const Text("View")),
-        ElevatedButton(onPressed: () => {_openScriptInPlayer(selectedScriptRef!)}, child: const Text("Play")),
+        TextButton(onPressed: () => {_openScriptInEditor(selectedScriptRef!, readOnly: false)}, child: const Text("View")),
+        ElevatedButton(onPressed: () => {_openScriptInPlayer(selectedScriptRef!, readOnly: false)}, child: const Text("Play")),
       ],
     );
   }

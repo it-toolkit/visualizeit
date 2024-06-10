@@ -14,22 +14,31 @@ extension GetItWidgets on GetIt {
     registerFactoryParam<ScriptSelectorPage, BuildContext, GoRouterState>((context, routerState) => ScriptSelectorPage(
       get(instanceName: "publicScriptsRepository"),
       get(instanceName: "myScriptsRepository"),
-      openScriptInPlayer: (scriptId) => context.push("/scripts/$scriptId/play"),
-      openScriptInEditor: (scriptId) => context.push("/scripts/$scriptId/edit"),
+      openScriptInPlayer: (scriptId, readonly) => context.push("/scripts/$scriptId/play", extra: { "readonly": readonly }),
+      openScriptInEditor: (scriptId, readonly) => context.push("/scripts/$scriptId/edit", extra: { "readonly": readonly }),
     ));
 
     registerFactoryParam<ScriptEditorPage, BuildContext, GoRouterState>((context, state) {
       final scriptId = state.pathParameters['sid']!;
+      final extras = state.extra as Map<String, dynamic>;
+
       return ScriptEditorPage(
         get(), get(), get(),
         scriptId: scriptId,
-        onPlayPressed: (scriptId) => {context.go("/scripts/$scriptId/play")}
+        readOnly: extras["readonly"] ?? true,
+        openScriptInPlayer: (scriptId, readonly) => context.push("/scripts/$scriptId/play", extra: { "readonly": readonly }),
       );
     });
 
     registerFactoryParam<PlayerPage, BuildContext, GoRouterState>((context, state) {
       final scriptId = state.pathParameters['sid']!;
-      return PlayerPage(get(), get(), get(), scriptId: scriptId);
+      final extras = state.extra as Map<String, dynamic>;
+
+      return PlayerPage(
+          get(), get(), get(),
+          scriptId: scriptId,
+          readOnly: extras["readonly"] ?? true,
+      );
     });
   }
 }

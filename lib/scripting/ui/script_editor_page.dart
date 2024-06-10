@@ -15,15 +15,19 @@ import '../../common/ui/base_page.dart';
 class ScriptEditorPage extends StatefulBasePage {
   static const RouteName = "script-editor";
 
-  const ScriptEditorPage(GetRawScriptById getRawScriptById, ScriptParser scriptParser, ExtensionRepository extensionRepository,
-      {super.key, required this.scriptId, this.onPlayPressed}) :
+  const ScriptEditorPage(
+      GetRawScriptById getRawScriptById,
+      ScriptParser scriptParser,
+      ExtensionRepository extensionRepository,
+      {super.key, required this.scriptId, this.openScriptInPlayer, this.readOnly = false}) :
       this._getRawScriptById = getRawScriptById,
       this._scriptParser = scriptParser,
       this._extensionRepository = extensionRepository,
       super(RouteName);
 
   final String scriptId;
-  final Function(String)? onPlayPressed;
+  final bool readOnly;
+  final Future<void> Function(String scriptRef, bool readonly)? openScriptInPlayer;
 
   final GetRawScriptById _getRawScriptById;
   final ScriptParser _scriptParser;
@@ -61,7 +65,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "${script?.metadata.name ?? "Unknown script name"}",
+      "${script?.metadata.name ?? "Unknown script name"}${ widget.readOnly ? " <read only>": ""}",
       // modeSwitch: ModeSwitch(
       //   initialState: false,
       //   enabledModeName: "GUI",
@@ -93,7 +97,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
         }, child: const Text("Save")),
         ElevatedButton(
             onPressed: () {
-              widget.onPlayPressed?.call(widget.scriptId);
+              widget.openScriptInPlayer?.call(widget.scriptId, widget.readOnly);
             },
             child: const Text("Play")),
       ],
@@ -209,6 +213,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
           children: [
             Expanded(
               child: ScriptEditorWidget(
+                readOnly: widget.readOnly,
                 script: sampleText,
                 availableExtensions: widget._extensionRepository.getAll(),
                 onCodeChange: (String text ) {
