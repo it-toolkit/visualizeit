@@ -377,7 +377,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                   style: TextStyle(fontSize: 14),
                   decoration: InputDecoration(suffixIcon: Icon(Icons.search), hintText: 'Search scripts...')),
             ),
-            TagsWidget(),
+            // TagsWidget(), //TODO redefine tags visualization
           ],
         ));
   }
