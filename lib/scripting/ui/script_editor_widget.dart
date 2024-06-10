@@ -128,7 +128,7 @@ class ScriptEditorWidget extends StatelessWidget {
       """
             scenes:
               - name: "...scene name..."
-                extensions: ["...required-extension-ids..."]
+                extensions: [ ]
                 description: "...scene description"
                 initial-state:
                   - nop
