@@ -52,4 +52,13 @@ class InMemoryRawScriptRepository implements RawScriptRepository {
     final _rawScripts = (await getStoredRawScripts());
     _rawScripts[rawScript.ref] = rawScript;
   }
+
+  @override
+  Future<RawScript> delete(ScriptRef id) async {
+    final _rawScripts = (await getStoredRawScripts());
+    final deleted = _rawScripts.remove(id);
+    if (deleted == null) throw ScriptNotFoundException(id);
+
+    return deleted;
+  }
 }

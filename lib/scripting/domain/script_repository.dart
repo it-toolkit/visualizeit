@@ -38,6 +38,8 @@ abstract class RawScriptRepository {
   Future<List<RawScript>> getAll();
 
   Future<void> save(RawScript rawScript);
+
+  Future<RawScript> delete(ScriptRef scriptRef);
 }
 
 class CompositeRawScriptRepository implements RawScriptRepository {
@@ -72,5 +74,10 @@ class CompositeRawScriptRepository implements RawScriptRepository {
   @override
   Future<void> save(RawScript rawScript) {
     throw UnimplementedError(); //TODO
+  }
+
+  @override
+  Future<RawScript> delete(ScriptRef scriptRef) {
+    throw UnimplementedError(); // TODO: implement delete
   }
 }

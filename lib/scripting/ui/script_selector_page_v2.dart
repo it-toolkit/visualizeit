@@ -97,6 +97,16 @@ class SearchableList<T> {
 
   @override
   int get hashCode => _allItems.hashCode ^ _queryMatcher.hashCode ^ query.hashCode ^ values.hashCode ^ selected.hashCode;
+
+  bool delete(T item) {
+    if (this._allItems.remove(item)) {
+      _dirty = true;
+      search(query);
+      return true;
+    }
+
+    return false;
+  }
 }
 
 class AvailableScript {
@@ -410,26 +420,47 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   }
 
   ButtonBar buildButtonBar(BuildContext context, SearchableList<AvailableScript> availableScripts) {
-    final selectedScriptRef = _getSelectedScript(availableScripts)?.scriptRef;
+    var selectedScript = _getSelectedScript(availableScripts);
+
+    if (selectedScript == null) return ButtonBar(children: [
+      TextButton(onPressed:null, child: const Text("Clone")),
+      TextButton(onPressed:null, child: const Text("View")),
+      ElevatedButton(onPressed:null, child: const Text("Play")),
+    ]);
+
     return ButtonBar(
       children: [
-        TextButton(onPressed: (() => {_showConfirmDialog(context, "clone the script", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))}).takeIfDef(selectedScriptRef), child: const Text("Clone")),
-        TextButton(onPressed: (() => { _openScriptInEditor(selectedScriptRef!, readOnly: true)}).takeIfDef(selectedScriptRef), child: const Text("View")),
-        ElevatedButton(onPressed: (() => {_openScriptInPlayer(selectedScriptRef!, readOnly: true)}).takeIfDef(selectedScriptRef), child: const Text("Play")),
-      ].nonNulls.toList(),
+        TextButton(onPressed: (() => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))}), child: const Text("Clone")),
+        TextButton(onPressed: (() => { _openScriptInEditor(selectedScript.scriptRef, readOnly: true)}), child: const Text("View")),
+        ElevatedButton(onPressed: (() => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: true)}), child: const Text("Play")),
+      ],
     );
   }
 
   ButtonBar buildMyScriptsButtonBar(BuildContext context, SearchableList<AvailableScript> availableScripts) {
-    final selectedScriptRef = _getSelectedScript(availableScripts)?.scriptRef;
+    var selectedScript = _getSelectedScript(availableScripts);
+
+    if (selectedScript == null) return ButtonBar(children: [
+      TextButton(onPressed: null, child: const Text("Delete")),
+      TextButton(onPressed: null, child: const Text("Clone")),
+      TextButton(onPressed: null, child: const Text("Edit")),
+      ElevatedButton(onPressed: null, child: const Text("Play")),
+    ]);
+
     return ButtonBar(
       children: [
-        TextButton(onPressed: () => {_showConfirmDialog(context, "delete the script", () {})}, child: const Text("Delete")),
-        TextButton(onPressed: () => {_showConfirmDialog(context, "clone the script", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}, child: const Text("Clone")),
-        TextButton(onPressed: () => {_openScriptInEditor(selectedScriptRef!, readOnly: false)}, child: const Text("View")),
-        ElevatedButton(onPressed: () => {_openScriptInPlayer(selectedScriptRef!, readOnly: false)}, child: const Text("Play")),
+        TextButton(onPressed: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}, child: const Text("Delete")),
+        TextButton(onPressed: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}, child: const Text("Clone")),
+        TextButton(onPressed: () => {_openScriptInEditor(selectedScript.scriptRef, readOnly: false)}, child: const Text("View")),
+        ElevatedButton(onPressed: () => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: false)}, child: const Text("Play")),
       ],
     );
+  }
+
+  void _deleteScript(AvailableScript selectedScript) {
+    widget._myRawScriptRepository.delete(selectedScript.scriptRef)
+        .then((deleted) => _myAvailableScripts.delete(selectedScript))
+        .whenComplete(() => setState((){}));
   }
 
   void _cloneSelectedScript(SearchableList<AvailableScript> availableScripts, RawScriptRepository repository){
@@ -444,15 +475,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('...'),
-          content: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            child: ListBody(
-              children: <Widget>[
-                Text('Would you like to $actionDescription?'),
-              ],
-            ),
-          ),
+          title: Text(" "),
+          content: Text('Would you like to $actionDescription?'),
           actions: <Widget>[
             TextButton(
                 child: const Text('Confirm'),
@@ -460,11 +484,9 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                   Navigator.of(context).pop();
                   action.call();
                 }),
-            TextButton(
+            ElevatedButton(
                 child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
+                onPressed: () => Navigator.of(context).pop()),
           ],
         );
       },

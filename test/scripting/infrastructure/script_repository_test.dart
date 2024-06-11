@@ -8,11 +8,22 @@ void main() {
 
   tearDown(() {});
 
-  test('throw script not found exception when unmatched script id', () async {
+  test('throw script not found exception when get with an unknown script id', () async {
     final repo = InMemoryRawScriptRepository();
 
     try {
       await repo.get("unknown-id");
+      fail("You should not be here");
+    } catch (e) {
+      expect(e, isA<ScriptNotFoundException>());
+    }
+  });
+
+  test('throw script not found exception when delete with an unknown script id', () async {
+    final repo = InMemoryRawScriptRepository();
+
+    try {
+      await repo.delete("unknown-id");
       fail("You should not be here");
     } catch (e) {
       expect(e, isA<ScriptNotFoundException>());
@@ -62,5 +73,16 @@ void main() {
     expect(availableScriptsMetadata["id_1"]!.name, equals("Script 1"));
     expect(availableScriptsMetadata["id_1"]!.description, equals("An empty script"));
     expect(availableScriptsMetadata["id_1"]!.tags, containsAll(["tag_1", "tag_2"]));
+  });
+
+  test('save a raw script and then delete it', () async {
+    final repo = InMemoryRawScriptRepository();
+
+    repo.save(RawScript("id_1", "contentAsYaml: 1"));
+
+    final deleted = await repo.delete("id_1");
+    expect(deleted.contentAsYaml, "contentAsYaml: 1");
+
+    expect(await repo.getAll(), isEmpty);
   });
 }
