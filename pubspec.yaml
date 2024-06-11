@@ -72,6 +72,7 @@ dependencies:
   visualizeit_external_sort_extension:
     git: #Read only token for extensions.. Change to public URL when available
       url: https://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@github.com/it-toolkit/visualizeit_external_sort_extension.git
+  file_picker: ^8.0.4
 
 
 

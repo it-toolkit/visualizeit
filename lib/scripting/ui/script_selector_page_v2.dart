@@ -1,8 +1,11 @@
 import 'package:animated_tree_view/animated_tree_view.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
+import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:visualizeit_extensions/logging.dart';
@@ -51,6 +54,12 @@ class SearchableList<T> {
 
   void addItem(T item) {
     this._allItems.add(item);
+    _dirty = true;
+    search(query);
+  }
+
+  void addItems(List<T> items) {
+    this._allItems.addAll(items);
     _dirty = true;
     search(query);
   }
@@ -321,7 +330,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                       Text("Scripts"),
                       Spacer(),
                       IconButton(onPressed: _createScript, icon: Icon(Icons.add_circle_outline), tooltip: "Create script", iconSize: 20),
-                      IconButton(onPressed: null, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
+                      IconButton(onPressed: _importScripts, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
                       IconButton(onPressed: null, icon: Icon(Icons.import_export), tooltip: "Export scripts", iconSize: 20),
               ]),
               Expanded(
@@ -337,6 +346,36 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                   ))),
             ],
           ));
+  }
+
+  void _importScripts() async {
+    List<PlatformFile> _paths = <PlatformFile>[];
+    try {
+      _paths = (await FilePicker.platform.pickFiles(
+        allowCompression: false,
+        type: FileType.custom,
+        allowMultiple: true,
+        onFileLoading: (FilePickerStatus status) => print(status),
+        allowedExtensions: ['yaml'],
+        dialogTitle: "Import scripts",
+      ))?.files ?? [];
+    } on PlatformException catch (e) {
+      _logger.error(() => 'Unsupported operation' + e.toString());
+    } catch (e) {
+      _logger.error(e.toString);
+    }
+    if (!mounted) return;
+
+    Future.wait(_paths.map((importedFile) =>
+      importedFile.xFile.readAsString()
+          .then((contentAsYaml) {
+            var rawScript = RawScript(Uuid().v4(), contentAsYaml);
+            return widget._myRawScriptRepository.save(rawScript).then((value) => Future.value(rawScript));
+          })
+    )).then((rawScripts) => rawScripts.map((rawScript) {
+      return AvailableScript(rawScript.ref, ScriptDefParser().parse(rawScript.contentAsYaml).metadata);
+    }).toList())
+    .then((importedScripts) => _myAvailableScripts.addItems(importedScripts));
   }
 
   Widget _buildListView(SearchableList<AvailableScript> availableScripts, IndexedTreeNode<AvailableScript> _treeData, _treeController) {
