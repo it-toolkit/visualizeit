@@ -2,7 +2,6 @@ import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
-import 'package:visualizeit/common/ui/tags_widget.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:collection/collection.dart';
@@ -10,6 +9,7 @@ import 'package:visualizeit_extensions/logging.dart';
 
 import '../../common/markdown/markdown.dart';
 import '../../common/ui/adaptive_container_widget.dart';
+import '../../common/ui/buttons.dart';
 import '../domain/script_def.dart';
 
 final _logger = Logger("scripting.ui.script_selector_page");
@@ -421,18 +421,17 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
 
   ButtonBar buildButtonBar(BuildContext context, SearchableList<AvailableScript> availableScripts) {
     var selectedScript = _getSelectedScript(availableScripts);
-
     if (selectedScript == null) return ButtonBar(children: [
-      TextButton(onPressed:null, child: const Text("Clone")),
-      TextButton(onPressed:null, child: const Text("View")),
-      ElevatedButton(onPressed:null, child: const Text("Play")),
+      Buttons.simple("Clone"),
+      Buttons.simple("View"),
+      Buttons.highlighted("Play"),
     ]);
 
     return ButtonBar(
       children: [
-        TextButton(onPressed: (() => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))}), child: const Text("Clone")),
-        TextButton(onPressed: (() => { _openScriptInEditor(selectedScript.scriptRef, readOnly: true)}), child: const Text("View")),
-        ElevatedButton(onPressed: (() => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: true)}), child: const Text("Play")),
+        Buttons.simple("Clone", action: (() => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))})),
+        Buttons.simple("View", action: (() => { _openScriptInEditor(selectedScript.scriptRef, readOnly: true)})),
+        Buttons.highlighted("Play", action: (() => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: true)})),
       ],
     );
   }
@@ -441,18 +440,18 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     var selectedScript = _getSelectedScript(availableScripts);
 
     if (selectedScript == null) return ButtonBar(children: [
-      TextButton(onPressed: null, child: const Text("Delete")),
-      TextButton(onPressed: null, child: const Text("Clone")),
-      TextButton(onPressed: null, child: const Text("Edit")),
-      ElevatedButton(onPressed: null, child: const Text("Play")),
+      Buttons.simple("Delete"),
+      Buttons.simple("Clone"),
+      Buttons.simple("Edit"),
+      Buttons.highlighted("Play"),
     ]);
 
     return ButtonBar(
       children: [
-        TextButton(onPressed: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}, child: const Text("Delete")),
-        TextButton(onPressed: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}, child: const Text("Clone")),
-        TextButton(onPressed: () => {_openScriptInEditor(selectedScript.scriptRef, readOnly: false)}, child: const Text("View")),
-        ElevatedButton(onPressed: () => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: false)}, child: const Text("Play")),
+        Buttons.simple("Delete", action: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}),
+        Buttons.simple("Clone", action: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}),
+        Buttons.simple("Edit", action: () => {_openScriptInEditor(selectedScript.scriptRef, readOnly: false)}),
+        Buttons.highlighted("Play", action: () => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: false)}),
       ],
     );
   }
@@ -478,15 +477,11 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
           title: Text(" "),
           content: Text('Would you like to $actionDescription?'),
           actions: <Widget>[
-            TextButton(
-                child: const Text('Confirm'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  action.call();
-                }),
-            ElevatedButton(
-                child: const Text('Cancel'),
-                onPressed: () => Navigator.of(context).pop()),
+            Buttons.simple("Confirm", action: () {
+              Navigator.of(context).pop();
+              action.call();
+            }),
+            Buttons.highlighted("Cancel", action: () => Navigator.of(context).pop()),
           ],
         );
       },
