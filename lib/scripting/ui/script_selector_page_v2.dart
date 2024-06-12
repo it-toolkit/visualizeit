@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:slugify/slugify.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
@@ -331,7 +335,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                       Spacer(),
                       IconButton(onPressed: _createScript, icon: Icon(Icons.add_circle_outline), tooltip: "Create script", iconSize: 20),
                       IconButton(onPressed: _importScripts, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
-                      IconButton(onPressed: null, icon: Icon(Icons.import_export), tooltip: "Export scripts", iconSize: 20),
+                      IconButton(onPressed: _exportAllFilteredScripts.takeIf(availableScripts.values.isNotEmpty), icon: Icon(Icons.import_export), tooltip: "Export scripts", iconSize: 20),
               ]),
               Expanded(
                   child: Container(
@@ -346,6 +350,28 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                   ))),
             ],
           ));
+  }
+
+  void _exportAllFilteredScripts() async {
+    var visibleScriptCount = _myAvailableScripts.values.length;
+    await _showConfirmDialog(
+        context,
+      visibleScriptCount > 1 ? "export the ${visibleScriptCount} filtered scripts": "export the selected script",
+        () async => Future.wait(_myAvailableScripts.values.map((script) => _exportScript(script))),
+    );
+  }
+
+  Future<void> _exportScript(AvailableScript? script) async {
+    if (script == null) return;
+
+    final rawScript = await widget._myRawScriptRepository.get(script.scriptRef);
+    final scriptContent = utf8.encoder.convert(rawScript.contentAsYaml);
+    final fileName = "${slugify(script.metadata.name)}.yaml";
+    try {
+      await FileSaver.instance.saveAs(name: fileName, ext: "yaml", mimeType: MimeType.custom, customMimeType: "application/yaml", bytes: scriptContent);
+    } catch (e) {
+      await FileSaver.instance.saveFile(name: fileName, mimeType: MimeType.custom, customMimeType: "application/yaml", bytes: scriptContent);
+    }
   }
 
   void _importScripts() async {
@@ -479,6 +505,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     var selectedScript = _getSelectedScript(availableScripts);
 
     if (selectedScript == null) return ButtonBar(children: [
+      Buttons.simple("Export"),
       Buttons.simple("Delete"),
       Buttons.simple("Clone"),
       Buttons.simple("Edit"),
@@ -487,6 +514,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
 
     return ButtonBar(
       children: [
+        Buttons.simple("Export", action: () => {_showConfirmDialog(context, "export '${selectedScript.metadata.name}'", () => _exportScript(selectedScript))}),
         Buttons.simple("Delete", action: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}),
         Buttons.simple("Clone", action: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}),
         Buttons.simple("Edit", action: () => {_openScriptInEditor(selectedScript.scriptRef, readOnly: false)}),
