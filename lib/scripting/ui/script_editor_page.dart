@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:re_editor/re_editor.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/buttons.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
@@ -44,9 +45,10 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
 
   RawScript? rawScript = null;
   Script? script = null;
-  String? currentEditorText = null;
   bool scriptHasChanges = false;
   bool graphicalMode = false;
+  final CodeScrollController codeScrollController = CodeScrollController();
+  final CodeLineEditingController codeController = CodeLineEditingController();
 
 
   @override
@@ -88,13 +90,13 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
     return ButtonBar(
       children: [
         Buttons.icon(Icons.cancel_outlined, "Discard changes", action: scriptHasChanges ? () => setState(() {
-          currentEditorText = rawScript!.contentAsYaml;
+          codeController.text = rawScript!.contentAsYaml;
           scriptHasChanges = false;
         }) : null),
         Buttons.icon(Icons.save_outlined, "Save changes", action: scriptHasChanges ? () {
           setState(() {
-            rawScript!.contentAsYaml = currentEditorText!;
-            script = widget._scriptParser.parse(currentEditorText!);
+            rawScript!.contentAsYaml = codeController.text;
+            script = widget._scriptParser.parse(codeController.text);
             scriptHasChanges = false;
           });
         } : null),
@@ -113,10 +115,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   Future<RawScript> resolveRawScript() async {
     if(rawScript == null){
       rawScript = await widget._getRawScriptById(widget.scriptId);
-    }
-
-    if (currentEditorText == null) {
-      currentEditorText = rawScript!.contentAsYaml;
+      codeController.text = rawScript!.contentAsYaml;
     }
     script = widget._scriptParser.parse(rawScript!.contentAsYaml);
 
@@ -220,11 +219,11 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
             Expanded(
               child: ScriptEditorWidget(
                 readOnly: widget.readOnly,
-                script: scriptContentAsYaml,
+                controller: codeController,
+                scrollController: codeScrollController,
                 availableExtensions: widget._extensionRepository.getAll(),
                 onCodeChange: (String text ) {
-                  currentEditorText = text;
-                  if (!scriptHasChanges && !widget.readOnly) setState(() {
+                  if (!scriptHasChanges) setState(() {
                     scriptHasChanges = true;
                   });
                 },

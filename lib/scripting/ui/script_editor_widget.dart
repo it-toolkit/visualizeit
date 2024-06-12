@@ -14,25 +14,28 @@ import 'package:visualizeit/player/domain/player.dart';
 final _logger = Logger("scripting.ui.script_editor_widget");
 
 class ScriptEditorWidget extends StatelessWidget {
-  const ScriptEditorWidget({
-    super.key, required this.script,
+  ScriptEditorWidget({
+    super.key,
+    String? script,
+    CodeLineEditingController? controller,
+    CodeScrollController? scrollController,
     required this.onCodeChange,
     this.availableExtensions = const [],
     this.listenPlayerEvents = false,
     this.readOnly = false
-  });
+  }) :
+    this.scrollController = scrollController ?? CodeScrollController(),
+    this.controller = controller ?? CodeLineEditingController.fromText(script);
 
+  final CodeLineEditingController controller;
+  final CodeScrollController scrollController;
   final List<Extension> availableExtensions;
-  final String script;
   final bool listenPlayerEvents;
   final Function(String) onCodeChange;
   final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
-    final controller = CodeLineEditingController.fromText(script);
-    final scrollController = CodeScrollController();
-
     if (!listenPlayerEvents) {
       return buildCodeEditorContainer(scrollController, controller).let(withCodeAutocompletion);
     } else {
@@ -58,7 +61,10 @@ class ScriptEditorWidget extends StatelessWidget {
         scrollController: scrollController,
         padding: EdgeInsets.all(15),
         readOnly: readOnly,
-        onChanged: (CodeLineEditingValue value) => onCodeChange(controller.text),
+        showCursorWhenReadOnly: !readOnly,
+        onChanged: (CodeLineEditingValue value) {
+          if(controller.codeLines != controller.preValue?.codeLines && controller.preValue != null) onCodeChange(controller.text);
+        },
         controller: controller,
         wordWrap: false,
         chunkAnalyzer: NonCodeChunkAnalyzer(),

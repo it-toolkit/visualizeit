@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:re_editor/re_editor.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/buttons.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
@@ -44,11 +45,13 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   RawScript? rawScript = null;
   Script? script = null;
-  String? currentEditorText = null;
   bool scriptHasChanges = false;
 
   bool graphicalMode = true;
   final PlayerTimer _timer = PlayerTimer();
+
+  final CodeScrollController codeScrollController = CodeScrollController();
+  final CodeLineEditingController codeController = CodeLineEditingController();
 
   @override
   void dispose() {
@@ -86,10 +89,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   Future<RawScript> resolveRawScript() async {
     if(rawScript == null){
       rawScript = (await widget._getRawScriptById(widget.scriptId)).clone();
-    }
-
-    if (currentEditorText == null) {
-      currentEditorText = rawScript!.contentAsYaml;
+      codeController.text = rawScript!.contentAsYaml;
     }
     script = widget._scriptParser.parse(rawScript!.contentAsYaml);
 
@@ -118,7 +118,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
       children: [
         Buttons.icon(Icons.cancel_outlined, "Discard changes", action: scriptHasChanges ? () {
             setState(() {
-              currentEditorText = rawScript!.contentAsYaml;
+              codeController.text = rawScript!.contentAsYaml;
               scriptHasChanges = false;
             });
         } : null),
@@ -127,8 +127,8 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           "Apply",
           action: scriptHasChanges ? () {
             setState(() {
-              rawScript!.contentAsYaml = currentEditorText!;
-              script = widget._scriptParser.parse(currentEditorText!);
+              rawScript!.contentAsYaml = codeController.text;
+              script = widget._scriptParser.parse(codeController.text);
               BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(script!)));
               scriptHasChanges = false;
             });
@@ -231,12 +231,12 @@ class PlayerPageState extends BasePageState<PlayerPage> {
               }),
               Expanded(
                 child: ScriptEditorWidget(
-                  script: rawScript.contentAsYaml,
+                  controller: codeController,
+                  scrollController: codeScrollController,
                   readOnly: false,
                   availableExtensions: widget._extensionRepository.getAll(),
                   listenPlayerEvents: true,
                   onCodeChange: (String text ) {
-                    currentEditorText = text;
                     if (!scriptHasChanges) setState(() {
                       scriptHasChanges = true;
                     });
