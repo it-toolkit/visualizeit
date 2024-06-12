@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
+import 'package:visualizeit/common/ui/buttons.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/player/ui/player_button_bar.dart';
@@ -44,6 +45,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   RawScript? rawScript = null;
   Script? script = null;
   String? currentEditorText = null;
+  bool scriptHasChanges = false;
 
   bool graphicalMode = true;
   final PlayerTimer _timer = PlayerTimer();
@@ -114,20 +116,22 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   ButtonBar buildButtonBar(BuildContext context) {
     return ButtonBar(
       children: [
-        TextButton(
-          onPressed: () {
-            setState(() { currentEditorText = rawScript!.contentAsYaml; });
-          },
-          child: const Text("Discard")),
-        ElevatedButton(
-          onPressed: () {
+        Buttons.icon(Icons.undo_outlined, "Discard changes", action: scriptHasChanges ? () {
+            setState(() {
+              currentEditorText = rawScript!.contentAsYaml;
+              scriptHasChanges = false;
+            });
+        } : null),
+        Buttons.highlighted(
+          "Apply",
+          action: scriptHasChanges ? () {
             setState(() {
               rawScript!.contentAsYaml = currentEditorText!;
               script = widget._scriptParser.parse(currentEditorText!);
               BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(script!)));
+              scriptHasChanges = false;
             });
-          },
-          child: const Text("Apply"),
+          } : null,
         ),
       ],
     );
@@ -232,6 +236,9 @@ class PlayerPageState extends BasePageState<PlayerPage> {
                   listenPlayerEvents: true,
                   onCodeChange: (String text ) {
                     currentEditorText = text;
+                    if (!scriptHasChanges) setState(() {
+                      scriptHasChanges = true;
+                    });
                   },
                 ),
               ),

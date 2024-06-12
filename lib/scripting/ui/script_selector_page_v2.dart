@@ -356,7 +356,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     var visibleScriptCount = _myAvailableScripts.values.length;
     await _showConfirmDialog(
         context,
-      visibleScriptCount > 1 ? "export the ${visibleScriptCount} filtered scripts": "export the selected script",
+        visibleScriptCount > 1 ? "export the ${visibleScriptCount} filtered scripts": "export the selected script",
         () async => Future.wait(_myAvailableScripts.values.map((script) => _exportScript(script))),
     );
   }
@@ -487,15 +487,15 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   ButtonBar buildButtonBar(BuildContext context, SearchableList<AvailableScript> availableScripts) {
     var selectedScript = _getSelectedScript(availableScripts);
     if (selectedScript == null) return ButtonBar(children: [
-      Buttons.simple("Clone"),
-      Buttons.simple("View"),
+      Buttons.icon(Icons.copy_rounded, "Clone"),
+      Buttons.icon(Icons.visibility_outlined, "View"),
       Buttons.highlighted("Play"),
     ]);
 
     return ButtonBar(
       children: [
-        Buttons.simple("Clone", action: (() => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))})),
-        Buttons.simple("View", action: (() => { _openScriptInEditor(selectedScript.scriptRef, readOnly: true)})),
+        Buttons.icon(Icons.copy_rounded, "Clone", action: (() => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))})),
+        Buttons.icon(Icons.visibility_outlined, "View", action: (() => { _openScriptInEditor(selectedScript.scriptRef, readOnly: true)})),
         Buttons.highlighted("Play", action: (() => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: true)})),
       ],
     );
@@ -505,19 +505,19 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     var selectedScript = _getSelectedScript(availableScripts);
 
     if (selectedScript == null) return ButtonBar(children: [
-      Buttons.simple("Export"),
-      Buttons.simple("Delete"),
-      Buttons.simple("Clone"),
-      Buttons.simple("Edit"),
+      Buttons.icon(Icons.import_export_outlined, "Export"),
+      Buttons.icon(Icons.delete_outline, "Delete"),
+      Buttons.icon(Icons.copy_rounded, "Clone"),
+      Buttons.icon(Icons.edit_outlined, "Edit"),
       Buttons.highlighted("Play"),
     ]);
 
     return ButtonBar(
       children: [
-        Buttons.simple("Export", action: () => {_showConfirmDialog(context, "export '${selectedScript.metadata.name}'", () => _exportScript(selectedScript))}),
-        Buttons.simple("Delete", action: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}),
-        Buttons.simple("Clone", action: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}),
-        Buttons.simple("Edit", action: () => {_openScriptInEditor(selectedScript.scriptRef, readOnly: false)}),
+        Buttons.icon(Icons.import_export_outlined, "Export", action: () => {_showConfirmDialog(context, "export '${selectedScript.metadata.name}'", () => _exportScript(selectedScript))}),
+        Buttons.icon(Icons.delete_outline, "Delete", action: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}),
+        Buttons.icon(Icons.copy_rounded, "Clone", action: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}),
+        Buttons.icon(Icons.edit_outlined, "Edit", action: () => {_openScriptInEditor(selectedScript.scriptRef, readOnly: false)}),
         Buttons.highlighted("Play", action: () => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: false)}),
       ],
     );

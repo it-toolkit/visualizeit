@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
+import 'package:visualizeit/common/ui/buttons.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/ui/tags_widget.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
@@ -44,7 +45,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   RawScript? rawScript = null;
   Script? script = null;
   String? currentEditorText = null;
-
+  bool scriptHasChanges = false;
   bool graphicalMode = false;
 
 
@@ -86,15 +87,17 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   ButtonBar buildButtonBar(BuildContext context) {
     return ButtonBar(
       children: [
-        TextButton(onPressed: () {
-        setState(() { currentEditorText = rawScript!.contentAsYaml; });
-        }, child: const Text("Discard")),
-        TextButton(onPressed: () {
+        Buttons.icon(Icons.undo_outlined, "Discard changes", action: scriptHasChanges ? () => setState(() {
+          currentEditorText = rawScript!.contentAsYaml;
+          scriptHasChanges = false;
+        }) : null),
+        Buttons.icon(Icons.save_outlined, "Save changes", action: scriptHasChanges ? () {
           setState(() {
             rawScript!.contentAsYaml = currentEditorText!;
             script = widget._scriptParser.parse(currentEditorText!);
+            scriptHasChanges = false;
           });
-        }, child: const Text("Save")),
+        } : null),
         ElevatedButton(
             onPressed: () {
               widget.openScriptInPlayer?.call(widget.scriptId, widget.readOnly);
@@ -205,7 +208,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
         ));
   }
 
-  Expanded buildScriptWidget(BuildContext context, ButtonBar buttonBar, String sampleText) {
+  Expanded buildScriptWidget(BuildContext context, ButtonBar buttonBar, String scriptContentAsYaml) {
     return Expanded(
         flex: 58,
         child: Column(
@@ -214,10 +217,13 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
             Expanded(
               child: ScriptEditorWidget(
                 readOnly: widget.readOnly,
-                script: sampleText,
+                script: scriptContentAsYaml,
                 availableExtensions: widget._extensionRepository.getAll(),
                 onCodeChange: (String text ) {
                   currentEditorText = text;
+                  if (!scriptHasChanges) setState(() {
+                    scriptHasChanges = true;
+                  });
                 },
               ),
             ),
