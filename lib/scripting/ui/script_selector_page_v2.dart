@@ -489,14 +489,14 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     if (selectedScript == null) return ButtonBar(children: [
       Buttons.icon(Icons.copy_rounded, "Clone"),
       Buttons.icon(Icons.visibility_outlined, "View"),
-      Buttons.highlighted("Play"),
+      Buttons.highlightedIcon(Icons.play_circle, "Play"),
     ]);
 
     return ButtonBar(
       children: [
         Buttons.icon(Icons.copy_rounded, "Clone", action: (() => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))})),
         Buttons.icon(Icons.visibility_outlined, "View", action: (() => { _openScriptInEditor(selectedScript.scriptRef, readOnly: true)})),
-        Buttons.highlighted("Play", action: (() => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: true)})),
+        Buttons.highlightedIcon(Icons.play_circle, "Play", action: (() => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: true)})),
       ],
     );
   }
@@ -509,7 +509,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
       Buttons.icon(Icons.delete_outline, "Delete"),
       Buttons.icon(Icons.copy_rounded, "Clone"),
       Buttons.icon(Icons.edit_outlined, "Edit"),
-      Buttons.highlighted("Play"),
+      Buttons.highlightedIcon(Icons.play_circle, "Play"),
     ]);
 
     return ButtonBar(
@@ -518,7 +518,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
         Buttons.icon(Icons.delete_outline, "Delete", action: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}),
         Buttons.icon(Icons.copy_rounded, "Clone", action: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}),
         Buttons.icon(Icons.edit_outlined, "Edit", action: () => {_openScriptInEditor(selectedScript.scriptRef, readOnly: false)}),
-        Buttons.highlighted("Play", action: () => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: false)}),
+        Buttons.highlightedIcon(Icons.play_circle, "Play", action: () => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: false)}),
       ],
     );
   }

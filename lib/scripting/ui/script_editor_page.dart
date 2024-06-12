@@ -87,7 +87,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   ButtonBar buildButtonBar(BuildContext context) {
     return ButtonBar(
       children: [
-        Buttons.icon(Icons.undo_outlined, "Discard changes", action: scriptHasChanges ? () => setState(() {
+        Buttons.icon(Icons.cancel_outlined, "Discard changes", action: scriptHasChanges ? () => setState(() {
           currentEditorText = rawScript!.contentAsYaml;
           scriptHasChanges = false;
         }) : null),
@@ -98,11 +98,14 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
             scriptHasChanges = false;
           });
         } : null),
-        ElevatedButton(
-            onPressed: () {
+        Buttons.highlightedIcon(
+            Icons.play_circle,
+            "Play",
+            action: () {
+              //TODO ask for pending changes
               widget.openScriptInPlayer?.call(widget.scriptId, widget.readOnly);
             },
-            child: const Text("Play")),
+        )
       ],
     );
   }
@@ -221,7 +224,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
                 availableExtensions: widget._extensionRepository.getAll(),
                 onCodeChange: (String text ) {
                   currentEditorText = text;
-                  if (!scriptHasChanges) setState(() {
+                  if (!scriptHasChanges && !widget.readOnly) setState(() {
                     scriptHasChanges = true;
                   });
                 },

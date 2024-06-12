@@ -116,13 +116,14 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   ButtonBar buildButtonBar(BuildContext context) {
     return ButtonBar(
       children: [
-        Buttons.icon(Icons.undo_outlined, "Discard changes", action: scriptHasChanges ? () {
+        Buttons.icon(Icons.cancel_outlined, "Discard changes", action: scriptHasChanges ? () {
             setState(() {
               currentEditorText = rawScript!.contentAsYaml;
               scriptHasChanges = false;
             });
         } : null),
-        Buttons.highlighted(
+        Buttons.highlightedIcon(
+          Icons.check_circle_outline,
           "Apply",
           action: scriptHasChanges ? () {
             setState(() {
