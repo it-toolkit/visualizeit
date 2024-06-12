@@ -254,7 +254,24 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
       TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? treeController,
       TextEditingController textEditingController) {
     return AdaptiveContainerWidget(
-      header: buildSearchBar(availableScripts, textEditingController),
+      header: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Expanded(
+              flex: 5,
+              child: TextField(
+                controller: textEditingController,
+                onChanged: (query) => search(query, availableScripts),
+                style: TextStyle(fontSize: 14),
+                decoration: InputDecoration(suffixIcon: Icon(Icons.search), hintText: 'Search scripts...', isDense: true),
+              ),
+            ),
+            // TagsWidget(), //TODO redefine tags visualization
+            Spacer(),
+            IconButton(onPressed: readOnly ? null : _createScript, icon: Icon(Icons.add_circle_outline), tooltip: readOnly ? null : "Create script", iconSize: 20),
+            IconButton(onPressed: readOnly ? null : _importScripts, icon: Icon(Icons.compare_arrows), tooltip: readOnly ? null : "Import scripts", iconSize: 20),
+            IconButton(onPressed: readOnly ? null : _exportAllFilteredScripts.takeIf(availableScripts.values.isNotEmpty), icon: Icon(Icons.import_export), tooltip: readOnly ? null : "Export scripts", iconSize: 20),
+      ])),
       children: [buildScriptsList(context, readOnly, loadingScripts, availableScripts, treeData, treeController),
         const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar, availableScripts)],
     );
@@ -265,6 +282,14 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     name: $scriptName
     description: $scriptDescription 
     tags: []
+    scenes:
+      - name: "...scene name..."
+        extensions: [ ]
+        description: "...scene description"
+        initial-state:
+          - nop
+        transitions:
+          - nop
     """.trimIndent();
 
 
@@ -328,15 +353,6 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              readOnly
-                  ? const SizedBox(height: 40, child: Align(alignment: Alignment.centerLeft, child: Text("Scripts")))
-                  : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                      Text("Scripts"),
-                      Spacer(),
-                      IconButton(onPressed: _createScript, icon: Icon(Icons.add_circle_outline), tooltip: "Create script", iconSize: 20),
-                      IconButton(onPressed: _importScripts, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
-                      IconButton(onPressed: _exportAllFilteredScripts.takeIf(availableScripts.values.isNotEmpty), icon: Icon(Icons.import_export), tooltip: "Export scripts", iconSize: 20),
-              ]),
               Expanded(
                   child: Container(
                     decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -345,7 +361,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
                       child: loadingScripts
                                 ? Center(child: CircularProgressIndicator())
                                 : availableScripts.values.length == 0 //Only root node
-                                    ?  const Center(child: Text('No Results Found', style: TextStyle(fontSize: 18)))
+                                    ?  const Center(child: Text('No scripts available', style: TextStyle(fontSize: 18)))
                                     : _buildListView(availableScripts, treeData, treeController),
                   ))),
             ],
@@ -435,38 +451,11 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
     );
   }
 
-  Widget buildSearchBar(SearchableList<AvailableScript> availableScripts, TextEditingController controller) {
-    return Container(
-        padding: const EdgeInsets.all(10),
-        child: Wrap(
-          spacing: 15,
-          runSpacing: 10,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            SizedBox(
-              width: 200,
-              height: 40,
-              child: TextField(
-                  controller: controller,
-                  onChanged: (query) => search(query, availableScripts),
-                  style: TextStyle(fontSize: 14),
-                  decoration: InputDecoration(suffixIcon: Icon(Icons.search), hintText: 'Search scripts...')),
-            ),
-            // TagsWidget(), //TODO redefine tags visualization
-          ],
-        ));
-  }
-
   Expanded buildDetailsSection(BuildContext context, ButtonBar buttonBar, SearchableList<AvailableScript> availableScripts) {
     return Expanded(
         flex: 58,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(
-              height: 40,
-              child: Align(alignment: Alignment.centerLeft, child: Text("Script details")),
-            ),
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(15.0),
