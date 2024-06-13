@@ -38,6 +38,7 @@ class ExtendedMarkdownWidget extends StatelessWidget {
 MarkdownConfig _buildMarkdownConfig() {
   return MarkdownConfig(
     configs: [
+      PConfig(textStyle: TextStyle(fontSize: 14)),
       TableConfig(wrapper: (child) => SingleChildScrollView(scrollDirection: Axis.horizontal, child: child))
     ],
   );
