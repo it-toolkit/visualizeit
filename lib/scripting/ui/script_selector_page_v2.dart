@@ -142,8 +142,9 @@ class AvailableScript {
   }
 }
 
-class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
-  final uuid = Uuid();
+class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with SingleTickerProviderStateMixin {
+  final _uuid = Uuid();
+  late TabController _tabController;
 
   IndexedTreeNode<AvailableScript> _publicScriptsTreeData = IndexedTreeNode.root();
   SearchableList<AvailableScript> _publicAvailableScripts = SearchableList<AvailableScript>(
@@ -191,6 +192,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
 
   @override
   void initState() {
+    _tabController = TabController(length: 2, vsync: this, animationDuration: Duration.zero);
     _publicAvailableScripts.onValuesUpdated = (values) => setState(() => _publicScriptsTreeData = _buildTreeData(values));
     widget._publicRawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
       this._publicAvailableScripts.setAllItems(value.entries.map((e) => AvailableScript(e.key, e.value)).toList())
@@ -217,31 +219,29 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   buildBody(BuildContext context) {
       return Container(
         decoration: const BoxDecoration(color: Colors.grey),
-        child: DefaultTabController(
-          length: 2,
-          initialIndex: 0,
-          child: Scaffold(
+        child: Scaffold(
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(40.0),
               child: Container(
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(colors: <Color>[Colors.lightBlue, Colors.lightGreenAccent]),
                     borderRadius: BorderRadius.all(Radius.circular(5))),
-                child: const TabBar(
+                child: TabBar(
                   tabs: [
                     Tab(child: Text("Public scripts", softWrap: true, textAlign: TextAlign.center)),
                     Tab(child: Text("My scripts", softWrap: true, textAlign: TextAlign.center)),
                   ],
+                  controller: _tabController,
                 ),
               ),
             ),
             body: TabBarView(
+              controller: _tabController,
               children: [
                 buildTabContent(context, true, buildButtonBar(context, _publicAvailableScripts), _loadingPublicScripts, _publicAvailableScripts, _publicScriptsTreeData, _publicScriptsTreeController, _publicScriptsTextEditingController),
                 _isUserLoggedIn() ? buildTabContent(context, false, buildMyScriptsButtonBar(context, _myAvailableScripts), _loadingMyScripts, _myAvailableScripts, _myScriptsTreeData, _myScriptsTreeController, _myScriptsTextEditingController) : buildLoginRequiredTabContent(context),
               ],
             ),
-          ),
         ),
       );
   }
@@ -268,9 +268,9 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
             ),
             // TagsWidget(), //TODO redefine tags visualization
             Spacer(),
-            IconButton(onPressed: readOnly ? null : _createScript, icon: Icon(Icons.add_circle_outline), tooltip: readOnly ? null : "Create script", iconSize: 20),
-            IconButton(onPressed: readOnly ? null : _importScripts, icon: Icon(Icons.compare_arrows), tooltip: readOnly ? null : "Import scripts", iconSize: 20),
-            IconButton(onPressed: readOnly ? null : _exportAllFilteredScripts.takeIf(availableScripts.values.isNotEmpty), icon: Icon(Icons.import_export), tooltip: readOnly ? null : "Export scripts", iconSize: 20),
+            IconButton(onPressed: _createScript, icon: Icon(Icons.add_circle_outline), tooltip: "Create script", iconSize: 20),
+            IconButton(onPressed: _importScripts, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
+            IconButton(onPressed: readOnly ? null : _exportAllFilteredScripts.takeIf(availableScripts.values.isNotEmpty), icon: Icon(Icons.import_export), tooltip: readOnly ? null : "Export my scripts", iconSize: 20),
       ])),
       children: [buildScriptsList(context, readOnly, loadingScripts, availableScripts, treeData, treeController),
         const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar, availableScripts)],
@@ -294,7 +294,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
 
 
   void _createScript() {
-    var scriptRef = uuid.v4();
+    _tabController.index = 1;
+    var scriptRef = _uuid.v4();
     final  newScriptRegExp = RegExp(r'New script (\d+)');
 
     widget._myRawScriptRepository.fetchAvailableScriptsMetadata()
@@ -314,7 +315,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   }
 
   void _cloneScript(ScriptRef ref, ScriptMetadata metadata, RawScriptRepository repository) {
-    var scriptRef = uuid.v4();
+    _tabController.index = 1;
+    var scriptRef = _uuid.v4();
     repository.get(ref)
       .then((rawScript) {
         widget._myRawScriptRepository.fetchAvailableScriptsMetadata()
@@ -391,6 +393,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> {
   }
 
   void _importScripts() async {
+    _tabController.index = 1;
     List<PlatformFile> _paths = <PlatformFile>[];
     try {
       _paths = (await FilePicker.platform.pickFiles(
