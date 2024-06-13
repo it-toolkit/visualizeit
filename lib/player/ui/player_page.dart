@@ -74,7 +74,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   @override
   Widget buildBody(BuildContext context) {
-    final canvas = CanvasWidget();
+    final canvas = Container(child: CanvasWidget(), decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),);
     final playerButtonBar = buildPlayerButtonBar(context);
 
     if(script == null) return Container(child: Text("Not ready"));
