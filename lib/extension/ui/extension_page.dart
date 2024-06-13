@@ -53,24 +53,28 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
     );
   }
 
-  Expanded buildScriptsList() {
+  Widget buildScriptsList() {
     return Expanded(
         flex: 40,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text("Extensions"),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            const Padding(
+              child: Text("Extensions", style: TextStyle(fontWeight: FontWeight.bold)),
+              padding: EdgeInsets.all(10),
+            ),
             Expanded(
-                child: Container(
-                    decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: const BorderRadius.all(Radius.circular(10))),
-                    child: Material(
-                        type: MaterialType.transparency,
-                        child: _filteredExtensions.isNotEmpty || _query.isNotEmpty
-                            ? _filteredExtensions.isEmpty
-                                ? const Center(child: Text('No Results Found', style: TextStyle(fontSize: 18)))
-                                : _buildListView(_filteredExtensions)
-                            : _buildListView(getAllExtensions())))),
-          ],
+                child: Material(
+                    type: MaterialType.transparency,
+                    child: _filteredExtensions.isNotEmpty || _query.isNotEmpty
+                        ? _filteredExtensions.isEmpty
+                            ? const Center(child: Text('No extensions found', style: TextStyle(fontSize: 18)))
+                            : _buildListView(_filteredExtensions)
+                        : _buildListView(getAllExtensions()))),
+          ]),
         ));
   }
 
@@ -128,32 +132,23 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
     );
   }
 
-  Expanded buildDetailsSection(BuildContext context) {
+  Widget buildDetailsSection(BuildContext context) {
     final selectedExtension = _selectedIndex != null
         ? _filteredExtensions.isEmpty
             ? getAllExtensions()[_selectedIndex!]
             : _filteredExtensions[_selectedIndex!]
         : null;
-    final detailsWidget = selectedExtension != null
-        ? markdownFromAsset(selectedExtension.markdownDocs["en"]!)
-        : null;
+    final detailsWidget = selectedExtension != null ? markdownFromAsset(selectedExtension.markdownDocs["en"]!) : null;
 
     return Expanded(
-        flex: 58,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text("Details"),
-            Expanded(
-              child: Container(
-                  padding: const EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  ),
-                  child: detailsWidget),
-            ),
-          ],
-        ));
+      flex: 58,
+      child: Container(
+          padding: const EdgeInsets.all(15.0),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          child: detailsWidget),
+    );
   }
 }
