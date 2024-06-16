@@ -7,7 +7,6 @@ import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/logging.dart';
-import 'package:visualizeit_extensions/scripting.dart';
 import 'package:visualizeit_extensions/visualizer.dart';
 
 import 'background.dart';
@@ -23,9 +22,9 @@ abstract class DefaultExtensionConsts {
 }
 
 
-class _DefaultExtensionComponents extends DefaultScriptingExtension implements ScriptingExtension, VisualizerExtension {
+class _DefaultExtensionCore extends ExtensionCore {
 
-  _DefaultExtensionComponents(): super({
+  _DefaultExtensionCore(): super({
     ShowPopup.commandDefinition: ShowPopup.build,
     ShowBackground.commandDefinition: ShowBackground.build,
     ShowBanner.commandDefinition: ShowBanner.build,
@@ -33,57 +32,20 @@ class _DefaultExtensionComponents extends DefaultScriptingExtension implements S
   });
 
   @override
-  Widget? render(Model model, BuildContext context) {
+  Iterable<Widget> renderAll(Model model, BuildContext context) {
     switch (model.name) {
       default:
         if (model is GlobalModel) {
-          return Stack(fit: StackFit.expand, children: model.models.values.map((innerModel) {
-            if (innerModel is BannerModel) return buildBannerWidget(innerModel);
-            else if (innerModel is BackgroundModel) return buildBackgroundWidget(innerModel);
-            else return null;
-          }).nonNulls.toList());
+          return model.models.values.map((innerModel) {
+            return switch (innerModel) {
+              BannerModel innerModel => BannerWidget(innerModel),
+              BackgroundModel innerModel => BackgroundWidget(innerModel),
+              _ => null
+            };
+          }).nonNulls;
         }
 
-        return null;
-    }
-  }
-
-  Widget buildBannerWidget(BannerModel innerModel) {
-    _logger.trace(() => "Building widget for: ${innerModel.toString()}");
-
-    return BannerWidget(innerModel);
-  }
-
-  Widget buildBackgroundWidget(BackgroundModel innerModel) {
-    _logger.trace(() => "Building widget for: ${innerModel.toString()}");
-
-    return Image.network(
-      innerModel.imageUrl,
-      fit: parseImageBoxFit(innerModel.scaling)
-    );
-  }
-
-  BoxFit parseImageBoxFit(String boxFit) {
-    switch(boxFit) {
-      case "fill": return BoxFit.fill;
-      case "contain": return BoxFit.contain;
-      case "cover": return BoxFit.cover;
-      default: throw Exception("Unknown image scaling strategy value"); //TODO handle error properly
-    }
-  }
-
-  Alignment parseAlignment(String alignment) {
-    switch(alignment) {
-      case "topLeft": return Alignment.topLeft;
-      case "topCenter": return Alignment.topCenter;
-      case "topRight": return Alignment.topRight;
-      case "centerLeft": return Alignment.centerLeft;
-      case "center": return Alignment.center;
-      case "centerRight": return Alignment.centerRight;
-      case "bottomLeft": return Alignment.bottomLeft;
-      case "bottomCenter": return Alignment.bottomCenter;
-      case "bottomRight": return Alignment.bottomRight;
-      default: throw Exception("Unknown alignment value"); //TODO handle error properly
+        return [];
     }
   }
 }
@@ -104,6 +66,32 @@ class PopupMessage extends GlobalStateUpdate {
   @override
   String toString() {
     return 'PopupMessage{title: $title, message: ${message.cap(30, addRealLengthSuffix: true)}}';
+  }
+}
+
+class BackgroundWidget extends StatelessWidget with RenderingPriority {
+
+  final BackgroundModel model;
+
+  BackgroundWidget(this.model) {
+    initPriority(RenderingPriority.minPriority);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+        model.imageUrl,
+        fit: _parseImageBoxFit(model.scaling)
+    );
+  }
+
+  BoxFit _parseImageBoxFit(String boxFit) {
+    switch(boxFit) {
+      case "fill": return BoxFit.fill;
+      case "contain": return BoxFit.contain;
+      case "cover": return BoxFit.cover;
+      default: throw Exception("Unknown image scaling strategy value"); //TODO handle error properly
+    }
   }
 }
 
@@ -141,11 +129,11 @@ class DefaultExtensionBuilder implements ExtensionBuilder {
 
   @override
   Future<Extension> build() async {
+    _logger.trace(() => "Building extension: ${DefaultExtensionConsts.Id}");
     final markdownDocs = {
       for (final languageCode in _availableDocsLanguages) languageCode : '$_docsLocationPath/$languageCode.md'
     };
 
-    final component = _DefaultExtensionComponents();
-    return Extension(DefaultExtensionConsts.Id, component, component, markdownDocs);
+    return Extension.create(id: DefaultExtensionConsts.Id, markdownDocs: markdownDocs, extensionCore: _DefaultExtensionCore());
   }
 }

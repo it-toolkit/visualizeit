@@ -24,7 +24,7 @@ void main() {
 
   test('When try to get a known extension then returns it', () {
     var extensionMock = ExtensionMock();
-    when(() => extensionMock.extensionId).thenReturn("known");
+    when(() => extensionMock.id).thenReturn("known");
     var repository = DefaultExtensionRepository(extensions: [extensionMock]);
 
     expect(repository.getById("known"), equals(extensionMock));

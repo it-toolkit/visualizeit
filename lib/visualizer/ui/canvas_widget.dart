@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit/extension/action.dart';
-import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
+import 'package:visualizeit_extensions/visualizer.dart';
 
 import '../../extension/domain/default/default_extension.dart';
 import '../../player/domain/player.dart';
@@ -37,25 +37,14 @@ class CanvasWidget extends StatelessWidget {
             _logger.debug(() => "Rendering $playerState");
 
             final getExtensionById = context.read<GetExtensionById>();
-
-            List<Widget> widgets = getModelsOrderedByPriority(playerState)
-                .map((model) => getExtensionById(model.extensionId).visualizer.render(model, context))
-                .nonNulls.toList();
+            List<Widget> widgets = playerState.currentSceneModels.values
+                .expand((model) => getExtensionById(model.extensionId).renderer.renderAll(model, context))
+                .nonNulls.toList()
+                ..sort((a, b) => (a is RenderingPriority ? a.priority : 0).compareTo(b is RenderingPriority ? b.priority : 0));
 
             return Stack(fit: StackFit.expand, children: widgets);
           },
     ),);
-  }
-
-  Iterable<Model> getModelsOrderedByPriority(PlayerState playerState) {
-    List<Model> topModels = [];
-    List<Model> bottomModels = [];
-
-    playerState.currentSceneModels.values.forEach((model) {
-        (model.extensionId == DefaultExtensionConsts.Id ? topModels : bottomModels).add(model);
-    });
-
-    return bottomModels.followedBy(topModels);
   }
 
   void _showAlertDialog(BuildContext context, PlayerBloc playerBloc, {String? title, required String message}) {

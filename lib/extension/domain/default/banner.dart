@@ -3,12 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:visualizeit/common/markdown/markdown.dart';
 import 'package:visualizeit/extension/domain/default/show_banner.dart';
+import 'package:visualizeit_extensions/visualizer.dart';
 
-class BannerWidget extends StatefulWidget {
+class BannerWidget extends StatefulWidget with RenderingPriority {
 
   final BannerModel model;
 
-  BannerWidget(this.model);
+  BannerWidget(this.model) {
+    initPriority(RenderingPriority.maxPriority);
+  }
 
   @override
   _BannerState createState() => _BannerState();

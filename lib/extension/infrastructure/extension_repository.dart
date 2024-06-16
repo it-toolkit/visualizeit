@@ -10,7 +10,7 @@ class DefaultExtensionRepository implements ExtensionRepository {
   final List<Extension> _extensions;
 
   DefaultExtensionRepository({List<Extension> extensions = const []}):
-        this._extensionsById = { for (var e in extensions) e.extensionId: e },
+        this._extensionsById = { for (var e in extensions) e.id: e },
         this._extensions = List.unmodifiable(extensions);
 
   static Future<DefaultExtensionRepository> withAvailableExtensions({List<Extension> extensions = const []}) async {

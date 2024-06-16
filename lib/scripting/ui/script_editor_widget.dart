@@ -125,7 +125,7 @@ class ScriptEditorWidget extends StatelessWidget {
   }
 
   Widget withCodeAutocompletion(Widget child) {
-    final keywordPrompts = availableExtensions.map((e) => CodeKeywordPrompt(word: e.extensionId)).toList();
+    final keywordPrompts = availableExtensions.map((e) => CodeKeywordPrompt(word: e.id)).toList();
     List<CodePrompt> templatePrompts = [
       CodeTemplatePrompt(word: "name", template: "name: ...element name..."),
       CodeTemplatePrompt(word: "description", template: "description: ...script description..."),
@@ -145,7 +145,7 @@ class ScriptEditorWidget extends StatelessWidget {
 
     Map<String, List<CodePrompt>> relatedCommandPrompts = {
       for (var e in availableExtensions)
-        e.extensionId : e.scripting.getAllCommandDefinitions().map((def) => CodeExtensionCommandPrompt(def)).toList()
+        e.id : e.scripting.getAllCommandDefinitions().map((def) => CodeExtensionCommandPrompt(def)).toList()
           ..sort((a,b) => a.commandDefinition.name.compareTo(b.commandDefinition.name))
     };
 

@@ -33,7 +33,7 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
     setState(
       () {
         _query = query;
-        _filteredExtensions = getAllExtensions().where((item) => item.extensionId.toLowerCase().contains(query.toLowerCase())).toList();
+        _filteredExtensions = getAllExtensions().where((item) => item.id.toLowerCase().contains(query.toLowerCase())).toList();
         if (_filteredExtensions.length == 1) {
           _selectedIndex = 0;
         } else {
@@ -86,7 +86,7 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
         return ListTile(
           dense: true,
           titleAlignment: ListTileTitleAlignment.top,
-          title: Text(extensions[index].extensionId),
+          title: Text(extensions[index].id),
           selectedTileColor: Colors.blue.shade200,
           onTap: () {
             setState(() {

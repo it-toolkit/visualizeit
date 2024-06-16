@@ -11,7 +11,7 @@ import 'package:visualizeit_extensions/scripting.dart';
 
 class GetExtensionsByIdMock extends Mock implements GetExtensionById {}
 class ExtensionMock extends Mock implements Extension {}
-class ScriptingExtensionMock extends Mock implements ScriptingExtension {}
+class ScriptingExtensionMock extends Mock implements Scripting {}
 class CommandMock extends Mock implements ModelCommand {}
 class ModelMock extends Mock implements Model {}
 
