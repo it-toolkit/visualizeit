@@ -54,6 +54,7 @@ dependencies:
   file_saver: ^0.2.13
   file_picker: ^8.0.4
   slugify: ^2.0.0
+  share_plus: ^9.0.0
 
   visualizeit_extensions:
     git: #Read only token for extensions.. Change to public URL when available

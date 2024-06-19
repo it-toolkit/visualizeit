@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:slugify/slugify.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
@@ -392,6 +393,16 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     }
   }
 
+  Future<void> _shareScript(AvailableScript? script) async {
+    if (script == null) return;
+
+    final rawScript = await widget._myRawScriptRepository.get(script.scriptRef);
+
+    final result = await Share.share(rawScript.contentAsYaml, subject: 'Script: ${script.metadata.name}');
+
+    _logger.info(() => "Share script result: ${result.status}");
+  }
+
   void _importScripts() async {
     _tabController.index = 1;
     List<PlatformFile> _paths = <PlatformFile>[];
@@ -497,6 +508,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     var selectedScript = _getSelectedScript(availableScripts);
 
     if (selectedScript == null) return ButtonBar(children: [
+      Buttons.icon(Icons.share_outlined, "Share"),
       Buttons.icon(Icons.import_export_outlined, "Export"),
       Buttons.icon(Icons.delete_outline, "Delete"),
       Buttons.icon(Icons.copy_rounded, "Clone"),
@@ -506,6 +518,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
 
     return ButtonBar(
       children: [
+        Buttons.icon(Icons.share_outlined, "Share", action: () => {_showConfirmDialog(context, "share '${selectedScript.metadata.name}'", () => _shareScript(selectedScript))}),
         Buttons.icon(Icons.import_export_outlined, "Export", action: () => {_showConfirmDialog(context, "export '${selectedScript.metadata.name}'", () => _exportScript(selectedScript))}),
         Buttons.icon(Icons.delete_outline, "Delete", action: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}),
         Buttons.icon(Icons.copy_rounded, "Clone", action: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}),
