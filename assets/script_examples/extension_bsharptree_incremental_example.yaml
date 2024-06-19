@@ -1,0 +1,112 @@
+name: B# Tree with autoincremental values
+group: DB data structures and algorithms
+description: |-
+  ## B\# Tree example
+
+  In this example a B\# tree is created, some keys are added and then one key is removed. All these commands cause changes in the tree,
+  like new node creations, overflows and balancing the keys between nodes  
+tags: [bsharptree-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: ['bsharptree-extension']
+    description: Tree creation
+    initial-state:
+      - bsharptree-create:
+          maxCapacity: "3"
+          initialValues: ["1"]
+          autoIncremental: "true"
+    transitions:
+      - show-banner: 
+        - |-
+            In a tree with autoincremental keys insertion there's an improvement in the balance algorithm.<br>
+            The tree tries to fill every node to maximum capacity, because there won't be insertions of keys<br> 
+            inbetween other keys.<br>
+            This leads to changes in the splitting of nodes when an overflow occurs.
+        - bottomCenter
+        - 9
+        - true
+      - bsharptree-insert: [2]
+      - bsharptree-insert: [3]
+      - bsharptree-insert: [4]
+      - show-banner:
+        - |-
+            When **5** is inserted, there's a split in the root that leaves the left leaf node at maximum capacity.<br>
+            The rest of the keys are then passed to a new node.
+        - bottomCenter
+        - 6
+        - true
+      - bsharptree-insert: [5]
+      - bsharptree-insert: [6]
+      - bsharptree-insert: [7]
+      - bsharptree-insert: [8]
+      - bsharptree-insert: [9]
+      - bsharptree-insert: [10]
+      - bsharptree-insert: [11]
+      - bsharptree-insert: [12]
+      - bsharptree-insert: [13]
+      - bsharptree-insert: [14]
+      - bsharptree-insert: [15]
+      - show-banner:
+        - |-
+            Now, while inserting the **16** the root ****overflows****. The left branch should be at maximum capacity,<br> 
+            while the right branch will have the remaining keys.
+        - bottomCenter
+        - 6
+        - true
+      - bsharptree-insert: [16]
+      - bsharptree-insert: [17]
+      - bsharptree-insert: [18]
+      - bsharptree-insert: [19]
+      - bsharptree-insert: [20]
+      - bsharptree-insert: [21]
+      - bsharptree-insert: [22]
+      - bsharptree-insert: [23]
+      - bsharptree-insert: [24]
+      - show-banner:
+        - |-
+            When **25** is inserted in the tree, it ****overflows**** the leaf node, but the index node is also full, <br> 
+            so a new index node is created, but only with the new inserted value in the left node, and an empty right node.
+        - bottomCenter
+        - 6
+        - true
+      - bsharptree-insert: [25]
+      - bsharptree-insert: [26]
+      - bsharptree-insert: [27]
+      - bsharptree-insert: [28]
+      - bsharptree-insert: [29]
+      - bsharptree-insert: [30]
+      - show-banner:
+        - |-
+            When deleting keys, the algorithm also changes. Balancing can be made between branches,<br>
+            but underflows in the last branch must be dealt in a special way, avoiding trying to balance with other <br>
+            nodes.
+        - bottomCenter
+        - 6
+        - true
+      - bsharptree-remove: [28]
+      - show-banner:
+        - |-
+            In any other node, leaving a node underflowed would cause a balancing attempt or a fusion, but in <br>
+            this case, after deleting **29** the ****underflow**** is not managed.
+        - bottomCenter
+        - 6
+        - true
+      - bsharptree-remove: [29]
+      - bsharptree-remove: [30]
+      - show-banner:
+        - |-
+            After deleting all the keys in the leaf node **14**, the index node **13** is in underflow, but even <br>
+            at this moment, there's no attempt to balance or fuse it with its left sibling.
+        - bottomCenter
+        - 6
+        - true
+      - bsharptree-remove: [27]
+      - bsharptree-remove: [26]
+      - show-banner:
+        - |-
+            Finally, after deleting the **25** the leaf node is released and the index node **13** has no more <br>
+            left or right children, it is released. 
+        - bottomCenter
+        - 6
+        - true
+      - bsharptree-remove: [25]
