@@ -183,6 +183,8 @@ class PlayerPageState extends BasePageState<PlayerPage> {
         onScaleChanged: (scale) {
           playerBloc.add(SetCanvasScaleEvent(scale));
         },
+        speedFactor: _timer.speedFactor,
+        scale: playerState.canvasScale,
       );
     });
   }

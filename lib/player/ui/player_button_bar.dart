@@ -11,6 +11,9 @@ class PlayerButtonBar extends StatelessWidget {
   final Function(double)? onScaleChanged;
   final double progress; // Value between 0.0 and 1.0 for the progress bar
   final bool isPlaying;
+  final double? speedFactor;
+  final double? scale;
+
   const PlayerButtonBar({
     super.key,
     this.onRestartPressed,
@@ -22,6 +25,8 @@ class PlayerButtonBar extends StatelessWidget {
     this.onScaleChanged,
     required this.progress,
     required this.isPlaying,
+    required this.speedFactor,
+    required this.scale
   });
 
   @override
@@ -36,7 +41,7 @@ class PlayerButtonBar extends StatelessWidget {
           IconButton(icon: const Icon(Icons.skip_previous), onPressed: onPreviousPressed?.takeIf(!isPlaying)),
           IconButton(icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow), onPressed: onPlayPausePressed),
           IconButton(icon: const Icon(Icons.skip_next), onPressed: onNextPressed?.takeIf(!isPlaying)),
-          SpeedSelector(onSpeedChanged: onSpeedChanged),
+          SpeedSelector(speedFactor ?? 1, onSpeedChanged: onSpeedChanged),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -48,7 +53,7 @@ class PlayerButtonBar extends StatelessWidget {
             ),
           ),
           IconButton(icon: const Icon(Icons.fullscreen), onPressed: onFullscreenPressed),
-          CanvasScaleSelector(onScaleChanged: onScaleChanged),
+          CanvasScaleSelector(scale ?? 1, onScaleChanged: onScaleChanged),
         ],
       ),
     );
@@ -56,17 +61,24 @@ class PlayerButtonBar extends StatelessWidget {
 }
 
 class SpeedSelector extends StatefulWidget {
+  final double initialValue;
   final Function(double)? onSpeedChanged;
 
-  const SpeedSelector({Key? key, this.onSpeedChanged}) : super(key: key);
+  const SpeedSelector(this.initialValue, {Key? key, this.onSpeedChanged}) : super(key: key);
 
   @override
   _SpeedSelectorState createState() => _SpeedSelectorState();
 }
 
 class _SpeedSelectorState extends State<SpeedSelector> {
-  double _currentSpeed = 1.0;  // Default speed
+  late double _currentSpeed;  // Default speed
   final List<double> _speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 4.0];
+
+  @override
+  void initState() {
+    _currentSpeed = widget.initialValue;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,17 +107,24 @@ class _SpeedSelectorState extends State<SpeedSelector> {
 }
 
 class CanvasScaleSelector extends StatefulWidget {
+  final double initialValue;
   final Function(double)? onScaleChanged;
 
-  const CanvasScaleSelector({Key? key, this.onScaleChanged}) : super(key: key);
+  const CanvasScaleSelector(this.initialValue, {Key? key, this.onScaleChanged}) : super(key: key);
 
   @override
   _CanvasScaleSelectorState createState() => _CanvasScaleSelectorState();
 }
 
 class _CanvasScaleSelectorState extends State<CanvasScaleSelector> {
-  double _currentScale = 1;  // Default speed
+  late double _currentScale;  // Default speed
   final List<double> _scales = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 4];
+
+  @override
+  void initState() {
+    _currentScale = widget.initialValue;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

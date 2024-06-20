@@ -15,6 +15,8 @@ class PlayerTimer {
 
   bool get isInitialized => _callback != null;
 
+  double get speedFactor => _speedFactor;
+
   void init(void Function() callback) {
     _callback = callback;
   }
