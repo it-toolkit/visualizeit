@@ -33,6 +33,11 @@ class OverrideEvent extends PlayerEvent {
   OverrideEvent(this.state);
 }
 
+class SetCanvasScaleEvent extends PlayerEvent {
+  double scale;
+  SetCanvasScaleEvent(this.scale);
+}
+
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   Queue<PlayerState> history = Queue();
 
@@ -72,6 +77,10 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     on<RestartPlaybackEvent>((event, emit) {
       emit(state.restartPlayback());
     });
+
+    on<SetCanvasScaleEvent>((event, emit) {
+      emit(state.updateCanvasScale(event.scale));
+    });
   }
 }
 
@@ -96,13 +105,17 @@ class PlayerState {
   late final Map<String, Model> currentSceneModels;
   late final bool isPlaying;
   late final bool waitingAction;
-  late final copyCounter = 0;
+  late final double canvasScale;
 
   Scene get currentScene => script.scenes[currentSceneIndex];
 
   Command? get currentCommand => currentScene.transitionCommands.isNotEmpty && currentCommandIndex >= -1
       ? currentScene.transitionCommands[min(currentCommandIndex + 1, currentScene.transitionCommands.length - 1)]
       : null;
+
+  PlayerState updateCanvasScale(double scale) {
+    return PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction, scale);
+  }
 
   @override
   String toString() {
@@ -112,6 +125,8 @@ class PlayerState {
   PlayerState(this.script) {
     _setupScene(0);
     isPlaying = false;
+    canvasScale = 1;
+    waitingAction = false;
   }
 
   double get progress {
@@ -124,10 +139,10 @@ class PlayerState {
     return commandsRun / totalCommands;
   }
 
-  PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction);
+  PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction, this.canvasScale);
 
   PlayerState copy({required int sceneIndex, required int commandIndex, required Map<String, Model> models, required bool isPlaying, bool waitingAction = false}) {
-    return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying, waitingAction);
+    return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying, waitingAction, canvasScale);
   }
 
   PlayerState runNextCommand({Duration timeFrame = Duration.zero}) {

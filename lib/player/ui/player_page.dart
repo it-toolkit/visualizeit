@@ -180,6 +180,9 @@ class PlayerPageState extends BasePageState<PlayerPage> {
         onSpeedChanged: (speedFactor) {
           _timer.changeSpeed(speedFactor);
         },
+        onScaleChanged: (scale) {
+          playerBloc.add(SetCanvasScaleEvent(scale));
+        },
       );
     });
   }

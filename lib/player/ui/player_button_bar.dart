@@ -8,6 +8,7 @@ class PlayerButtonBar extends StatelessWidget {
   final VoidCallback? onNextPressed;
   final VoidCallback? onFullscreenPressed;
   final Function(double)? onSpeedChanged;
+  final Function(double)? onScaleChanged;
   final double progress; // Value between 0.0 and 1.0 for the progress bar
   final bool isPlaying;
   const PlayerButtonBar({
@@ -18,6 +19,7 @@ class PlayerButtonBar extends StatelessWidget {
     this.onNextPressed,
     this.onFullscreenPressed,
     this.onSpeedChanged,
+    this.onScaleChanged,
     required this.progress,
     required this.isPlaying,
   });
@@ -46,6 +48,7 @@ class PlayerButtonBar extends StatelessWidget {
             ),
           ),
           IconButton(icon: const Icon(Icons.fullscreen), onPressed: onFullscreenPressed),
+          CanvasScaleSelector(onScaleChanged: onScaleChanged),
         ],
       ),
     );
@@ -68,10 +71,11 @@ class _SpeedSelectorState extends State<SpeedSelector> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton<double>(
+      isDense: true,
       value: _currentSpeed,
       icon: Icon(Icons.speed),
       iconEnabledColor: Colors.black,
-      onChanged: (double? newValue) {
+      onChanged: widget.onSpeedChanged == null ? null : (double? newValue) {
         setState(() {
           _currentSpeed = newValue!;
           widget.onSpeedChanged?.call(_currentSpeed);
@@ -82,7 +86,46 @@ class _SpeedSelectorState extends State<SpeedSelector> {
           value: value,
           child: Tooltip(
             message: '${(1/value).toStringAsPrecision(2)} seconds per frame',
-            child: Text("${value}x"),
+            child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class CanvasScaleSelector extends StatefulWidget {
+  final Function(double)? onScaleChanged;
+
+  const CanvasScaleSelector({Key? key, this.onScaleChanged}) : super(key: key);
+
+  @override
+  _CanvasScaleSelectorState createState() => _CanvasScaleSelectorState();
+}
+
+class _CanvasScaleSelectorState extends State<CanvasScaleSelector> {
+  double _currentScale = 1;  // Default speed
+  final List<double> _scales = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 4];
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<double>(
+      isDense: true,
+      value: _currentScale,
+      icon: Icon(Icons.photo_size_select_large_outlined),
+      iconEnabledColor: Colors.black,
+      onChanged: widget.onScaleChanged == null ? null : (double? newValue) {
+        setState(() {
+          _currentScale = newValue!;
+          widget.onScaleChanged?.call(_currentScale);
+        });
+      },
+      items: _scales.map<DropdownMenuItem<double>>((double value) {
+        return DropdownMenuItem<double>(
+          value: value,
+          child: Tooltip(
+            message: '${value}x scaled canvas',
+            child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
           ),
         );
       }).toList(),
