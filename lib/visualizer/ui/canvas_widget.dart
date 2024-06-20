@@ -31,6 +31,14 @@ class _CanvasWidgetState extends State<CanvasWidget> {
   final _transformationController = TransformationController();
 
   @override
+  void dispose() {
+    _verticalController.dispose();
+    _horizontalController.dispose();
+    _transformationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
       child: BlocConsumer<PlayerBloc, PlayerState>(
