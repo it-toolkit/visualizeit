@@ -32,31 +32,34 @@ class PlayerButtonBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey[200], // Adjust as needed
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(icon: const Icon(Icons.restart_alt), onPressed: onRestartPressed?.takeIf(!isPlaying)),
-          IconButton(icon: const Icon(Icons.skip_previous), onPressed: onPreviousPressed?.takeIf(!isPlaying)),
-          IconButton(icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow), onPressed: onPlayPausePressed),
-          IconButton(icon: const Icon(Icons.skip_next), onPressed: onNextPressed?.takeIf(!isPlaying)),
-          SpeedSelector(speedFactor ?? 1, onSpeedChanged: onSpeedChanged),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: LinearProgressIndicator(
-                value: progress,
-                backgroundColor: Colors.grey[400],
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-              ),
-            ),
-          ),
-          IconButton(icon: const Icon(Icons.fullscreen), onPressed: onFullscreenPressed),
-          CanvasScaleSelector(scale ?? 1, onScaleChanged: onScaleChanged),
-        ],
-      ),
-    );
+        color: Colors.grey[200], // Adjust as needed
+        padding: const EdgeInsets.all(8.0),
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          children: [
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              IconButton(icon: const Icon(Icons.restart_alt), onPressed: onRestartPressed?.takeIf(!isPlaying)),
+              IconButton(icon: const Icon(Icons.skip_previous), onPressed: onPreviousPressed?.takeIf(!isPlaying)),
+              IconButton(icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow), onPressed: onPlayPausePressed),
+              IconButton(icon: const Icon(Icons.skip_next), onPressed: onNextPressed?.takeIf(!isPlaying)),
+              LimitedBox(
+                  maxWidth: 120,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.grey[400],
+                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+                    ),
+                  )),
+            ]),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              SpeedSelector(speedFactor ?? 1, onSpeedChanged: onSpeedChanged),
+              CanvasScaleSelector(scale ?? 1, onScaleChanged: onScaleChanged),
+              IconButton(icon: const Icon(Icons.fullscreen), onPressed: onFullscreenPressed),
+            ])
+          ],
+        ));
   }
 }
 
@@ -82,27 +85,31 @@ class _SpeedSelectorState extends State<SpeedSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<double>(
-      isDense: true,
-      value: _currentSpeed,
-      icon: Icon(Icons.speed),
-      iconEnabledColor: Colors.black,
-      onChanged: widget.onSpeedChanged == null ? null : (double? newValue) {
-        setState(() {
-          _currentSpeed = newValue!;
-          widget.onSpeedChanged?.call(_currentSpeed);
-        });
-      },
-      items: _speeds.map<DropdownMenuItem<double>>((double value) {
-        return DropdownMenuItem<double>(
-          value: value,
-          child: Tooltip(
-            message: '${(1/value).toStringAsPrecision(2)} seconds per frame',
-            child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
-          ),
-        );
-      }).toList(),
-    );
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+        child: DropdownButton<double>(
+          isDense: true,
+          value: _currentSpeed,
+          icon: Icon(Icons.speed),
+          iconEnabledColor: Colors.black,
+          onChanged: widget.onSpeedChanged == null
+              ? null
+              : (double? newValue) {
+                  setState(() {
+                    _currentSpeed = newValue!;
+                    widget.onSpeedChanged?.call(_currentSpeed);
+                  });
+                },
+          items: _speeds.map<DropdownMenuItem<double>>((double value) {
+            return DropdownMenuItem<double>(
+              value: value,
+              child: Tooltip(
+                message: '${(1 / value).toStringAsPrecision(2)} seconds per frame',
+                child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
+              ),
+            );
+          }).toList(),
+        ));
   }
 }
 
@@ -128,26 +135,30 @@ class _CanvasScaleSelectorState extends State<CanvasScaleSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<double>(
-      isDense: true,
-      value: _currentScale,
-      icon: Icon(Icons.photo_size_select_large_outlined),
-      iconEnabledColor: Colors.black,
-      onChanged: widget.onScaleChanged == null ? null : (double? newValue) {
-        setState(() {
-          _currentScale = newValue!;
-          widget.onScaleChanged?.call(_currentScale);
-        });
-      },
-      items: _scales.map<DropdownMenuItem<double>>((double value) {
-        return DropdownMenuItem<double>(
-          value: value,
-          child: Tooltip(
-            message: '${value}x scaled canvas',
-            child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
-          ),
-        );
-      }).toList(),
-    );
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+        child: DropdownButton<double>(
+          isDense: true,
+          value: _currentScale,
+          icon: Icon(Icons.photo_size_select_large_outlined),
+          iconEnabledColor: Colors.black,
+          onChanged: widget.onScaleChanged == null
+              ? null
+              : (double? newValue) {
+                  setState(() {
+                    _currentScale = newValue!;
+                    widget.onScaleChanged?.call(_currentScale);
+                  });
+                },
+          items: _scales.map<DropdownMenuItem<double>>((double value) {
+            return DropdownMenuItem<double>(
+              value: value,
+              child: Tooltip(
+                message: '${value}x scaled canvas',
+                child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
+              ),
+            );
+          }).toList(),
+        ));
   }
 }
