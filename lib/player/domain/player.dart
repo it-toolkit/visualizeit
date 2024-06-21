@@ -130,11 +130,14 @@ class PlayerState {
   }
 
   double get progress {
+    final totalCommands = script.scenes.fold(0, (acc, scene) => acc + scene.transitionCommands.length);
+
+    if (totalCommands == 0) return 1.0;
+
     var commandsRun = currentCommandIndex+1;
     for(int i=0; i< currentSceneIndex-1; i++){
       commandsRun += script.scenes[i].transitionCommands.length;
     }
-    final totalCommands = script.scenes.fold(0, (acc, scene) => acc + scene.transitionCommands.length);
 
     return commandsRun / totalCommands;
   }

@@ -56,6 +56,566 @@ void main() {
             - multi-arg-command: [arg1, arg2]
     """.trimIndent();
 
+  test('Parsing invalid yaml script fails with errors', () {
+    final scriptYaml = """
+      name: A script name
+      description: |
+        ## Example of flow diagram usage
+        This script builds a simple flow diagram and adds some components 
+      tags: [data-structure, example]
+      scenes:
+        - name 
+          extensions: 
+          description: Initial scene description
+          initial-state
+            - no-arg-command
+            - single-arg-command: "my-arg"
+            - multi-arg-command: [arg1, arg2]
+          transitions:
+            - no-arg-command
+            - single-arg-command: "my-arg"
+            - multi-arg-command: [arg1, arg2]
+    """.trimIndent();
+    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)), throwsA(isA<Exception>()));
+  });
+
+  test('Detect unexpected tokens', () {
+    final scriptYaml = """
+      name: "Flow diagram example"
+      unexpected_attribute: "should not be here"
+      description: |
+        ## Example of flow diagram usage
+        This script builds a simple flow diagram and adds some components 
+      tags: [data-structure, example]
+      other_unexpected: 5
+      scenes:
+        - name: Scene name
+          alternative_name: Unexpected attribute
+          extensions: [flow-diagram]
+          description: Initial scene description
+          initial-state:
+            - no-arg-command
+            - single-arg-command: "my-arg"
+            - multi-arg-command: [arg1, arg2]
+          transitions:
+            - no-arg-command
+            - single-arg-command: "my-arg"
+            - multi-arg-command: [arg1, arg2]
+    """.trimIndent();
+    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)), throwsA(isA<ParserException>()
+        .having((e) => e.causes[0].message, 'message', equals("Unexpected attribute 'unexpected_attribute'"))
+        .having((e) => e.causes[1].message, 'message', equals("Unexpected attribute 'other_unexpected'"))
+        .having((e) => e.causes[2].message, 'message', equals("Unexpected attribute 'alternative_name'"))
+    ));
+  });
+
+  group("Errors at script name", () {
+    test('Missing script name', () {
+      final scriptYaml = """
+        description: |
+          ## Example of flow diagram usage
+          This script builds a simple flow diagram and adds some components 
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non blank 'name' attribute"))));
+    });
+
+  test('Blank script name', () {
+    final scriptYaml = """
+        name: ""
+        description: |
+          ## Example of flow diagram usage
+          This script builds a simple flow diagram and adds some components 
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+        throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non blank 'name' attribute"))));
+  });
+
+  test('Invalid type for script name', () {
+    final scriptYaml = """
+        name: [ "a name in an array" ]
+        description: |
+          ## Example of flow diagram usage
+          This script builds a simple flow diagram and adds some components 
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+        throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'name' must be a String"))));
+  });
+
+  });
+
+  group("Errors at script description", () {
+    test('Missing script description', () {
+      final scriptYaml = """
+        name: Valid name
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non blank 'description' attribute"))));
+    });
+
+    test('Blank script description', () {
+      final scriptYaml = """
+        name: Valid name
+        description: "" 
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non blank 'description' attribute"))));
+    });
+
+    test('Invalid type for script description', () {
+      final scriptYaml = """
+        name: Valid name
+        description: [ "a description in an array" ]
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'description' must be a String"))));
+    });
+
+  });
+
+  group("Errors at script group", () {
+    test('Missing script group is valid', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          isNot(throwsA(isA<ParserException>())));
+    });
+
+    test('Blank or null group is valid', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        group: 
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          isNot(throwsA(isA<ParserException>())));
+    });
+
+    test('Invalid type for script group', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        group: 123
+        tags: [data-structure, example]
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'group' must be a String"))));
+    });
+
+  });
+
+  group("Errors at script tags", () {
+    test('Missing script tags is valid', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          isNot(throwsA(isA<ParserException>())));
+    });
+
+    test('Null tags is valid', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        tags: 
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          isNot(throwsA(isA<ParserException>())));
+    });
+
+    test('Invalid type for script tags', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        tags: "invalid-tag"
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+            transitions:
+              - no-arg-command
+              - single-arg-command: "my-arg"
+              - multi-arg-command: [arg1, arg2]
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'tags' must be a String array"))));
+    });
+  });
+
+  group("Errors at script scenes", () {
+    test('Missing script scenes', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non empty 'scenes' array"))));
+    });
+
+    test('Null script scenes', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes: 
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'scenes' must be a scenes array"))));
+    });
+
+    test('Empty script scenes', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes: []
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'scenes' array must not be empty"))));
+    });
+
+    test('Invalid type for script scenes', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes: { "key": "value"}
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>()
+              .having((e) => e.causes[0].message, 'message', equals("Unexpected attribute 'key'"))
+              .having((e) => e.causes[1].message, 'message', equals("'scenes' must be a scenes array"))
+          ));
+    });
+
+    test('Malformed scene in script scenes', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - nop
+            transitions:
+              - nop
+          - Invalid scene
+          - 12345
+          
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>()
+              .having((e) => e.causes[0].message, 'message', equals("Element 1 of 'scenes' array is not a valid scene"))
+              .having((e) => e.causes[1].message, 'message', equals("Element 2 of 'scenes' array is not a valid scene"))
+          ));
+    });
+
+    test('Scene without name', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - extensions: [ some_ext ]
+            description: Initial scene description
+            initial-state:
+              - nop
+            transitions:
+              - nop
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>()
+              .having((e) => e.causes[0].message, 'message', equals("Missing non blank 'name' attribute"))
+          ));
+    });
+
+    test('Scene without description', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            extensions: [ some_ext ]
+            initial-state:
+              - nop
+            transitions:
+              - nop
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>()
+              .having((e) => e.causes[0].message, 'message', equals("Missing non blank 'description' attribute"))
+          ));
+    });
+
+
+    test('Missing scene extensions is valid', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            description: Initial scene description
+            initial-state:
+              - nop
+            transitions:
+              - nop
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          isNot(throwsA(isA<ParserException>())));
+    });
+
+    test('Null scene extensions is valid', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            extensions: 
+            description: Initial scene description
+            initial-state:
+              - nop
+            transitions:
+              - nop
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          isNot(throwsA(isA<ParserException>())));
+    });
+
+    test('Invalid type for scene extensions', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            extensions: "invalid-array"
+            description: Initial scene description
+            initial-state:
+              - nop
+            transitions:
+              - nop
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'extensions' must be a String array"))));
+    });
+
+    test('Missing initial-state and transitions is valid', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            extensions: [ ]
+            description: Initial scene description
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          isNot(throwsA(isA<ParserException>())));
+    });
+
+    test('Empty initial-state and transitions is valid', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            extensions: [ "a"]
+            description: Initial scene description
+            initial-state:
+            transitions: []
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          isNot(throwsA(isA<ParserException>())));
+    });
+
+    test('initial-state and transitions require an array', () {
+      final scriptYaml = """
+        name: Valid name
+        description: Valid description
+        scenes:
+          - name: Scene name
+            extensions: [ "a"]
+            description: Initial scene description
+            initial-state: "Some String"
+            transitions: 
+              key: value 
+        """.trimIndent();
+
+      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+          throwsA(isA<ParserException>()
+              .having((e) => e.causes[0].message, 'message', equals("'initial-state' must be a commands array"))
+              .having((e) => e.causes[1].message, 'message', equals("'transitions' must be a commands array"))
+          ));
+    });
+
+  });
+
   test('Parsing empty yaml script throws exception', () {
 
     final rawYaml = "".trimIndent();

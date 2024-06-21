@@ -3,12 +3,14 @@ import 'package:re_editor/re_editor.dart';
 import 'package:visualizeit/common/ui/buttons.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
-import 'package:visualizeit/scripting/action.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/scripting/ui/script_editor_widget.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit_extensions/logging.dart';
+
+final _logger = Logger("scripting.ui.script_editor_page");
 
 class ScriptEditorPage extends StatefulBasePage {
   static const RouteName = "script-editor";
@@ -81,11 +83,22 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
         }) : null),
         Buttons.icon(Icons.save_outlined, "Save changes", action: scriptHasChanges ? () async {
           var updatedRawScript = script!.raw.copyWith(contentAsYaml: codeController.text);
-          final updateScript = await widget._scriptRepository.save(updatedRawScript);
-          setState(() {
-            script = updateScript;
-            scriptHasChanges = false;
-          });
+          try {
+            final updateScript = await widget._scriptRepository.save(updatedRawScript);
+            setState(() {
+              script = updateScript;
+              scriptHasChanges = false;
+            });
+          } on ParserException catch (e) {
+            _logger.warn(() {
+              final buffer = StringBuffer("Save aborted due ${e.causes.length} errors: \n");
+              e.causes.forEach((error) {
+                final errorLocation = 'line ${error.span!.start.line + 1}, column ${error.span!.start.column + 1}';
+                buffer.writeln("\t${error.message} ($errorLocation)");
+              });
+              return buffer.toString();
+            });
+          }
         } : null),
         Buttons.highlightedIcon(
             Icons.play_circle,

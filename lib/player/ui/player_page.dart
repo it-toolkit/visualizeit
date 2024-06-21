@@ -9,6 +9,7 @@ import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
+import 'package:visualizeit_extensions/logging.dart';
 
 import '../../extension/domain/extension_repository.dart';
 import '../../scripting/domain/script.dart';
@@ -17,6 +18,8 @@ import '../../scripting/ui/script_editor_widget.dart';
 import '../domain/player.dart';
 import '../domain/player_timer.dart';
 
+
+final _logger = Logger("player.ui.player_page");
 
 class PlayerPage extends StatefulBasePage {
   static const RouteName = "player";
@@ -123,11 +126,23 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           Icons.check_circle_outline,
           "Apply",
           action: scriptHasChanges ? () {
-            setState(() {
-              script = widget._scriptParser.parse(script!.raw.copyWith(contentAsYaml: codeController.text));
-              BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(script!)));
-              scriptHasChanges = false;
-            });
+            try {
+              final parsedScript = widget._scriptParser.parse(script!.raw.copyWith(contentAsYaml: codeController.text));
+              setState(() {
+                script = parsedScript;
+                BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(script!)));
+                scriptHasChanges = false;
+              });
+            } on ParserException catch (e) {
+              _logger.warn(() {
+                final buffer = StringBuffer("Apply aborted due ${e.causes.length} errors: \n");
+                e.causes.forEach((error) {
+                  final errorLocation = 'line ${error.span!.start.line + 1}, column ${error.span!.start.column + 1}';
+                  buffer.writeln("\t${error.message} ($errorLocation)");
+                });
+                return buffer.toString();
+              });
+            }
           } : null,
         ),
       ],
