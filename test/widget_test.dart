@@ -14,6 +14,7 @@ void main() {
   setUp(() async {
     try {
       TestWidgetsFlutterBinding.ensureInitialized();
+      setupLogging();
       setupGetIt();
       await GetIt.I.allReady();
     } catch (e) {

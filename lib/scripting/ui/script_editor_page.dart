@@ -14,11 +14,11 @@ class ScriptEditorPage extends StatefulBasePage {
   static const RouteName = "script-editor";
 
   const ScriptEditorPage(
-      GetRawScriptById getRawScriptById,
+      ScriptRepository scriptRepository,
       ScriptParser scriptParser,
       ExtensionRepository extensionRepository,
       {super.key, required this.scriptId, this.openScriptInPlayer, this.readOnly = false}) :
-      this._getRawScriptById = getRawScriptById,
+      this._scriptRepository = scriptRepository,
       this._scriptParser = scriptParser,
       this._extensionRepository = extensionRepository,
       super(RouteName);
@@ -27,7 +27,7 @@ class ScriptEditorPage extends StatefulBasePage {
   final bool readOnly;
   final Future<void> Function(String scriptRef, bool readonly)? openScriptInPlayer;
 
-  final GetRawScriptById _getRawScriptById;
+  final ScriptRepository _scriptRepository;
   final ScriptParser _scriptParser;
   final ExtensionRepository _extensionRepository;
 
@@ -39,7 +39,6 @@ class ScriptEditorPage extends StatefulBasePage {
 
 class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
 
-  RawScript? rawScript = null;
   Script? script = null;
   bool scriptHasChanges = false;
   final CodeScrollController codeScrollController = CodeScrollController();
@@ -49,9 +48,10 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _resolveRawScript(),
+        future: _resolveScript(),
         builder: (context, snapshot) {
           if(snapshot.hasError) { //TODO
+            debugPrintStack(stackTrace : snapshot.stackTrace); //TODO remove
             return Text("Error loading script: ${snapshot.error}");
           }else if (snapshot.hasData) {
             return Builder(builder: (context) => super.build(context));
@@ -69,20 +69,21 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
 
   @override
   Widget buildBody(BuildContext context) {
-    return _buildTextScriptEditorContent(context, rawScript!);
+    return _buildTextScriptEditorContent(context, script!.raw);
   }
 
   ButtonBar _buildButtonBar(BuildContext context) {
     return ButtonBar(
       children: [
         Buttons.icon(Icons.cancel_outlined, "Discard changes", action: scriptHasChanges ? () => setState(() {
-          codeController.text = rawScript!.contentAsYaml;
+          codeController.text = script!.raw.contentAsYaml;
           scriptHasChanges = false;
         }) : null),
-        Buttons.icon(Icons.save_outlined, "Save changes", action: scriptHasChanges ? () {
+        Buttons.icon(Icons.save_outlined, "Save changes", action: scriptHasChanges ? () async {
+          var updatedRawScript = script!.raw.copyWith(contentAsYaml: codeController.text);
+          final updateScript = await widget._scriptRepository.save(updatedRawScript);
           setState(() {
-            rawScript!.contentAsYaml = codeController.text;
-            script = widget._scriptParser.parse(codeController.text);
+            script = updateScript;
             scriptHasChanges = false;
           });
         } : null),
@@ -98,14 +99,13 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
     );
   }
 
-  Future<RawScript> _resolveRawScript() async {
-    if(rawScript == null){
-      rawScript = await widget._getRawScriptById(widget.scriptId);
-      codeController.text = rawScript!.contentAsYaml;
+  Future<Script> _resolveScript() async {
+    if(script == null){
+      script = await widget._scriptRepository.get(widget.scriptId);
+      codeController.text = script!.raw.contentAsYaml;
     }
-    script = widget._scriptParser.parse(rawScript!.contentAsYaml);
 
-    return Future.value(rawScript);
+    return Future.value(script);
   }
 
   Widget _buildTextScriptEditorContent(BuildContext context, RawScript rawScript) {

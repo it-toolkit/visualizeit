@@ -1,12 +1,10 @@
 
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:visualizeit/extension/domain/default/nop.dart';
-import 'package:visualizeit/extension/infrastructure/extension_repository.dart';
 import 'package:visualizeit/player/domain/player.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
-import 'package:visualizeit_extension_template/visualizeit_extension_template.dart';
+import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/scripting.dart';
 
@@ -53,6 +51,7 @@ class FakeCommand extends ModelCommand {
 void main() {
   test('Init player state with single scene without commands', () {
     var script = Script(
+      RawScript("ref", "yaml"),
       ScriptMetadata("script_name", "script_description", {}),
       [
         Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10), [], [])
@@ -72,6 +71,7 @@ void main() {
     var transitionFakeCommand2 = FakeCommand.build("t2");
 
     var script = Script(
+        RawScript("ref", "yaml"),
         ScriptMetadata("script_name", "script_description", {}),
         [
           Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10),
@@ -109,6 +109,7 @@ void main() {
     var transitionFakeCommand3 = FakeCommand.build("t3", duration: 2);
 
     var script = Script(
+        RawScript("ref", "yaml"),
         ScriptMetadata("script_name", "script_description", {}),
         [
           Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10),

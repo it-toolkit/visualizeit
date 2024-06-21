@@ -9,20 +9,21 @@ import '../scripting/infrastructure/script_repository.dart';
 
 extension GetItRepositories on GetIt {
   void registerRepositories() {
-    registerSingleton<RawScriptRepository>(kReleaseMode
-        ? InMemoryRawScriptRepository() //TODO use remote repository
-        : InMemoryRawScriptRepository(
+    registerLazySingleton<ScriptRepository>(() => kReleaseMode
+        ? InMemoryScriptRepository(get()) //TODO use remote repository
+        : InMemoryScriptRepository(
+            get(),
             initialRawScriptsLoader: _loadExampleScriptsFromAssets()),
-      instanceName: "publicScriptsRepository"
-    );
+            instanceName: "publicScriptsRepository"
+        );
 
-    registerSingleton<RawScriptRepository>(
-        InMemoryRawScriptRepository(), //TODO use remote repository
+    registerLazySingleton<ScriptRepository>(() =>
+        InMemoryScriptRepository(get()), //TODO use remote repository
         instanceName: "myScriptsRepository"
     );
 
-    registerSingleton<RawScriptRepository>(
-        CompositeRawScriptRepository([get(instanceName: "publicScriptsRepository"), get(instanceName: "myScriptsRepository")])
+    registerLazySingleton<ScriptRepository>( ()=>
+        CompositeScriptRepository(get(instanceName: "publicScriptsRepository"), get(instanceName: "myScriptsRepository"))
     );
 
     registerSingletonAsync<ExtensionRepository>(

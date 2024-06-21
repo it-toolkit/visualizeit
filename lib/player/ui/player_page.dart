@@ -11,7 +11,6 @@ import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 
 import '../../extension/domain/extension_repository.dart';
-import '../../scripting/action.dart';
 import '../../scripting/domain/script.dart';
 import '../../scripting/domain/script_repository.dart';
 import '../../scripting/ui/script_editor_widget.dart';
@@ -22,15 +21,15 @@ import '../domain/player_timer.dart';
 class PlayerPage extends StatefulBasePage {
   static const RouteName = "player";
 
-  final GetRawScriptById _getRawScriptById;
+  final ScriptRepository _scriptRepository;
   final ScriptParser _scriptParser;
   final ScriptRef scriptId;
   final ExtensionRepository _extensionRepository;
   final bool readOnly;
 
-  const PlayerPage(GetRawScriptById getRawScriptById, ScriptParser scriptParser, ExtensionRepository extensionRepository,
+  const PlayerPage(ScriptRepository scriptRepository, ScriptParser scriptParser, ExtensionRepository extensionRepository,
       {super.key, required this.scriptId, this.readOnly = false })
-      : this._getRawScriptById = getRawScriptById,
+      : this._scriptRepository = scriptRepository,
         this._scriptParser = scriptParser,
         this._extensionRepository = extensionRepository,
         super(RouteName);
@@ -43,7 +42,6 @@ class PlayerPage extends StatefulBasePage {
 
 class PlayerPageState extends BasePageState<PlayerPage> {
 
-  RawScript? rawScript = null;
   Script? script = null;
   bool scriptHasChanges = false;
 
@@ -79,32 +77,31 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
     if(script == null) return Container(child: Text("Not ready"));
 
-    final scriptEditor = buildScriptWidget(context, buildButtonBar(context), script!, rawScript!);//TODO script!.scenes[0].metadata.rawYaml);
+    final scriptEditor = buildScriptWidget(context, buildButtonBar(context));//TODO script!.scenes[0].metadata.rawYaml);
 
     return graphicalMode
         ? buildPresentationModeContent(context, playerButtonBar, canvas)
         : buildExplorationModeContent(context, playerButtonBar, canvas, scriptEditor);
   }
 
-  Future<RawScript> resolveRawScript() async {
-    if(rawScript == null){
-      rawScript = (await widget._getRawScriptById(widget.scriptId)).clone();
-      codeController.text = rawScript!.contentAsYaml;
+  Future<Script> resolveScript() async {
+    if(script == null){
+      script = (await widget._scriptRepository.get(widget.scriptId)).clone();
+      codeController.text = script!.raw.contentAsYaml;
     }
-    script = widget._scriptParser.parse(rawScript!.contentAsYaml);
 
-    return Future.value(rawScript);
+    return Future.value(script);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: resolveRawScript(),
+        future: resolveScript(),
         builder: (context, snapshot) {
           if(snapshot.hasError) { //TODO
             return Text("Error loading script: ${snapshot.error}");
           }else if (snapshot.hasData) {
-            var initialPlayerState = PlayerState(script!);
+            var initialPlayerState = PlayerState(snapshot.data!);
             return MultiBlocProvider(providers: [
               BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState)),
             ], child: Builder(builder: (context) => super.build(context)));
@@ -118,7 +115,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
       children: [
         Buttons.icon(Icons.cancel_outlined, "Discard changes", action: scriptHasChanges ? () {
             setState(() {
-              codeController.text = rawScript!.contentAsYaml;
+              codeController.text = script!.raw.contentAsYaml;
               scriptHasChanges = false;
             });
         } : null),
@@ -127,8 +124,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           "Apply",
           action: scriptHasChanges ? () {
             setState(() {
-              rawScript!.contentAsYaml = codeController.text;
-              script = widget._scriptParser.parse(codeController.text);
+              script = widget._scriptParser.parse(script!.raw.copyWith(contentAsYaml: codeController.text));
               BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(script!)));
               scriptHasChanges = false;
             });
@@ -219,7 +215,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     ]);
   }
 
-  Widget buildScriptWidget(BuildContext context, ButtonBar buttonBar, Script script, RawScript rawScript) {
+  Widget buildScriptWidget(BuildContext context, ButtonBar buttonBar) {
       return Expanded(
           flex: 58,
           child: Column(

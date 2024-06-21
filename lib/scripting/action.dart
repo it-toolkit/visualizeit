@@ -1,9 +1,11 @@
+import 'package:visualizeit/scripting/domain/script.dart';
+
 import 'domain/script_repository.dart';
 
-class GetRawScriptById {
-  final RawScriptRepository _repository;
+class GetScriptById {
+  final ScriptRepository _repository;
 
-  GetRawScriptById(RawScriptRepository repository) : this._repository = repository;
+  GetScriptById(ScriptRepository repository) : this._repository = repository;
 
-  Future<RawScript> call(String id) async => await _repository.get(id);
+  Future<Script> call(String id) async => await _repository.get(id);
 }

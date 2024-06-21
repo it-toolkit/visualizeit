@@ -4,17 +4,27 @@ import 'package:json2yaml/json2yaml.dart';
 import 'package:visualizeit/extension/action.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
+import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/scripting/domain/yaml_utils.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/scripting.dart';
 import 'package:yaml/yaml.dart';
+import 'package:yaml/src/error_listener.dart';
 
 import '../../extension/domain/default/default_extension.dart';
 
+class ErrorCollector extends ErrorListener {
+  final List<YamlException> errors = [];
+
+  void onError(YamlException error) => errors.add(error);
+}
+
 class ScriptDefParser {
-  ScriptDef parse(String rawScript) {
-    final yamlDocument = loadYamlDocument(rawScript);
+  ScriptDef parse(String rawScriptYaml) {
+    // final errorCollector = ErrorCollector();
+    // final yamlDocument = loadYamlDocument(rawScript, errorListener: errorCollector);
+    final yamlDocument = loadYamlDocument(rawScriptYaml);
 
     if (yamlDocument.contents is! YamlMap) throw Exception("Invalid yaml script");
     YamlMap root = yamlDocument.contents as YamlMap;
@@ -54,8 +64,8 @@ class ScriptParser {
 
   final _scripDefParser = ScriptDefParser();
 
-  Script parse(String rawScript) {
-    ScriptDef scriptDef = _scripDefParser.parse(rawScript);
+  Script parse(RawScript rawScript) {
+    ScriptDef scriptDef = _scripDefParser.parse(rawScript.contentAsYaml);
 
     List<Scene> scenes = scriptDef.scenes.map((sceneDef) {
 
@@ -72,7 +82,7 @@ class ScriptParser {
         );
     }).toList(growable: false);
 
-    return Script(scriptDef.metadata, scenes);
+    return Script(rawScript, scriptDef.metadata, scenes);
   }
 
 

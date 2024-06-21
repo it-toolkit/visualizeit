@@ -1,16 +1,36 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:visualizeit/scripting/domain/parser.dart';
+import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/scripting/infrastructure/script_repository.dart';
 
-void main() {
-  setUpAll(() {});
+class ScriptParserMock extends Mock implements ScriptParser {}
 
-  tearDown(() {});
+void main() {
+
+  var scriptParser = ScriptParserMock();
+  late InMemoryScriptRepository repo;
+
+  setUpAll(() {
+    registerFallbackValue(Script(RawScript("", ""), ScriptMetadata("name", "description", {}), []));
+    registerFallbackValue(RawScript("", ""));
+  });
+
+  setUp(() {
+    when(() => scriptParser.parse(any())).thenAnswer((i) {
+      final rawScript = i.positionalArguments[0] as RawScript;
+      return Script(rawScript, ScriptMetadata("Script 1", "An empty script", {'tag_1', 'tag_2'}), []);
+    });
+    repo = InMemoryScriptRepository(scriptParser);
+  });
+
+  tearDown(() {
+    reset(scriptParser);
+  });
 
   test('throw script not found exception when get with an unknown script id', () async {
-    final repo = InMemoryRawScriptRepository();
-
     try {
       await repo.get("unknown-id");
       fail("You should not be here");
@@ -20,8 +40,6 @@ void main() {
   });
 
   test('throw script not found exception when delete with an unknown script id', () async {
-    final repo = InMemoryRawScriptRepository();
-
     try {
       await repo.delete("unknown-id");
       fail("You should not be here");
@@ -31,25 +49,21 @@ void main() {
   });
 
   test('save some raw scripts and get them by id', () async {
-    final repo = InMemoryRawScriptRepository();
-
     repo.save(RawScript("id_1", "contentAsYaml: 1"));
     repo.save(RawScript("id_2", "contentAsYaml: 2"));
 
-    final rawScript1 = await repo.get("id_1");
-    expect(rawScript1.contentAsYaml, "contentAsYaml: 1");
+    final script1 = await repo.get("id_1");
+    expect(script1.raw.contentAsYaml, "contentAsYaml: 1");
 
-    final rawScript2 = await repo.get("id_2");
-    expect(rawScript2.contentAsYaml, "contentAsYaml: 2");
+    final script2 = await repo.get("id_2");
+    expect(script2.raw.contentAsYaml, "contentAsYaml: 2");
   });
 
   test('save some raw scripts and get all of them', () async {
-    final repo = InMemoryRawScriptRepository();
-
     repo.save(RawScript("id_1", "contentAsYaml: 1"));
     repo.save(RawScript("id_2", "contentAsYaml: 2"));
 
-    final rawScripts = await repo.getAll();
+    final rawScripts = (await repo.getAll()).map((e) => e.raw);
     expect(
         rawScripts,
         containsAll([
@@ -59,8 +73,6 @@ void main() {
   });
 
   test('get all available scripts metadata', () async {
-    final repo = InMemoryRawScriptRepository();
-
     repo.save(RawScript("id_1", """
       name: "Script 1"
       description: "An empty script" 
@@ -76,12 +88,10 @@ void main() {
   });
 
   test('save a raw script and then delete it', () async {
-    final repo = InMemoryRawScriptRepository();
-
     repo.save(RawScript("id_1", "contentAsYaml: 1"));
 
     final deleted = await repo.delete("id_1");
-    expect(deleted.contentAsYaml, "contentAsYaml: 1");
+    expect(deleted.raw.contentAsYaml, "contentAsYaml: 1");
 
     expect(await repo.getAll(), isEmpty);
   });

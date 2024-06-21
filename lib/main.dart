@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:visualizeit/router.dart';
@@ -12,6 +13,10 @@ import 'extension/action.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+  ]);
+
   setupLogging();
   setupGetIt();
   runApp(const VisualizeItApp());
@@ -27,11 +32,11 @@ class VisualizeItApp extends StatelessWidget {
         future: GetIt.I.allReady(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final a = GetIt.I.get<RawScriptRepository>();
+            final a = GetIt.I.get<ScriptRepository>();
             final b = GetIt.I.get<GetExtensionById>();
             return MultiRepositoryProvider(
                 providers: [
-                  RepositoryProvider<RawScriptRepository>(
+                  RepositoryProvider<ScriptRepository>(
                       create: (context) => a), //TODO use only getit
                   RepositoryProvider<GetExtensionById>(create: (context) => b),
                 ],

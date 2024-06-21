@@ -33,8 +33,8 @@ class ScriptSelectorPage extends StatefulBasePage {
 
   final Future<void> Function(String scriptRef, bool readonly)? openScriptInPlayer;
   final Future<void> Function(String scriptRef, bool readonly)? openScriptInEditor;
-  final RawScriptRepository _publicRawScriptRepository;
-  final RawScriptRepository _myRawScriptRepository;
+  final ScriptRepository _publicRawScriptRepository;
+  final ScriptRepository _myRawScriptRepository;
 
   @override
   State<StatefulWidget> createState() {
@@ -315,11 +315,11 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     _openScriptInEditor(scriptRef, readOnly: false);
   }
 
-  void _cloneScript(ScriptRef ref, ScriptMetadata metadata, RawScriptRepository repository) {
+  void _cloneScript(ScriptRef ref, ScriptMetadata metadata, ScriptRepository repository) {
     _tabController.index = 1;
     var scriptRef = _uuid.v4();
     repository.get(ref)
-      .then((rawScript) {
+      .then((script) {
         widget._myRawScriptRepository.fetchAvailableScriptsMetadata()
             .then((availableScriptsMetadata) {
           final nextIndex = availableScriptsMetadata.values
@@ -327,7 +327,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
               .map((e) => int.tryParse(e)).nonNulls.maxOrNull?.let((max) => max + 1) ?? 1;
 
           var newScriptName = "${metadata.name} - clone $nextIndex";
-          widget._myRawScriptRepository.save(RawScript(scriptRef, rawScript.contentAsYaml.replaceFirst(metadata.name, newScriptName)));
+          widget._myRawScriptRepository.save(RawScript(scriptRef, script.raw.contentAsYaml.replaceFirst(metadata.name, newScriptName)));
 
           return ScriptMetadata(newScriptName, metadata.description, metadata.tags);
         })
@@ -384,7 +384,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     if (script == null) return;
 
     final rawScript = await widget._myRawScriptRepository.get(script.scriptRef);
-    final scriptContent = utf8.encoder.convert(rawScript.contentAsYaml);
+    final scriptContent = utf8.encoder.convert(rawScript.raw.contentAsYaml);
     final fileName = "${slugify(script.metadata.name)}.yaml";
     try {
       await FileSaver.instance.saveAs(name: fileName, ext: "yaml", mimeType: MimeType.custom, customMimeType: "application/yaml", bytes: scriptContent);
@@ -398,7 +398,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
 
     final rawScript = await widget._myRawScriptRepository.get(script.scriptRef);
 
-    final result = await Share.share(rawScript.contentAsYaml, subject: 'Script: ${script.metadata.name}');
+    final result = await Share.share(rawScript.raw.contentAsYaml, subject: 'Script: ${script.metadata.name}');
 
     _logger.info(() => "Share script result: ${result.status}");
   }
@@ -534,7 +534,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
         .whenComplete(() => setState((){}));
   }
 
-  void _cloneSelectedScript(SearchableList<AvailableScript> availableScripts, RawScriptRepository repository){
+  void _cloneSelectedScript(SearchableList<AvailableScript> availableScripts, ScriptRepository repository){
     final selectedScript = _getSelectedScript(availableScripts);
     if (selectedScript == null) return;
     _cloneScript(selectedScript.scriptRef, selectedScript.metadata, repository);

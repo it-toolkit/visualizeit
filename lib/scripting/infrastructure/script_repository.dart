@@ -1,16 +1,16 @@
 
 
 import 'package:visualizeit/scripting/domain/parser.dart';
+import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 
-class InMemoryRawScriptRepository implements RawScriptRepository {
-  final _scriptDefParser = ScriptDefParser();
+class InMemoryScriptRepository implements ScriptRepository {
+  final ScriptParser _scriptParser;
   Map<ScriptRef, RawScript>? _storedRawScripts = null;
-
   Future<List<RawScript>>? initialRawScriptsLoader;
 
-  InMemoryRawScriptRepository({Future<List<RawScript>>? this.initialRawScriptsLoader = null})
+  InMemoryScriptRepository(this._scriptParser, {Future<List<RawScript>>? this.initialRawScriptsLoader = null})
       : _storedRawScripts = initialRawScriptsLoader == null ? {} : null;
 
   Future<Map<ScriptRef, RawScript>> getStoredRawScripts() async {
@@ -29,36 +29,37 @@ class InMemoryRawScriptRepository implements RawScriptRepository {
   Future<Map<ScriptRef, ScriptMetadata>> fetchAvailableScriptsMetadata() async {
     final _rawScripts = await getStoredRawScripts();
     return _rawScripts.map((key, value) {
-      return MapEntry(key, _scriptDefParser.parse(value.contentAsYaml).metadata);
+      return MapEntry(key, _scriptParser.parse(value).metadata);
     });
   }
 
   @override
-  Future<RawScript> get(ScriptRef id) async {
+  Future<Script> get(ScriptRef id) async {
     final _rawScripts = (await getStoredRawScripts());
     if (!_rawScripts.containsKey(id)) throw ScriptNotFoundException(id);
 
-    return _rawScripts[id]!;
+    return _scriptParser.parse(_rawScripts[id]!);
   }
 
   @override
-  Future<List<RawScript>> getAll() async {
+  Future<List<Script>> getAll() async {
     final _rawScripts = (await getStoredRawScripts());
-    return _rawScripts.values.toList();
+    return _rawScripts.values.map(_scriptParser.parse).toList();
   }
 
   @override
-  Future<void> save(RawScript rawScript) async {
+  Future<Script> save(RawScript rawScript) async {
     final _rawScripts = (await getStoredRawScripts());
     _rawScripts[rawScript.ref] = rawScript;
+    return _scriptParser.parse(rawScript);
   }
 
   @override
-  Future<RawScript> delete(ScriptRef id) async {
+  Future<Script> delete(ScriptRef id) async {
     final _rawScripts = (await getStoredRawScripts());
     final deleted = _rawScripts.remove(id);
     if (deleted == null) throw ScriptNotFoundException(id);
 
-    return deleted;
+    return _scriptParser.parse(deleted);
   }
 }

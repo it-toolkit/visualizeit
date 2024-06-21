@@ -1,9 +1,12 @@
 
+import 'package:flutter/foundation.dart';
+import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
 
+@immutable
 class RawScript {
-  ScriptRef ref;
-  String contentAsYaml;
+  final ScriptRef ref;
+  final String contentAsYaml;
 
   RawScript(this.ref, this.contentAsYaml);
 
@@ -17,6 +20,10 @@ class RawScript {
   int get hashCode => ref.hashCode;
 
   RawScript clone() => RawScript(ref, contentAsYaml);
+
+  RawScript copyWith({required String contentAsYaml}) {
+    return RawScript(ref, contentAsYaml);
+  }
 }
 
 class ScriptNotFoundException implements Exception {
@@ -30,22 +37,25 @@ class ScriptNotFoundException implements Exception {
 
 typedef ScriptRef = String;
 
-abstract class RawScriptRepository {
+abstract class ScriptRepository {
   Future<Map<ScriptRef, ScriptMetadata>> fetchAvailableScriptsMetadata();
 
-  Future<RawScript> get(ScriptRef scriptRef);
+  Future<Script> get(ScriptRef scriptRef);
 
-  Future<List<RawScript>> getAll();
+  Future<List<Script>> getAll();
 
-  Future<void> save(RawScript rawScript);
+  Future<Script> save(RawScript rawScript);
 
-  Future<RawScript> delete(ScriptRef scriptRef);
+  Future<Script> delete(ScriptRef scriptRef);
 }
 
-class CompositeRawScriptRepository implements RawScriptRepository {
-  final List<RawScriptRepository> delegates;
+class CompositeScriptRepository implements ScriptRepository {
+  final ScriptRepository publicRepository; //Read only
+  final ScriptRepository myScriptsRepository; //Read/Write
+  final List<ScriptRepository> delegates;
 
-  CompositeRawScriptRepository(this.delegates);
+  CompositeScriptRepository(this.publicRepository, this.myScriptsRepository)
+      : this.delegates = [publicRepository, myScriptsRepository];
 
   @override
   Future<Map<ScriptRef, ScriptMetadata>> fetchAvailableScriptsMetadata() {
@@ -56,28 +66,28 @@ class CompositeRawScriptRepository implements RawScriptRepository {
   }
 
   @override
-  Future<RawScript> get(ScriptRef scriptRef) {
+  Future<Script> get(ScriptRef scriptRef) {
     return Future.wait(delegates.map((r) {
-      return r.get(scriptRef).then((value) => value as RawScript?).catchError((e) => null);
+      return r.get(scriptRef).then((value) => value as Script?).catchError((e) => null);
     })).then((values) {
       return Future.value(values.firstWhere((script) => script != null, orElse: () => throw ScriptNotFoundException(scriptRef)));
     });
   }
 
   @override
-  Future<List<RawScript>> getAll() {
+  Future<List<Script>> getAll() {
     return Future.wait(delegates.map((r) => r.getAll())).then((values) {
       return Future.value(values.expand((e) => e).toList());
     });
   }
 
   @override
-  Future<void> save(RawScript rawScript) {
-    throw UnimplementedError(); //TODO
+  Future<Script> save(RawScript rawScript) {
+    return myScriptsRepository.save(rawScript);
   }
 
   @override
-  Future<RawScript> delete(ScriptRef scriptRef) {
-    throw UnimplementedError(); // TODO: implement delete
+  Future<Script> delete(ScriptRef scriptRef) {
+    return myScriptsRepository.delete(scriptRef);
   }
 }
