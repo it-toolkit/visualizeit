@@ -57,9 +57,15 @@ class ParserException implements Exception {
 
   final List<SourceSpanFormatException> causes;
 
-  const ParserException(this.causes);
+  ParserException(this.causes) {
+    causes.sort((a, b) {
+      var result = (a.span?.start.line ?? 0).compareTo((b.span?.start.line ?? 0));
+      if (result != 0) return result;
+      else return (a.span?.start.column ?? 0).compareTo((b.span?.start.column ?? 0));
+    });
+  }
 
-  List<String> get errorMessages => causes.map((e) => _customMessage(e)).sorted((a, b) => a.compareTo(b));
+  List<String> get errorMessages => causes.map((e) => _customMessage(e)).toList();
 
   String _customMessage(SourceSpanFormatException e) {
     final errorLocation = 'line ${e.span!.start.line + 1}, column ${e.span!.start.column + 1}';
