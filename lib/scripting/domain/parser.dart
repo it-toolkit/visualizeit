@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:json2yaml/json2yaml.dart';
 import 'package:visualizeit/extension/action.dart';
@@ -49,13 +50,14 @@ class _SourceSpanFormatExceptionEquality implements Equality<SourceSpanFormatExc
   }
 }
 
+@immutable
 class ParserException implements Exception {
 
   static const _listEquality = ListEquality<SourceSpanFormatException>(_SourceSpanFormatExceptionEquality());
 
   final List<SourceSpanFormatException> causes;
 
-  ParserException(this.causes);
+  const ParserException(this.causes);
 
   List<String> get errorMessages => causes.map((e) => _customMessage(e)).sorted((a, b) => a.compareTo(b));
 
