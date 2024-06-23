@@ -121,12 +121,10 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   }
 
   Widget _buildScriptWidget(BuildContext context, ButtonBar buttonBar, String scriptContentAsYaml) {
-    ScriptEditorWidget scriptEditorWidget = _buildScriptEditorWidget();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(child: scriptEditorWidget),
+        Expanded(child: _buildScriptEditorWidget()),
         if (scriptErrors != null) ScriptErrorWidget(scriptErrors),
         buttonBar,
       ],

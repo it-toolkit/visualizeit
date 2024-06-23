@@ -8,6 +8,7 @@ import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
+import 'package:visualizeit/scripting/ui/script_errors_widget.dart';
 import 'package:visualizeit/visualizer/ui/canvas_widget.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
@@ -47,7 +48,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   Script? script = null;
   bool scriptHasChanges = false;
-
+  ParserException? scriptErrors = null;
   bool graphicalMode = true;
   final PlayerTimer _timer = PlayerTimer();
 
@@ -80,7 +81,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
     if(script == null) return Container(child: Text("Not ready"));
 
-    final scriptEditor = buildScriptWidget(context, buildButtonBar(context));//TODO script!.scenes[0].metadata.rawYaml);
+    final scriptEditor = _buildExplorationPanel(context, buildButtonBar(context));//TODO script!.scenes[0].metadata.rawYaml);
 
     return graphicalMode
         ? buildPresentationModeContent(context, playerButtonBar, canvas)
@@ -227,38 +228,69 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     ]);
   }
 
-  Widget buildScriptWidget(BuildContext context, ButtonBar buttonBar) {
+  Widget _buildExplorationPanel(BuildContext context, ButtonBar buttonBar) {
       return Expanded(
           flex: 58,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              BlocBuilder<PlayerBloc, PlayerState>(builder: (context, playerState) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Scene #${playerState.currentSceneIndex + 1}"),
-                    Text("Playing line: ${playerState.currentCommand?.metadata?.scriptLineIndex.let((it) => it+1) ?? "?"}")
-                  ],
-                );
-              }),
-              Expanded(
-                child: ScriptEditorWidget(
-                  controller: codeController,
-                  scrollController: codeScrollController,
-                  readOnly: false,
-                  availableExtensions: widget._extensionRepository.getAll(),
-                  listenPlayerEvents: true,
-                  onCodeChange: (String text ) {
-                    if (!scriptHasChanges) setState(() {
-                      scriptHasChanges = true;
-                    });
-                  },
-                ),
-              ),
+              _buildExplorationPanelHeader(),
+              Expanded(child: _buildScriptEditorWidget()),
+              if (scriptErrors != null) ScriptErrorWidget(scriptErrors),
               buttonBar
             ],
           ));
     // });
+  }
+
+  BlocBuilder<PlayerBloc, PlayerState> _buildExplorationPanelHeader() {
+    return BlocBuilder<PlayerBloc, PlayerState>(builder: (context, playerState) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Scene #${playerState.currentSceneIndex + 1}"),
+                  Text("Playing line: ${playerState.currentCommand?.metadata?.scriptLineIndex.let((it) => it+1) ?? "?"}")
+                ],
+              );
+            });
+  }
+
+  ScriptEditorWidget _buildScriptEditorWidget() {
+    return ScriptEditorWidget(
+      controller: codeController,
+      scrollController: codeScrollController,
+      readOnly: false,
+      availableExtensions: widget._extensionRepository.getAll(),
+      listenPlayerEvents: true,
+      onCodeChange: _monitorScriptChangesAndErrors,
+    );
+  }
+
+  void _monitorScriptChangesAndErrors(String text) {
+    ParserException? newScriptErrors;
+    try {
+      widget._scriptParser.parse(RawScript("ref", text));
+      _logger.trace(() => "Script syntax is correct");
+      newScriptErrors = null;
+    } on ParserException catch (e) {
+      newScriptErrors = e;
+    }
+    final bool newErrors = newScriptErrors != scriptErrors;
+    if (!scriptHasChanges) {
+      setState(() {
+        scriptHasChanges = true;
+        scriptErrors = newScriptErrors;
+      });
+    } else if (newErrors) setState(() => scriptErrors = newScriptErrors);
+
+    if (newErrors && newScriptErrors != null) _logErrorsFound(newScriptErrors);
+  }
+
+  void _logErrorsFound(ParserException? newScriptErrors) {
+    _logger.trace(() {
+      final buffer = StringBuffer("There are ${newScriptErrors!.causes.length} errors: \n");
+      newScriptErrors.errorMessages.forEach((errorMessage) => buffer.writeln("\t$errorMessage"));
+      return buffer.toString();
+    });
   }
 }
