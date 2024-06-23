@@ -93,10 +93,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
                     } on ParserException catch (e) {
                       _logger.warn(() {
                         final buffer = StringBuffer("Save aborted due ${e.causes.length} errors: \n");
-                        e.causes.forEach((error) {
-                          final errorLocation = 'line ${error.span!.start.line + 1}, column ${error.span!.start.column + 1}';
-                          buffer.writeln("\t${error.message} ($errorLocation)");
-                        });
+                        e.errorMessages.forEach((errorMessage) => buffer.writeln("\t$errorMessage"));
                         return buffer.toString();
                       });
                     }
@@ -169,10 +166,7 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   void _logErrorsFound(ParserException? newScriptErrors) {
     _logger.trace(() {
       final buffer = StringBuffer("There are ${newScriptErrors!.causes.length} errors: \n");
-      newScriptErrors.causes.forEach((error) {
-        final errorLocation = 'line ${error.span!.start.line + 1}, column ${error.span!.start.column + 1}';
-        buffer.writeln("\t${error.message} ($errorLocation)");
-      });
+      newScriptErrors.errorMessages.forEach((errorMessage) => buffer.writeln("\t$errorMessage"));
       return buffer.toString();
     });
   }

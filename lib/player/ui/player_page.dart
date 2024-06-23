@@ -136,10 +136,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
             } on ParserException catch (e) {
               _logger.warn(() {
                 final buffer = StringBuffer("Apply aborted due ${e.causes.length} errors: \n");
-                e.causes.forEach((error) {
-                  final errorLocation = 'line ${error.span!.start.line + 1}, column ${error.span!.start.column + 1}';
-                  buffer.writeln("\t${error.message} ($errorLocation)");
-                });
+                e.errorMessages.forEach((errorMessage) => buffer.writeln("\t$errorMessage"));
                 return buffer.toString();
               });
             }
