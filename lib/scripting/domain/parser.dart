@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 
 import 'package:json2yaml/json2yaml.dart';
 import 'package:visualizeit/extension/action.dart';
@@ -23,10 +24,57 @@ class ErrorCollector extends ErrorListener {
   void onError(YamlException error) => errors.add(error);
 }
 
+class _SourceSpanFormatExceptionEquality implements Equality<SourceSpanFormatException> {
+  const _SourceSpanFormatExceptionEquality();
+
+  @override
+  bool equals(SourceSpanFormatException e1, SourceSpanFormatException e2) {
+    return _customMessage(e1) == _customMessage(e2);
+  }
+
+  @override
+  int hash(SourceSpanFormatException e) {
+    return _customMessage(e).hashCode;
+  }
+
+  String _customMessage(SourceSpanFormatException e) {
+    final errorLocation = 'line ${e.span!.start.line + 1}, column ${e.span!.start.column + 1}';
+    var customMessage = "${e.message} ($errorLocation)";
+    return customMessage;
+  }
+
+  @override
+  bool isValidKey(Object? o) {
+    return o == null || o is SourceSpanFormatException;
+  }
+}
+
 class ParserException implements Exception {
+
+  static const _listEquality = ListEquality<SourceSpanFormatException>(_SourceSpanFormatExceptionEquality());
+
   final List<SourceSpanFormatException> causes;
 
   ParserException(this.causes);
+
+  List<String> get errorMessages => causes.map((e) => _customMessage(e)).sorted((a, b) => a.compareTo(b));
+
+  String _customMessage(SourceSpanFormatException e) {
+    final errorLocation = 'line ${e.span!.start.line + 1}, column ${e.span!.start.column + 1}';
+    var customMessage = "${e.message} ($errorLocation)";
+    return customMessage;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) || (
+        other is ParserException
+            && runtimeType == other.runtimeType
+            && (causes == other.causes || _listEquality.equals(causes, other.causes)));
+  }
+
+  @override
+  int get hashCode => _listEquality.hash(causes);
 }
 
 class ScriptDefParser {
