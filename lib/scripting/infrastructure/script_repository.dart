@@ -49,9 +49,11 @@ class InMemoryScriptRepository implements ScriptRepository {
 
   @override
   Future<Script> save(RawScript rawScript) async {
+    final parsedScript = _scriptParser.parse(rawScript); //Fails if script is invalid
     final _rawScripts = (await getStoredRawScripts());
     _rawScripts[rawScript.ref] = rawScript;
-    return _scriptParser.parse(rawScript);
+
+    return parsedScript;
   }
 
   @override
