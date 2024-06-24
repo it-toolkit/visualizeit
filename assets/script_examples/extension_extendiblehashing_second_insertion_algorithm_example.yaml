@@ -1,0 +1,30 @@
+name: "Extendible Hashing example of the second insertion algorithm"
+group: "DB data structures and algorithms"
+description: |-
+  ## Extendible Hashing in Direct Files example of the second insertion algorithm
+
+  In this example....to complete
+
+  ### extendiblehashing-create
+  It's used to create the file indicating the size of the buckets, and the initial records to insert.
+
+  ### extendiblehashing-insert
+  This command adds a value to the file acording to the extendible hashing method.
+
+  ### extendiblehashing-remove
+  This command removes a value from the file acording to the extendible hashing method.
+
+  ### extendiblehashing-find
+  This command searches for a given value in the file.
+ 
+tags: [extendible-hashing-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: ['extendible-hashing-extension']
+    description: Extendible Hashing example of the second insertion algorithm
+    initial-state:
+      - extendiblehashing-create: [3, ["270","946","741","446","123","376","458","954","973","426","410"]]
+    transitions:
+      - extendiblehashing-insert: [789]
+      - extendiblehashing-find: [946]
+      - extendiblehashing-find: [444]
