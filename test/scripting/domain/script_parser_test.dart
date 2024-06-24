@@ -443,8 +443,8 @@ void main() {
 
       expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
           throwsA(isA<ParserException>()
-              .having((e) => e.causes[0].message, 'message', equals("Unexpected attribute 'key'"))
-              .having((e) => e.causes[1].message, 'message', equals("'scenes' must be a scenes array"))
+              .having((e) => e.causes[0].message, 'message', equals("'scenes' must be a scenes array"))
+              .having((e) => e.causes[1].message, 'message', equals("Unexpected attribute 'key'"))
           ));
     });
 

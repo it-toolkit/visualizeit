@@ -3,19 +3,24 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:json2yaml/json2yaml.dart';
+import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/extension/action.dart';
+import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/scripting/domain/yaml_utils.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
+import 'package:visualizeit_extensions/logging.dart';
 import 'package:visualizeit_extensions/scripting.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml/src/error_listener.dart';
 
 import '../../extension/domain/default/default_extension.dart';
 import 'package:source_span/source_span.dart';
+
+final _logger = Logger("scripting.parser");
 
 class ErrorCollector extends ErrorListener {
   final List<YamlException> errors = [];
@@ -39,7 +44,10 @@ class _SourceSpanFormatExceptionEquality implements Equality<SourceSpanFormatExc
   }
 
   String _customMessage(SourceSpanFormatException e) {
-    final errorLocation = 'line ${e.span!.start.line + 1}, column ${e.span!.start.column + 1}';
+    var span = e.span;
+    if (span == null) return e.message;
+
+    final errorLocation = 'line ${span.start.line + 1}, column ${span.start.column + 1}';
     var customMessage = "${e.message} ($errorLocation)";
     return customMessage;
   }
@@ -68,7 +76,10 @@ class ParserException implements Exception {
   List<String> get errorMessages => causes.map((e) => _customMessage(e)).toList();
 
   String _customMessage(SourceSpanFormatException e) {
-    final errorLocation = 'line ${e.span!.start.line + 1}, column ${e.span!.start.column + 1}';
+    var span = e.span;
+    if (span == null) return e.message;
+
+    final errorLocation = 'line ${span.start.line + 1}, column ${span.start.column + 1}';
     var customMessage = "${e.message} ($errorLocation)";
     return customMessage;
   }
@@ -270,42 +281,53 @@ class ScriptParser {
 
   Script parse(RawScript rawScript) {
     ScriptDef scriptDef = _scripDefParser.parse(rawScript.contentAsYaml);
+    final errorCollector = ErrorCollector();
+    dynamic scenes = scriptDef.scenes.map((sceneDef) {
+      try {
+        Map<String, Extension> extensions = {
+          for (var extensionId in sceneDef.metadata.extensionIds) extensionId: _getExtensionsById(extensionId)
+        };
 
-    List<Scene> scenes = scriptDef.scenes.map((sceneDef) {
-      Map<String, Extension> extensions = {
-        for (var extensionId in sceneDef.metadata.extensionIds) extensionId: _getExtensionsById(extensionId)
-      };
+        extensions[DefaultExtensionConsts.Id] = _getExtensionsById(DefaultExtensionConsts.Id);
 
-      extensions[DefaultExtensionConsts.Id] = _getExtensionsById(DefaultExtensionConsts.Id);
+        return Scene(
+          sceneDef.metadata,
+          _parseRawCommands(sceneDef.initialStateBuilderCommands, extensions, errorCollector),
+          _parseRawCommands(sceneDef.transitionCommands, extensions, errorCollector),
+        );
+      } on ExtensionNotFoundException catch (e) {
+        errorCollector.onError(YamlException("Unknown extension '${e.extensionId}' (scene at line ${sceneDef.metadata.scriptLineIndex + 1})", null));
+      }
+    }).nonNulls.toList(growable: false);
 
-      return Scene(
-        sceneDef.metadata,
-        _parseRawCommands(sceneDef.initialStateBuilderCommands, extensions),
-        _parseRawCommands(sceneDef.transitionCommands, extensions),
-      );
-    }).toList(growable: false);
+    if (!errorCollector.isEmpty()) throw ParserException(errorCollector.errors);
 
     return Script(rawScript, scriptDef.metadata, scenes);
   }
 
   ///Throws error if command cannot be parsed
-  Command _parseCommand(dynamic rawCommand, Map<String, Extension> extensions) {
-    try {
-      return extensions.values
-          .map((extension) {
-            RawCommand rawCmd = _parseCommandNode(rawCommand);
-            return extension.scripting.buildCommand(rawCmd);
-          })
-          .nonNulls
-          .single; //TODO handle too many or none
-    } catch (e) {
-      print("Error parsing command: ${[rawCommand, extensions]}, error: $e");
-      rethrow;
-    }
+  Command _parseCommand(YamlNode rawCommand, Map<String, Extension> extensions) {
+    final commands = extensions.values.map((extension) {
+      RawCommand rawCmd = _parseCommandNode(rawCommand);
+      return extension.scripting.buildCommand(rawCmd);
+    }).nonNulls;
+
+    if (commands.isEmpty) throw YamlException("Unknown command: '${rawCommand.toString().cap(15)}'", rawCommand.span);
+
+    return commands.first;
   }
 
-  List<Command> _parseRawCommands(YamlList rawCommands, Map<String, Extension> extensions) {
-    return rawCommands.nodes.map((rawCommand) => _parseCommand(rawCommand, extensions)).toList();
+  List<Command> _parseRawCommands(YamlList rawCommands, Map<String, Extension> extensions, ErrorCollector errorCollector) {
+    return rawCommands.nodes.map((rawCommand) {
+      try {
+        return _parseCommand(rawCommand, extensions);
+      } on YamlException catch (e) {
+        errorCollector.onError(e);
+      } catch (e) {
+        _logger.debug(() => "Error parsing command: ${[rawCommand, extensions]}, error: $e");
+        errorCollector.onError(YamlException(e.toString(), rawCommand.span));
+      }
+    }).nonNulls.toList();
   }
 
   RawCommand _parseCommandNode(YamlNode rawCommand) {
@@ -315,7 +337,7 @@ class ScriptParser {
     if (commandNode is YamlScalar || commandNode is String) {
       return RawCommand.literal(commandNode.toString(), metadata: commandMetadata);
     } else if (commandNode is YamlMap) {
-      if (commandNode.length > 1) throw Exception("Single key map required");
+      if (commandNode.length > 1) throw YamlException("Invalid command syntax, single key map is required: '${commandNode.toString().cap(15)}'", rawCommand.span);
 
       var commandName = commandNode.keys.single.toString(); //Catch error if not single
       var valueYamlNode = commandNode.values.single;
@@ -329,10 +351,10 @@ class ScriptParser {
       } else if (valueYamlNode is String || valueYamlNode is num || valueYamlNode is bool) {
         return RawCommand.withPositionalArgs(commandName, [valueYamlNode], metadata: commandMetadata);
       } else {
-        throw Exception("Unknown command value type"); //TODO improve error handling
+        throw YamlException("Invalid command syntax: '${commandNode.toString().cap(15)}'", rawCommand.span);
       }
     } else {
-      throw Exception("Unknown command"); //TODO improve error handling
+      throw YamlException("Invalid command syntax, string or single key map is required: '${commandNode.toString().cap(15)}'", rawCommand.span);
     }
   }
 }

@@ -22,7 +22,7 @@ class DefaultExtensionRepository implements ExtensionRepository {
   @override
   Extension getById(String id) {
     var extension = _extensionsById[id];
-    if (extension == null) throw ExtensionNotFoundException("Extension not found for id [$id]");
+    if (extension == null) throw ExtensionNotFoundException(id);
 
     return extension;
   }
