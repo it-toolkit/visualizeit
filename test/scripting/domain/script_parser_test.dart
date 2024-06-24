@@ -33,7 +33,10 @@ void main() {
   tearDown(() {
     reset(getExtensionsById);
     reset(extensionMock);
+    reset(extension2Mock);
     reset(scriptingExtensionMock);
+    reset(scriptingExtension2Mock);
+    reset(modelMock);
     reset(commandMock);
   });
   final validRawScriptYaml = """
@@ -680,7 +683,7 @@ void main() {
     expect(script.scenes.single.initialStateBuilderCommands.length, equals(3));
     expect(script.scenes.single.transitionCommands.length, equals(3));
 
-    final capturedRawCommands = verify(() => scriptingExtensionMock.buildCommand(captureAny<RawCommand>())).captured;
+    final capturedRawCommands = verify(() => scriptingExtension2Mock.buildCommand(captureAny<RawCommand>())).captured;
 
     expect(capturedRawCommands.where((e) => e.name == 'no-arg-command').length, equals(2));
     expect(capturedRawCommands.where((e) => e.name == 'single-arg-command').length, equals(2));

@@ -310,7 +310,7 @@ class ScriptParser {
     final commands = extensions.values.map((extension) {
       RawCommand rawCmd = _parseCommandNode(rawCommand);
       return extension.scripting.buildCommand(rawCmd);
-    }).nonNulls;
+    }).nonNulls.toList();
 
     if (commands.isEmpty) throw YamlException("Unknown command: '${rawCommand.toString().cap(15)}'", rawCommand.span);
 
