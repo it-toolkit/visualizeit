@@ -1204,7 +1204,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: ea44dbb07e963bdae6979a714fbf54af6dc79e9b
+      resolved-ref: "940d2ee7490fedcb2ead8524031b26de933d8120"
       url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
     source: git
     version: "0.0.1"
