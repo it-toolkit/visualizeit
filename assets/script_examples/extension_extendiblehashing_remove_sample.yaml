@@ -1,7 +1,7 @@
-name: "Extendible Hashing example of the first remove algorithm"
+name: "Extendible Hashing example of the second insertion algorithm"
 group: "DB data structures and algorithms"
 description: |-
-  ## Extendible Hashing in Direct Files example of the first remove algorithm
+  ## Extendible Hashing in Direct Files example of the second insertion algorithm
 
   In this example....to complete
 
@@ -21,11 +21,10 @@ tags: [extendible-hashing-extension, dev-example]
 scenes:
   - name: First scene
     extensions: ['extendible-hashing-extension']
-    description: Extendible Hashing example of the first remove algorithm
+    description: Extendible Hashing example of the second insertion algorithm
     initial-state:
-      - extendiblehashing-create: [3, ["270","946","741","446","123","376","458","954","973","426","410","789","484","305","462","809","459"]]
+      - extendiblehashing-create: [3, ["270","946","741","446","123","376","458","954","973","426","410"]]
     transitions:
-      - extendiblehashing-remove: [305]
-      - extendiblehashing-remove: [809]
-      - extendiblehashing-find: [305]
-      - extendiblehashing-find: [809]
+      - extendiblehashing-insert: [789]
+      - extendiblehashing-find: [946]
+      - extendiblehashing-find: [444]
