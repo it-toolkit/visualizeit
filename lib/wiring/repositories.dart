@@ -40,6 +40,10 @@ extension GetItRepositories on GetIt {
       "assets/script_examples/extension_bsharptree_example.yaml",
       "assets/script_examples/extension_bsharptree_incremental_example.yaml",
       "assets/script_examples/extension_template_example.yaml",
+      "assets/script_examples/extension_extendiblehashing_example.yaml",
+      "assets/script_examples/extension_extendiblehashing_remove_sample.yaml",
+      "assets/script_examples/extension_extendiblehashing_second_insertion_algorithm_example.yaml",
+      "assets/script_examples/extension_extendiblehashing_second_remove_example.yaml",
     ];
     return Future.wait(assetKeys.map((key) async =>
         RawScript(key.hashCode.toString(), await rootBundle.loadString(key))));

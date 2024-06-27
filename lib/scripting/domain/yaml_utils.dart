@@ -21,6 +21,6 @@ abstract class YamlUtils {
   static List<dynamic> unwrapScalarsInList(YamlList yamlList) {
     var list = <dynamic>[];
     yamlList.forEach((e) { list.add(_convertNode(e)); });
-    return list;;
+    return list;
   }
 }
