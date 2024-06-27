@@ -6,6 +6,8 @@ description: |-
   In this example it is possible to create a file organized with the extensible hashing technique. Where you can select the size of the buckets that will contain fixed length records. It is also possible to select an initial state of the file.
   In the extensible hashing technique, the hash function will be used to access the table (hash table) of bucket addresses. This extensible version of hashing is also known as postfix bits because it considers the last bits of a record key to determine in the hash table the bucket number that the record contains.
 
+  This example shows an insert where the hash table is not duplicated but only updated. Also the find command is tested.
+
   ### extendiblehashing-create
   It's used to create the file indicating the size of the buckets, and the initial records to insert.
 
