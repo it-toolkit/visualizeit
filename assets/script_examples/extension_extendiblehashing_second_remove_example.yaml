@@ -1,7 +1,7 @@
-name: "Extendible Hashing example of the second insertion algorithm"
+name: "Extendible Hashing example of the second remove algorithm"
 group: "DB data structures and algorithms"
 description: |-
-  ## Extendible Hashing in Direct Files example of the second insertion algorithm
+  ## Extendible Hashing in Direct Files example of the second remove algorithm
 
   In this example it is possible to create a file organized with the extensible hashing technique. Where you can select the size of the buckets that will contain fixed length records. It is also possible to select an initial state of the file.
   In the extensible hashing technique, the hash function will be used to access the table (hash table) of bucket addresses. This extensible version of hashing is also known as postfix bits because it considers the last bits of a record key to determine in the hash table the bucket number that the record contains.
@@ -22,10 +22,13 @@ tags: [extendible-hashing-extension, dev-example]
 scenes:
   - name: First scene
     extensions: ['extendible-hashing-extension']
-    description: Extendible Hashing example of the second insertion algorithm
+    description: Extendible Hashing example of the second remove algorithm
     initial-state:
-      - extendiblehashing-create: [3, ["270","946","741","446","123","376","458","954","973","426","410"]]
+      - extendiblehashing-create: [3, ["270","946","741","446","123","376","458","954","973","426","410","789","484","305","462","809"]]
     transitions:
-      - extendiblehashing-insert: [789]
-      - extendiblehashing-find: [946]
-      - extendiblehashing-find: [444]
+      - extendiblehashing-insert: [459]
+      - extendiblehashing-remove: [305]
+      - extendiblehashing-remove: [809]
+      - extendiblehashing-remove: [946]
+      - extendiblehashing-remove: [410]
+      - extendiblehashing-remove: [954]
