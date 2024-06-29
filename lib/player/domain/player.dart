@@ -149,11 +149,15 @@ class PlayerState {
   }
 
   PlayerState runNextCommand({Duration timeFrame = Duration.zero}) {
-
     var nextCommandIndex = currentCommandIndex + 1;
     var scene = script.scenes[currentSceneIndex];
 
-    if (nextCommandIndex >= scene.transitionCommands.length) return stopPlayback(); //TODO advance scene?
+    final isLastScene = (currentSceneIndex == script.scenes.length - 1);
+
+    if (nextCommandIndex >= scene.transitionCommands.length) {
+      if (isLastScene) return stopPlayback();
+      else return nextScene();
+    }
 
     var command = scene.transitionCommands[nextCommandIndex];
     var commandContext = CommandContext(timeFrame: timeFrame);
@@ -168,6 +172,11 @@ class PlayerState {
       models: result.models,
       isPlaying: isPlaying,
     );
+  }
+
+  PlayerState nextScene() {
+    var sceneIndex = currentSceneIndex +1;
+    return PlayerState._internal(script, sceneIndex, -1, _buildInitialState(script.scenes[sceneIndex].initialStateBuilderCommands), isPlaying, waitingAction, canvasScale);
   }
 
   PlayerState startPlayback({bool waitingAction = false}) {

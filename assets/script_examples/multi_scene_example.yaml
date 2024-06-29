@@ -1,0 +1,30 @@
+name: Multi scene example
+group: Extension examples
+description: |-
+  ## Global commands example
+tags: [global-extension, dev-example]
+scenes:
+  - name: First scene
+    extensions: []
+    description: Scene showing some global commands usage
+    initial-state:
+      - background: ["https://images.pexels.com/photos/159627/pencils-clips-colour-pencils-foam-rubber-159627.jpeg", cover]
+    transitions:
+      - show-popup: Scene 1
+      - show-banner: ["Banner of scene 1", center, 2]
+  - name: Second scene
+    extensions: [fake_extension]
+    description: Scene showing some global commands usage
+    initial-state:
+    transitions:
+      - show-popup: Scene 2
+      - fake-command
+  - name: Third scene
+    extensions: ['slides']
+    description: Scene showing how to use some slide types
+    initial-state:
+      - create-slideshow
+      - add-title-slide: { title: "Title slide", subtitle: "With subtitle..." }
+    transitions:
+      - show-popup: Scene 3
+      - show-slides
