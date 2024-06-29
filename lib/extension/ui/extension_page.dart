@@ -24,7 +24,6 @@ class ExtensionPage extends StatefulBasePage {
 }
 
 class _ExtensionPageState extends BasePageState<ExtensionPage> {
-  //TODO implement extensions model
   List<Extension> _filteredExtensions = [];
   int? _selectedIndex;
   String _query = '';

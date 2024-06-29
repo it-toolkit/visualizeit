@@ -68,7 +68,6 @@ class ScriptEditorWidget extends StatelessWidget {
         controller: controller,
         wordWrap: false,
         chunkAnalyzer: NonCodeChunkAnalyzer(),
-        //TODO DefaultCodeChunkAnalyzer(),
         style: buildCodeEditorStyle(),
         indicatorBuilder: indicatorBuilder,
         sperator: Container(width: 1, color: Colors.blue),

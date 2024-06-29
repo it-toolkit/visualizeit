@@ -247,7 +247,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
       );
   }
 
-  bool _isUserLoggedIn() => true; //TODO
+  bool _isUserLoggedIn() => true; //TODO eliminar login
 
   Widget buildTabContent(BuildContext context, bool readOnly, ButtonBar scriptButtonBar, bool loadingScripts,
       SearchableList<AvailableScript> availableScripts,

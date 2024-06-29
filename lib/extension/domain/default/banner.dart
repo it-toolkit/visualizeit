@@ -80,7 +80,7 @@ class _BannerState extends State<BannerWidget> {
       case "bottomLeft": return Alignment.bottomLeft;
       case "bottomCenter": return Alignment.bottomCenter;
       case "bottomRight": return Alignment.bottomRight;
-      default: throw Exception("Unknown alignment value"); //TODO handle error properly
+      default: throw Exception("Unknown alignment value"); //TODO handle error properly, provide a custom exception to use
     }
   }
 }

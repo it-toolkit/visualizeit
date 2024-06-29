@@ -53,7 +53,6 @@ class AvailableExtensionsRegistrationBuilder implements Builder {
   }
 
   bool _implementsInterface(ClassElement classElement, String interfaceName) {
-    //TODO también contemplar casos de herencia
     return classElement.interfaces.any((interfaceType) => interfaceType.element.name == interfaceName);
   }
 }

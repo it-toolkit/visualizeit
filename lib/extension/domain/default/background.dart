@@ -42,7 +42,7 @@ class ShowBackground extends GlobalCommand {
 
   @override
   Result call(Model model, CommandContext context) {
-    final globalModel = (model as GlobalModel).clone(); //TODO fail if cannot cast
+    final globalModel = (model as GlobalModel).clone();
     final backgroundModel = BackgroundModel(backgroundModelName, imageUrl, scaling);
 
     Result result = Result(model: globalModel);

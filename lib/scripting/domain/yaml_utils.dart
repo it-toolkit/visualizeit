@@ -7,7 +7,7 @@ abstract class YamlUtils {
     if (v is YamlMap) return unwrapScalarsInMap(v);
     else if (v is YamlList) return unwrapScalarsInList(v);
     else if (v is YamlScalar) return v.value;
-    else return v; //TODO Error?
+    else return v;
   }
 
   static Map<String, dynamic> unwrapScalarsInMap(YamlMap yamlMap) {

@@ -10,7 +10,7 @@ import '../scripting/infrastructure/script_repository.dart';
 extension GetItRepositories on GetIt {
   void registerRepositories() {
     registerLazySingleton<ScriptRepository>(() => kReleaseMode
-        ? InMemoryScriptRepository(get()) //TODO use remote repository
+        ? InMemoryScriptRepository(get())
         : InMemoryScriptRepository(
             get(),
             initialRawScriptsLoader: _loadExampleScriptsFromAssets()),
@@ -18,7 +18,7 @@ extension GetItRepositories on GetIt {
         );
 
     registerLazySingleton<ScriptRepository>(() =>
-        InMemoryScriptRepository(get()), //TODO use remote repository
+        InMemoryScriptRepository(get()),
         instanceName: "myScriptsRepository"
     );
 
@@ -31,6 +31,7 @@ extension GetItRepositories on GetIt {
   }
 
   Future<List<RawScript>> _loadExampleScriptsFromAssets() async {
+    //TODO also read from extensions
     final assetKeys = [
       "assets/script_examples/visualizeit_intro.yaml",
       "assets/script_examples/bsharptree_example_with_explanation.yaml",
