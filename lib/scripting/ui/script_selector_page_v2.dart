@@ -240,14 +240,12 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
               controller: _tabController,
               children: [
                 buildTabContent(context, true, buildButtonBar(context, _publicAvailableScripts), _loadingPublicScripts, _publicAvailableScripts, _publicScriptsTreeData, _publicScriptsTreeController, _publicScriptsTextEditingController),
-                _isUserLoggedIn() ? buildTabContent(context, false, buildMyScriptsButtonBar(context, _myAvailableScripts), _loadingMyScripts, _myAvailableScripts, _myScriptsTreeData, _myScriptsTreeController, _myScriptsTextEditingController) : buildLoginRequiredTabContent(context),
+                buildTabContent(context, false, buildMyScriptsButtonBar(context, _myAvailableScripts), _loadingMyScripts, _myAvailableScripts, _myScriptsTreeData, _myScriptsTreeController, _myScriptsTextEditingController),
               ],
             ),
         ),
       );
   }
-
-  bool _isUserLoggedIn() => true; //TODO eliminar login
 
   Widget buildTabContent(BuildContext context, bool readOnly, ButtonBar scriptButtonBar, bool loadingScripts,
       SearchableList<AvailableScript> availableScripts,
@@ -558,21 +556,5 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
         );
       },
     );
-  }
-
-  buildLoginRequiredTabContent(BuildContext context) {
-    return Container(
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.info_outline,
-              size: 36,
-              color: Colors.blue.shade300,
-            ),
-            const Text("Login required")
-          ],
-        ));
   }
 }
