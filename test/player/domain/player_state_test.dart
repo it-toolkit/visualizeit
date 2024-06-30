@@ -53,7 +53,7 @@ void main() {
   test('Init player state with single scene without commands', () {
     var script = Script(
       RawScript("ref", "yaml"),
-      ScriptMetadata("script_name", "script_description", {}),
+      ScriptMetadata("script_name", "script_description"),
       [
         Scene(SceneMetadata("scene_name", "scene_description", {}, SourceSpan(SourceLocation(0), SourceLocation(1), " ")), [], [])
       ]
@@ -73,7 +73,7 @@ void main() {
 
     var script = Script(
         RawScript("ref", "yaml"),
-        ScriptMetadata("script_name", "script_description", {}),
+        ScriptMetadata("script_name", "script_description"),
         [
           Scene(SceneMetadata("scene_name", "scene_description", {}, SourceSpan(SourceLocation(0), SourceLocation(1), " "), 0),
               [
@@ -111,7 +111,7 @@ void main() {
 
     var script = Script(
         RawScript("ref", "yaml"),
-        ScriptMetadata("script_name", "script_description", {}),
+        ScriptMetadata("script_name", "script_description"),
         [
           Scene(SceneMetadata("scene_name", "scene_description", {}, SourceSpan(SourceLocation(0), SourceLocation(1), " "), 0),
               [

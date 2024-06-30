@@ -100,7 +100,6 @@ class ScriptDefParser {
     "name": null,
     "description": null,
     "group": null,
-    "tags": null,
     "scenes": {
       "name": null,
       "description": null,
@@ -127,12 +126,11 @@ class ScriptDefParser {
       final name = getRequiredString(root, 'name', errorCollector);
       final description = getRequiredString(root, 'description', errorCollector);
       final group = getOptionalString(root, 'group', errorCollector);
-      final tags = getOptionalStringSet(root, 'tags', errorCollector);
       final scenesDef = buildScenesDef(root, errorCollector);
 
       if (!errorCollector.isEmpty()) throw ParserException(errorCollector.errors);
 
-      return ScriptDef(ScriptMetadata(name, description, tags ?? Set<String>(), group: group), scenesDef);
+      return ScriptDef(ScriptMetadata(name, description, group: group), scenesDef);
     }
   }
 

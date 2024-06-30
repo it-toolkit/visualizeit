@@ -7,18 +7,17 @@ import 'package:yaml/yaml.dart';
 class ScriptMetadata {
   final String name;
   final String description;
-  final Set<String> tags;
   final String? group;
 
-  ScriptMetadata(this.name, this.description, this.tags, {this.group});
+  ScriptMetadata(this.name, this.description, {this.group});
 
   @override
   String toString() {
-    return 'ScriptMetadata{name: $name, description: $description, tags: $tags, group: $group}';
+    return 'ScriptMetadata{name: $name, description: $description, group: $group}';
   }
 
   ScriptMetadata clone() {
-    return ScriptMetadata(name, description, Set.from(tags), group: group);
+    return ScriptMetadata(name, description, group: group);
   }
 }
 

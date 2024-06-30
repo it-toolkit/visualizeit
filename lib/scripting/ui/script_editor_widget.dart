@@ -129,7 +129,6 @@ class ScriptEditorWidget extends StatelessWidget {
       CodeTemplatePrompt(word: "name", template: "name: ...element name..."),
       CodeTemplatePrompt(word: "description", template: "description: ...element description..."),
       CodeTemplatePrompt(word: "group", template: "group: ...optional parent..."),
-      CodeTemplatePrompt(word: "tags", template: "tags: [optional-tags]"),
       CodeTemplatePrompt(word: "title-duration", template: "title-duration: 1"),
       CodeTemplatePrompt(word: "base-frame-duration-ms", template: "base-frame-duration-ms: 1000"),
       CodeTemplatePrompt(word: "scenes", template:

@@ -3,7 +3,6 @@ description: |
   "## Example of global commands usage
   
   This script builds a simple visualization using global commands"
-tags: [example]
 scenes:
   - name: Scene name
     extensions: []

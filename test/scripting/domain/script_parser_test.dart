@@ -44,7 +44,6 @@ void main() {
       description: |
         ## Example of flow diagram usage
         This script builds a simple flow diagram and adds some components 
-      tags: [data-structure, example]
       scenes:
         - name: Scene name
           extensions: [flow-diagram]
@@ -65,7 +64,6 @@ void main() {
       description: |
         ## Example of flow diagram usage
         This script builds a simple flow diagram and adds some components 
-      tags: [data-structure, example]
       scenes:
         - name 
           extensions: 
@@ -89,7 +87,6 @@ void main() {
       description: |
         ## Example of flow diagram usage
         This script builds a simple flow diagram and adds some components 
-      tags: [data-structure, example]
       other_unexpected: 5
       scenes:
         - name: Scene name
@@ -118,7 +115,6 @@ void main() {
         description: |
           ## Example of flow diagram usage
           This script builds a simple flow diagram and adds some components 
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -143,7 +139,6 @@ void main() {
         description: |
           ## Example of flow diagram usage
           This script builds a simple flow diagram and adds some components 
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -168,7 +163,6 @@ void main() {
         description: |
           ## Example of flow diagram usage
           This script builds a simple flow diagram and adds some components 
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -193,7 +187,6 @@ void main() {
     test('Missing script description', () {
       final scriptYaml = """
         name: Valid name
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -216,7 +209,6 @@ void main() {
       final scriptYaml = """
         name: Valid name
         description: "" 
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -239,7 +231,6 @@ void main() {
       final scriptYaml = """
         name: Valid name
         description: [ "a description in an array" ]
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -265,7 +256,6 @@ void main() {
       final scriptYaml = """
         name: Valid name
         description: Valid description
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -289,7 +279,6 @@ void main() {
         name: Valid name
         description: Valid description
         group: 
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -313,7 +302,6 @@ void main() {
         name: Valid name
         description: Valid description
         group: 123
-        tags: [data-structure, example]
         scenes:
           - name: Scene name
             extensions: [ some_ext ]
@@ -332,76 +320,6 @@ void main() {
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'group' must be a String"))));
     });
 
-  });
-
-  group("Errors at script tags", () {
-    test('Missing script tags is valid', () {
-      final scriptYaml = """
-        name: Valid name
-        description: Valid description
-        scenes:
-          - name: Scene name
-            extensions: [ some_ext ]
-            description: Initial scene description
-            initial-state:
-              - no-arg-command
-              - single-arg-command: "my-arg"
-              - multi-arg-command: [arg1, arg2]
-            transitions:
-              - no-arg-command
-              - single-arg-command: "my-arg"
-              - multi-arg-command: [arg1, arg2]
-        """.trimIndent();
-
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
-          isNot(throwsA(isA<ParserException>())));
-    });
-
-    test('Null tags is valid', () {
-      final scriptYaml = """
-        name: Valid name
-        description: Valid description
-        tags: 
-        scenes:
-          - name: Scene name
-            extensions: [ some_ext ]
-            description: Initial scene description
-            initial-state:
-              - no-arg-command
-              - single-arg-command: "my-arg"
-              - multi-arg-command: [arg1, arg2]
-            transitions:
-              - no-arg-command
-              - single-arg-command: "my-arg"
-              - multi-arg-command: [arg1, arg2]
-        """.trimIndent();
-
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
-          isNot(throwsA(isA<ParserException>())));
-    });
-
-    test('Invalid type for script tags', () {
-      final scriptYaml = """
-        name: Valid name
-        description: Valid description
-        tags: "invalid-tag"
-        scenes:
-          - name: Scene name
-            extensions: [ some_ext ]
-            description: Initial scene description
-            initial-state:
-              - no-arg-command
-              - single-arg-command: "my-arg"
-              - multi-arg-command: [arg1, arg2]
-            transitions:
-              - no-arg-command
-              - single-arg-command: "my-arg"
-              - multi-arg-command: [arg1, arg2]
-        """.trimIndent();
-
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
-          throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'tags' must be a String array"))));
-    });
   });
 
   group("Errors at script scenes", () {
@@ -646,7 +564,6 @@ void main() {
         ## Example of flow diagram usage
         This script builds a simple flow diagram and adds some components 
     """.trimIndent()));
-    expect(script.metadata.tags, containsAll(["data-structure", "example"]));
   });
 
   test('parse valid script scene metadata', () {

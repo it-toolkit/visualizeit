@@ -18,7 +18,6 @@ description: |-
   ### bsharptree-find
   This command searches through the tree until it finds the node a value should be located, even if it isn't in the tree at the moment
   
-tags: [bsharptree-extension, dev-example]
 scenes:
   - name: First scene
     extensions: ['bsharptree-extension']

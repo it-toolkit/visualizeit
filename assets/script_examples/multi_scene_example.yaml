@@ -2,7 +2,6 @@ name: Multi scene example
 group: Extension examples
 description: |-
   ## Global commands example
-tags: [global-extension, dev-example]
 scenes:
   - name: First scene
     extensions: []

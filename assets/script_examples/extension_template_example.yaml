@@ -18,7 +18,6 @@ description: |-
   <video src="https://upload.wikimedia.org/wikipedia/commons/transcoded/e/eb/FractalSpirograph2880p60_20200409.webm/FractalSpirograph2880p60_20200409.webm.1080p.vp9.webm">
   
   to enrich your docs
-tags: [fake-extension, dev-example]
 scenes:
   - name: First scene
     extensions: ['fake_extension']

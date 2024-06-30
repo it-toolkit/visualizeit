@@ -158,7 +158,6 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
                 decoration: InputDecoration(suffixIcon: Icon(Icons.search), hintText: 'Search scripts...', isDense: true),
               ),
             ),
-            // TagsWidget(), //TODO redefine tags visualization
             Spacer(),
             IconButton(onPressed: _createScript, icon: Icon(Icons.add_circle_outline), tooltip: "Create script", iconSize: 20),
             IconButton(onPressed: _importScripts, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
@@ -173,7 +172,6 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     # Write your script here...
     name: "$scriptName"
     description: "$scriptDescription" 
-    tags: []
     scenes:
       - name: "...scene name..."
         extensions: [ ]
@@ -199,7 +197,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
           var scriptName = "New script $nextIndex";
           var scriptDescription = "... complete the 'New script $nextIndex' description...";
           widget._myRawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
-          return ScriptMetadata(scriptName, scriptDescription, <String>{});
+          return ScriptMetadata(scriptName, scriptDescription);
         })
         .then((scriptMetadata) => _myAvailableScripts.addItem(_AvailableScript(scriptRef, scriptMetadata)));
 
@@ -220,7 +218,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
           var newScriptName = "${metadata.name} - clone $nextIndex";
           widget._myRawScriptRepository.save(RawScript(scriptRef, script.raw.contentAsYaml.replaceFirst(metadata.name, newScriptName)));
 
-          return ScriptMetadata(newScriptName, metadata.description, metadata.tags);
+          return ScriptMetadata(newScriptName, metadata.description);
         })
       .then((scriptMetadata) => _myAvailableScripts.addItem(_AvailableScript(scriptRef, scriptMetadata)))
       .then((value) => _openScriptInEditor(scriptRef, readOnly: false));
