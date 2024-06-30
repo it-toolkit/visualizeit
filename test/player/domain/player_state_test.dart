@@ -74,7 +74,7 @@ void main() {
         RawScript("ref", "yaml"),
         ScriptMetadata("script_name", "script_description", {}),
         [
-          Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10),
+          Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10, 0),
               [
                 FakeModelCommand.build(fakeModel),
                 initFakeCommand1,
@@ -112,7 +112,7 @@ void main() {
         RawScript("ref", "yaml"),
         ScriptMetadata("script_name", "script_description", {}),
         [
-          Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10),
+          Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10, 0),
               [
                 FakeModelCommand.build(fakeModel),
               ],

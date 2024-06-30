@@ -32,7 +32,7 @@ class SceneMetadata {
   final String rawYaml;
   final int scriptLineIndex;
 
-  SceneMetadata(this.name, this.description, this.extensionIds, this.rawYaml, this.scriptLineIndex, this.titleDuration, this.baseFrameDurationInMillis);
+  SceneMetadata(this.name, this.description, this.extensionIds, this.rawYaml, this.scriptLineIndex, [this.titleDuration, this.baseFrameDurationInMillis]);
 
   SceneMetadata clone() {
     return SceneMetadata(name, description, extensionIds, rawYaml, scriptLineIndex, titleDuration, baseFrameDurationInMillis);
