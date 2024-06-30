@@ -23,8 +23,9 @@ scenes:
     transitions:
       - fake-command
       - show-popup: |-
-          The next scene does not have 
-          a title slide
+          The next scene does not use 
+          the **default title slide**.
+          It starts showing the initial state representation.
   - name: Third scene
     extensions: ['slides']
     title-duration: 0
