@@ -333,41 +333,18 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
       itemComparator: (item1, item2) => item1.metadata.name.compareTo(item2.metadata.name),
       order: GroupedListOrder.DESC,
       useStickyGroupSeparators: true,
-      groupSeparatorBuilder: (String value) => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: InkWell(
-          onTap: () {
-            textEditingController.text = value;
-            search(value, availableScripts);
-            },
-          child:Text(
-            value,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-        ),
+      groupSeparatorBuilder: (String value) => _ScriptListGroup(value,
+        onTap: () {
+          textEditingController.text = value;
+          search(value, availableScripts);
+        },
       ),
-      itemBuilder: (c, element) {
-        return Card(
-          elevation: 8.0,
-          margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
-          child: SizedBox(
-            child: ListTile(
-              contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
-              leading: const Icon(Icons.text_snippet_outlined),
-              dense: true,
-              title: Text(element.metadata.name),
-              onTap: () {
-                setState(() {
-                  _logger.debug(() => "Tap on: ${element.metadata.name}");
-                  availableScripts.select(element);
-                });
-              },
-            ),
-          ),
-        );
-      },
+      itemBuilder: (c, element) => _ScriptListItem(element.metadata.name, onTap: () {
+        _logger.debug(() => "Tap on: ${element.metadata.name}");
+        setState(() {
+          availableScripts.select(element);
+        });
+      }),
     );
   }
 
@@ -463,6 +440,55 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
           ],
         );
       },
+    );
+  }
+}
+
+class _ScriptListItem extends StatelessWidget {
+
+  final String text;
+  final GestureTapCallback? onTap;
+
+  _ScriptListItem(this.text, {this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 8.0,
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
+      child: SizedBox(
+        child: ListTile(
+          contentPadding:
+          const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
+          leading: const Icon(Icons.text_snippet_outlined),
+          dense: true,
+          title: Text(text),
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
+}
+
+class _ScriptListGroup extends StatelessWidget {
+
+  final String text;
+  final GestureTapCallback? onTap;
+
+  _ScriptListGroup(this.text, {this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
+        onTap: onTap,
+        child:Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }
