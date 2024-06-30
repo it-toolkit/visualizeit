@@ -46,25 +46,6 @@ extension _AppBlocExt on AppBloc {
   }
 }
 
-abstract class BasePage extends StatelessWidget {
-  /// Constructs a [TemplateScreen]
-  const BasePage({super.key, this.onExtensionsPressed, this.onHelpPressed});
-
-  final VoidCallback? onHelpPressed;
-  final VoidCallback? onExtensionsPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: _buildBasePageAppBar(context: context, buildAppBarBottom: buildAppBarBottom),
-        body: Container(margin: const EdgeInsets.all(15), child: buildBody(context)));
-  }
-
-  PreferredSizeWidget? buildAppBarBottom(BuildContext context) => null;
-
-  Widget buildBody(BuildContext context);
-}
-
 abstract class StatefulBasePage extends StatefulWidget {
   final String name;
 

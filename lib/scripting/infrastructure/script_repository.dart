@@ -2,7 +2,6 @@
 
 import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
-import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 
 class InMemoryScriptRepository implements ScriptRepository {
@@ -23,14 +22,6 @@ class InMemoryScriptRepository implements ScriptRepository {
       _storedRawScripts = {};
     }
     return _storedRawScripts!;
-  }
-
-  @override
-  Future<Map<ScriptRef, ScriptMetadata>> fetchAvailableScriptsMetadata() async {
-    final _rawScripts = await getStoredRawScripts();
-    return _rawScripts.map((key, value) {
-      return MapEntry(key, _scriptParser.parse(value).metadata);
-    });
   }
 
   @override

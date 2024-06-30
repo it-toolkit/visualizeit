@@ -10,7 +10,7 @@ import 'package:slugify/slugify.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
-import 'package:visualizeit/scripting/domain/parser.dart';
+import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:collection/collection.dart';
 import 'package:visualizeit/scripting/domain/searchable_list.dart';
@@ -43,27 +43,7 @@ class ScriptSelectorPage extends StatefulBasePage {
   }
 }
 
-class _AvailableScript {
-  ScriptRef scriptRef;
-  ScriptMetadata metadata;
-
-  _AvailableScript(this.scriptRef, this.metadata);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _AvailableScript && runtimeType == other.runtimeType && scriptRef == other.scriptRef && metadata == other.metadata;
-
-  @override
-  int get hashCode => scriptRef.hashCode ^ metadata.hashCode;
-
-  @override
-  String toString() {
-    return 'AvailableScript{name: ${metadata.name}}';
-  }
-}
-
-
+typedef _AvailableScript = Script;
 
 class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with SingleTickerProviderStateMixin {
   final _uuid = Uuid();
@@ -91,11 +71,10 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this, animationDuration: Duration.zero);
-    widget._publicRawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
-      this._publicAvailableScripts.setAllItems(value.entries.map((e) => _AvailableScript(e.key, e.value)).toList())
-    ).whenComplete(() => setState(() {
-      _loadingPublicScripts = false;
-    }));
+
+    widget._publicRawScriptRepository.getAll()
+        .then((allScripts) => this._publicAvailableScripts.setAllItems(allScripts))
+        .whenComplete(() => setState(() => _loadingPublicScripts = false));
 
     loadMyAvailableScripts();
 
@@ -104,11 +83,9 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
 
   Future<void> loadMyAvailableScripts() {
     _logger.trace(() => "Loading my available scripts");
-    return widget._myRawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
-        this._myAvailableScripts.setAllItems(value.entries.map((e) => _AvailableScript(e.key, e.value)).toList())
-    ).whenComplete(() => setState(() {
-      _loadingMyScripts = false;
-    }));
+    return widget._myRawScriptRepository.getAll()
+        .then((allScripts) => this._myAvailableScripts.setAllItems(allScripts))
+        .whenComplete(() => setState(() => _loadingMyScripts = false));
   }
 
   @override
@@ -188,20 +165,19 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     var scriptRef = _uuid.v4();
     final  newScriptRegExp = RegExp(r'New script (\d+)');
 
-    widget._myRawScriptRepository.fetchAvailableScriptsMetadata()
-        .then((availableScriptsMetadata) {
-          final nextIndex = availableScriptsMetadata.values
-              .map((e) => newScriptRegExp.firstMatch(e.name)?.group(1)).nonNulls
+    widget._myRawScriptRepository.getAll()
+        .then((allScripts) {
+          final nextIndex = allScripts
+              .map((e) => newScriptRegExp.firstMatch(e.metadata.name)?.group(1)).nonNulls
               .map((e) => int.tryParse(e)).nonNulls.maxOrNull?.let((max) => max + 1) ?? 1;
 
           var scriptName = "New script $nextIndex";
           var scriptDescription = "... complete the 'New script $nextIndex' description...";
-          widget._myRawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
-          return ScriptMetadata(scriptName, scriptDescription);
+          return widget._myRawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
         })
-        .then((scriptMetadata) => _myAvailableScripts.addItem(_AvailableScript(scriptRef, scriptMetadata)));
-
-    _openScriptInEditor(scriptRef, readOnly: false);
+        .then((script) => _myAvailableScripts.addItem(script))
+        .then((v) => _openScriptInEditor(scriptRef, readOnly: false));
+    ;
   }
 
   void _cloneScript(ScriptRef ref, ScriptMetadata metadata, ScriptRepository repository) {
@@ -209,19 +185,16 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     var scriptRef = _uuid.v4();
     repository.get(ref)
       .then((script) {
-        widget._myRawScriptRepository.fetchAvailableScriptsMetadata()
-            .then((availableScriptsMetadata) {
-          final nextIndex = availableScriptsMetadata.values
-              .map((e) => e.name.replaceFirst(metadata.name, "").trim()).nonNulls
+        widget._myRawScriptRepository.getAll().then((allScripts) {
+          final nextIndex = allScripts
+              .map((e) => e.metadata.name.replaceFirst(metadata.name, "").trim()).nonNulls
               .map((e) => int.tryParse(e)).nonNulls.maxOrNull?.let((max) => max + 1) ?? 1;
 
           var newScriptName = "${metadata.name} - clone $nextIndex";
-          widget._myRawScriptRepository.save(RawScript(scriptRef, script.raw.contentAsYaml.replaceFirst(metadata.name, newScriptName)));
-
-          return ScriptMetadata(newScriptName, metadata.description);
+          return widget._myRawScriptRepository.save(RawScript(scriptRef, script.raw.contentAsYaml.replaceFirst(metadata.name, newScriptName)));
         })
-      .then((scriptMetadata) => _myAvailableScripts.addItem(_AvailableScript(scriptRef, scriptMetadata)))
-      .then((value) => _openScriptInEditor(scriptRef, readOnly: false));
+      .then((script) => _myAvailableScripts.addItem(script))
+      .then((v) => _openScriptInEditor(scriptRef, readOnly: false));
     });
   }
 
@@ -272,7 +245,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
   Future<void> _exportScript(_AvailableScript? script) async {
     if (script == null) return;
 
-    final rawScript = await widget._myRawScriptRepository.get(script.scriptRef);
+    final rawScript = await widget._myRawScriptRepository.get(script.raw.ref);
     final scriptContent = utf8.encoder.convert(rawScript.raw.contentAsYaml);
     final fileName = "${slugify(script.metadata.name)}.yaml";
     try {
@@ -285,7 +258,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
   Future<void> _shareScript(_AvailableScript? script) async {
     if (script == null) return;
 
-    final rawScript = await widget._myRawScriptRepository.get(script.scriptRef);
+    final rawScript = await widget._myRawScriptRepository.get(script.raw.ref);
 
     final result = await Share.share(rawScript.raw.contentAsYaml, subject: 'Script: ${script.metadata.name}');
 
@@ -315,12 +288,10 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
       importedFile.xFile.readAsString()
           .then((contentAsYaml) {
             var rawScript = RawScript(Uuid().v4(), contentAsYaml);
-            return widget._myRawScriptRepository.save(rawScript).then((value) => Future.value(rawScript));
+            return widget._myRawScriptRepository.save(rawScript);
           })
-    )).then((rawScripts) => rawScripts.map((rawScript) {
-      return _AvailableScript(rawScript.ref, ScriptDefParser().parse(rawScript.contentAsYaml).metadata);
-    }).toList())
-    .then((importedScripts) => _myAvailableScripts.addItems(importedScripts));
+    ))
+    .then((importedScripts) => setState(() => _myAvailableScripts.addItems(importedScripts)));
   }
 
   Widget _buildListView(SearchableList<_AvailableScript> availableScripts, TextEditingController textEditingController) {
@@ -339,6 +310,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
       ),
       itemBuilder: (c, element) => _ScriptListItem(element.metadata.name,
           selected: availableScripts.selected == element,
+          errors: element is InvalidScript ? element.parserError.causes.length : 0,
           onTap: () {
             _logger.debug(() => "Tap on: ${element.metadata.name}");
             setState(() {
@@ -382,8 +354,11 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     return ButtonBar(
       children: [
         Buttons.icon(Icons.copy_rounded, "Clone", action: (() => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._publicRawScriptRepository))})),
-        Buttons.icon(Icons.visibility_outlined, "View", action: (() => { _openScriptInEditor(selectedScript.scriptRef, readOnly: true)})),
-        Buttons.highlightedIcon(Icons.play_circle, "Play", action: (() => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: true)})),
+        Buttons.icon(Icons.visibility_outlined, "View", action: (() => { _openScriptInEditor(selectedScript.raw.ref, readOnly: true)})),
+        Buttons.highlightedIcon(Icons.play_circle, "Play", action: selectedScript is ValidScript
+          ? (() => {_openScriptInPlayer(selectedScript.raw.ref, readOnly: true)})
+          : null,
+        ),
       ],
     );
   }
@@ -406,14 +381,14 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
         Buttons.icon(Icons.import_export_outlined, "Export", action: () => {_showConfirmDialog(context, "export '${selectedScript.metadata.name}'", () => _exportScript(selectedScript))}),
         Buttons.icon(Icons.delete_outline, "Delete", action: () => {_showConfirmDialog(context, "delete '${selectedScript.metadata.name}'", () => _deleteScript(selectedScript))}),
         Buttons.icon(Icons.copy_rounded, "Clone", action: () => {_showConfirmDialog(context, "clone '${selectedScript.metadata.name}'", () => _cloneSelectedScript(availableScripts, widget._myRawScriptRepository))}),
-        Buttons.icon(Icons.edit_outlined, "Edit", action: () => {_openScriptInEditor(selectedScript.scriptRef, readOnly: false)}),
-        Buttons.highlightedIcon(Icons.play_circle, "Play", action: () => {_openScriptInPlayer(selectedScript.scriptRef, readOnly: false)}),
+        Buttons.icon(Icons.edit_outlined, "Edit", action: () => {_openScriptInEditor(selectedScript.raw.ref, readOnly: false)}),
+        Buttons.highlightedIcon(Icons.play_circle, "Play", action: () => {_openScriptInPlayer(selectedScript.raw.ref, readOnly: false)}),
       ],
     );
   }
 
   void _deleteScript(_AvailableScript selectedScript) {
-    widget._myRawScriptRepository.delete(selectedScript.scriptRef)
+    widget._myRawScriptRepository.delete(selectedScript.raw.ref)
         .then((deleted) => _myAvailableScripts.delete(selectedScript))
         .whenComplete(() => setState((){}));
   }
@@ -421,7 +396,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
   void _cloneSelectedScript(SearchableList<_AvailableScript> availableScripts, ScriptRepository repository){
     final selectedScript = _getSelectedScript(availableScripts);
     if (selectedScript == null) return;
-    _cloneScript(selectedScript.scriptRef, selectedScript.metadata, repository);
+    _cloneScript(selectedScript.raw.ref, selectedScript.metadata, repository);
   }
 
   Future<void> _showConfirmDialog(BuildContext context, String actionDescription, void Function() action) async {
@@ -450,8 +425,9 @@ class _ScriptListItem extends StatelessWidget {
   final String text;
   final bool selected;
   final GestureTapCallback? onTap;
+  final int errors;
 
-  _ScriptListItem(this.text, {this.selected = false, this.onTap});
+  _ScriptListItem(this.text, {this.selected = false, this.errors = 1, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -463,6 +439,7 @@ class _ScriptListItem extends StatelessWidget {
           contentPadding:
           const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
           leading: const Icon(Icons.text_snippet_outlined),
+          trailing: errors > 0 ? Tooltip(message: "$errors errors found", child: const Icon(Icons.error_outline, color: Colors.deepOrangeAccent)): null,
           dense: true,
           title: Text(text),
           onTap: onTap,

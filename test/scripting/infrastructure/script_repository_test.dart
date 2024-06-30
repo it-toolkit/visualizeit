@@ -14,14 +14,14 @@ void main() {
   late InMemoryScriptRepository repo;
 
   setUpAll(() {
-    registerFallbackValue(Script(RawScript("", ""), ScriptMetadata("name", "description"), []));
+    registerFallbackValue(ValidScript(RawScript("", ""), ScriptMetadata("name", "description"), []));
     registerFallbackValue(RawScript("", ""));
   });
 
   setUp(() {
     when(() => scriptParser.parse(any())).thenAnswer((i) {
       final rawScript = i.positionalArguments[0] as RawScript;
-      return Script(rawScript, ScriptMetadata("Script 1", "An empty script"), []);
+      return ValidScript(rawScript, ScriptMetadata("Script 1", "An empty script"), []);
     });
     repo = InMemoryScriptRepository(scriptParser);
   });
@@ -72,17 +72,17 @@ void main() {
         ]));
   });
 
-  test('get all available scripts metadata', () async {
+  test('get all available scripts', () async {
     repo.save(RawScript("id_1", """
       name: "Script 1"
       description: "An empty script" 
     """));
 
-    final availableScriptsMetadata = await repo.fetchAvailableScriptsMetadata();
+    final availableScripts = await repo.getAll();
 
-    expect(availableScriptsMetadata.keys, equals(["id_1"]));
-    expect(availableScriptsMetadata["id_1"]!.name, equals("Script 1"));
-    expect(availableScriptsMetadata["id_1"]!.description, equals("An empty script"));
+    expect(availableScripts, hasLength(1));
+    expect(availableScripts[0].metadata.name, equals("Script 1"));
+    expect(availableScripts[0].metadata.description, equals("An empty script"));
   });
 
   test('save a raw script and then delete it', () async {

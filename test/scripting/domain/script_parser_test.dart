@@ -5,6 +5,7 @@ import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/extension/action.dart';
 
 import 'package:visualizeit/scripting/domain/parser.dart';
+import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
@@ -15,6 +16,13 @@ class ExtensionMock extends Mock implements Extension {}
 class ScriptingExtensionMock extends Mock implements Scripting {}
 class CommandMock extends Mock implements ModelCommand {}
 class ModelMock extends Mock implements Model {}
+
+ValidScript _parseValidScriptOrThrowError(GetExtensionById getExtensionsById, scriptYaml) {
+  final script = ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml));
+  if (script is InvalidScript) throw script.parserError;
+  
+  return script as ValidScript;
+}
 
 void main() {
   var getExtensionsById = GetExtensionsByIdMock();
@@ -77,7 +85,7 @@ void main() {
             - single-arg-command: "my-arg"
             - multi-arg-command: [arg1, arg2]
     """.trimIndent();
-    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)), throwsA(isA<Exception>()));
+    expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml), throwsA(isA<Exception>()));
   });
 
   test('Detect unexpected tokens', () {
@@ -102,7 +110,7 @@ void main() {
             - single-arg-command: "my-arg"
             - multi-arg-command: [arg1, arg2]
     """.trimIndent();
-    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)), throwsA(isA<ParserException>()
+    expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml), throwsA(isA<ParserException>()
         .having((e) => e.causes[0].message, 'message', equals("Unexpected attribute 'unexpected_attribute'"))
         .having((e) => e.causes[1].message, 'message', equals("Unexpected attribute 'other_unexpected'"))
         .having((e) => e.causes[2].message, 'message', equals("Unexpected attribute 'alternative_name'"))
@@ -129,7 +137,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non blank 'name' attribute"))));
     });
 
@@ -153,7 +161,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+    expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
         throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non blank 'name' attribute"))));
   });
 
@@ -177,7 +185,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+    expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
         throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'name' must be a String"))));
   });
 
@@ -201,7 +209,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non blank 'description' attribute"))));
     });
 
@@ -223,7 +231,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non blank 'description' attribute"))));
     });
 
@@ -245,7 +253,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'description' must be a String"))));
     });
 
@@ -270,7 +278,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           isNot(throwsA(isA<ParserException>())));
     });
 
@@ -293,7 +301,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           isNot(throwsA(isA<ParserException>())));
     });
 
@@ -316,7 +324,7 @@ void main() {
               - multi-arg-command: [arg1, arg2]
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'group' must be a String"))));
     });
 
@@ -329,7 +337,7 @@ void main() {
         description: Valid description
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("Missing non empty 'scenes' array"))));
     });
 
@@ -340,7 +348,7 @@ void main() {
         scenes: 
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'scenes' must be a scenes array"))));
     });
 
@@ -351,7 +359,7 @@ void main() {
         scenes: []
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'scenes' array must not be empty"))));
     });
 
@@ -362,7 +370,7 @@ void main() {
         scenes: { "key": "value"}
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>()
               .having((e) => e.causes[0].message, 'message', equals("'scenes' must be a scenes array"))
               .having((e) => e.causes[1].message, 'message', equals("Unexpected attribute 'key'"))
@@ -386,7 +394,7 @@ void main() {
           
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>()
               .having((e) => e.causes[0].message, 'message', equals("Element 1 of 'scenes' array is not a valid scene"))
               .having((e) => e.causes[1].message, 'message', equals("Element 2 of 'scenes' array is not a valid scene"))
@@ -406,7 +414,7 @@ void main() {
               - nop
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>()
               .having((e) => e.causes[0].message, 'message', equals("Missing non blank 'name' attribute"))
           ));
@@ -425,7 +433,7 @@ void main() {
               - nop
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           isNot(throwsA(isA<ParserException>())));
     });
 
@@ -443,7 +451,7 @@ void main() {
               - nop
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           isNot(throwsA(isA<ParserException>())));
     });
 
@@ -461,7 +469,7 @@ void main() {
               - nop
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           isNot(throwsA(isA<ParserException>())));
     });
 
@@ -479,7 +487,7 @@ void main() {
               - nop
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>().having((e) => e.causes.first.message, 'message', equals("'extensions' must be a String array"))));
     });
 
@@ -493,7 +501,7 @@ void main() {
             description: Initial scene description
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           isNot(throwsA(isA<ParserException>())));
     });
 
@@ -509,7 +517,7 @@ void main() {
             transitions: []
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           isNot(throwsA(isA<ParserException>())));
     });
 
@@ -526,7 +534,7 @@ void main() {
               key: value 
         """.trimIndent();
 
-      expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
+      expect(() => _parseValidScriptOrThrowError(getExtensionsById, scriptYaml),
           throwsA(isA<ParserException>()
               .having((e) => e.causes[0].message, 'message', equals("'initial-state' must be a commands array"))
               .having((e) => e.causes[1].message, 'message', equals("'transitions' must be a commands array"))
@@ -538,14 +546,15 @@ void main() {
   test('Parsing empty yaml script throws exception', () {
 
     final rawYaml = "".trimIndent();
-    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", rawYaml)), throwsA(isA<Exception>()));
+
+    expect(() => _parseValidScriptOrThrowError(getExtensionsById, rawYaml), throwsA(isA<Exception>()));
   });
 
   test('Parsing invalid yaml script throws exception', () {
     final rawYaml = """
     1
     """.trimIndent();
-    expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", rawYaml)), throwsA(isA<Exception>()));
+    expect(() => _parseValidScriptOrThrowError(getExtensionsById, rawYaml), throwsA(isA<Exception>()));
   });
 
   test('parse valid script metadata', () {
@@ -575,7 +584,7 @@ void main() {
     when(() => extension2Mock.scripting).thenReturn(scriptingExtension2Mock);
     when(() => getExtensionsById.call(any(that: equals("flow-diagram")))).thenReturn(extension2Mock);
 
-    final script = ScriptParser(getExtensionsById).parse(RawScript("ref", validRawScriptYaml));
+    final script = ScriptParser(getExtensionsById).parse(RawScript("ref", validRawScriptYaml)) as ValidScript;
 
     expect(script.scenes.length, equals(1));
     expect(script.scenes.single.metadata.name, equals("Scene name"));
@@ -592,7 +601,7 @@ void main() {
     when(() => extension2Mock.scripting).thenReturn(scriptingExtension2Mock);
     when(() => getExtensionsById.call(any(that: equals("flow-diagram")))).thenReturn(extension2Mock);
 
-    final script = ScriptParser(getExtensionsById).parse(RawScript("ref", validRawScriptYaml));
+    final script = ScriptParser(getExtensionsById).parse(RawScript("ref", validRawScriptYaml)) as ValidScript;
 
     expect(script.scenes.length, equals(1));
     expect(script.scenes.single.initialStateBuilderCommands.length, equals(3));
