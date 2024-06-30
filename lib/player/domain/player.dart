@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:visualizeit/player/domain/player_timer.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
@@ -97,6 +98,8 @@ class _RunCommandResult{
   }
 }
 
+const _defaultSceneTitleDuration = 1;
+
 class PlayerState {
 
   final Script script;
@@ -106,15 +109,18 @@ class PlayerState {
   late final bool isPlaying;
   late final bool waitingAction;
   late final double canvasScale;
+  late final int baseFrameDurationInMillis;
 
   Scene get currentScene => script.scenes[currentSceneIndex];
+
+  int get countdownToStart => max(-1-currentCommandIndex, 0);
 
   Command? get currentCommand => currentScene.transitionCommands.isNotEmpty && currentCommandIndex >= -1
       ? currentScene.transitionCommands[min(currentCommandIndex + 1, currentScene.transitionCommands.length - 1)]
       : null;
 
   PlayerState updateCanvasScale(double scale) {
-    return PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction, scale);
+    return PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction, scale, baseFrameDurationInMillis);
   }
 
   @override
@@ -142,18 +148,26 @@ class PlayerState {
     return commandsRun / totalCommands;
   }
 
-  PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction, this.canvasScale);
+  PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction, this.canvasScale, this.baseFrameDurationInMillis);
 
   PlayerState copy({required int sceneIndex, required int commandIndex, required Map<String, Model> models, required bool isPlaying, bool waitingAction = false}) {
-    return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying, waitingAction, canvasScale);
+    return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying, waitingAction, canvasScale, baseFrameDurationInMillis);
   }
 
-  PlayerState runNextCommand({Duration timeFrame = Duration.zero}) {
+  int _getSceneTitleDuration(int sceneIndex) => script.scenes[sceneIndex].metadata.titleDuration ?? _defaultSceneTitleDuration;
 
+  PlayerState runNextCommand({Duration timeFrame = Duration.zero}) {
     var nextCommandIndex = currentCommandIndex + 1;
+    if (nextCommandIndex < 0) return PlayerState._internal(script, currentSceneIndex, nextCommandIndex, currentSceneModels, isPlaying, waitingAction, canvasScale, baseFrameDurationInMillis);
+
     var scene = script.scenes[currentSceneIndex];
 
-    if (nextCommandIndex >= scene.transitionCommands.length) return stopPlayback(); //TODO advance scene?
+    final isLastScene = (currentSceneIndex == script.scenes.length - 1);
+
+    if (nextCommandIndex >= scene.transitionCommands.length) {
+      if (isLastScene) return stopPlayback();
+      else return nextScene();
+    }
 
     var command = scene.transitionCommands[nextCommandIndex];
     var commandContext = CommandContext(timeFrame: timeFrame);
@@ -168,6 +182,13 @@ class PlayerState {
       models: result.models,
       isPlaying: isPlaying,
     );
+  }
+
+  PlayerState nextScene() {
+    var sceneIndex = currentSceneIndex +1;
+    var nextScene = script.scenes[sceneIndex];
+    final frameDurationInMillis = nextScene.metadata.baseFrameDurationInMillis ?? PlayerTimer.DefaultFrameDurationInMillis;
+    return PlayerState._internal(script, sceneIndex, -1 - _getSceneTitleDuration(sceneIndex), _buildInitialState(nextScene.initialStateBuilderCommands), isPlaying, waitingAction, canvasScale, frameDurationInMillis);
   }
 
   PlayerState startPlayback({bool waitingAction = false}) {
@@ -186,8 +207,10 @@ class PlayerState {
 
   void _setupScene(int sceneIndex) {
     currentSceneIndex = sceneIndex;
-    currentCommandIndex = -1;
-    currentSceneModels = _buildInitialState(script.scenes[sceneIndex].initialStateBuilderCommands);
+    currentCommandIndex = -1 - _getSceneTitleDuration(sceneIndex);
+    var scene = script.scenes[sceneIndex];
+    currentSceneModels = _buildInitialState(scene.initialStateBuilderCommands);
+    baseFrameDurationInMillis = scene.metadata.baseFrameDurationInMillis ?? PlayerTimer.DefaultFrameDurationInMillis;
   }
 
   Map<String, Model> _buildInitialState(List<Command> commands) {

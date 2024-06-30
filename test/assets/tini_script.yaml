@@ -1,6 +1,5 @@
 name: "Tiny script"
 description: "A tiny script"
-tags: [example]
 scenes:
   - name: Just a banner
     extensions: []

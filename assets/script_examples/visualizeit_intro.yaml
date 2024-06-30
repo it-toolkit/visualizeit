@@ -7,11 +7,11 @@ description: >
   algorithm and data structure operations. We'll explore its customizable scripting language, 
   extension capabilities, and multi-platform support through Flutter. 
   Let's dive into its exciting features!
-tags: [slides-extension]
 scenes:
   - name: General introduction
     extensions: ['slides']
-    description: "-"
+    base-frame-duration-ms: 2500
+    title-duration: 0
     initial-state:
       - create-slideshow
       - add-fullscreen-image-slide:
@@ -80,7 +80,6 @@ scenes:
                 ## Global commands example
               
                 This simple script uses some global commands like show-banner, show-popup and background
-              tags: [global-extension, dev-example]
             - |
               ###7###
               name: Global commands example
@@ -88,7 +87,6 @@ scenes:
                 ## Global commands example
               
                 This simple script uses some global commands like show-banner, show-popup and background
-              tags: [global-extension, dev-example]
               scenes:
             - |
               ###8,9,10###
@@ -97,7 +95,6 @@ scenes:
                 ## Global commands example
               
                 This simple script uses some global commands like show-banner, show-popup and background
-              tags: [global-extension, dev-example]
               scenes:
                 - name: First scene
                   extensions: []
@@ -109,7 +106,6 @@ scenes:
                 ## Global commands example
               
                 This simple script uses some global commands like show-banner, show-popup and background
-              tags: [global-extension, dev-example]
               scenes:
                 - name: First scene
                   extensions: []

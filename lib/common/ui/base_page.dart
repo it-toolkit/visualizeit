@@ -14,7 +14,6 @@ class AppBarAction {
 }
 
 class AppBarActions {
-  static final SignIn = AppBarAction(Icons.login, 'SignIn', "sign-in");
   static final Extensions = AppBarAction(Icons.account_tree, 'Extensions', "extensions");
   static final Help = AppBarAction(Icons.help, 'Help', "help");
 }
@@ -49,10 +48,9 @@ extension _AppBlocExt on AppBloc {
 
 abstract class BasePage extends StatelessWidget {
   /// Constructs a [TemplateScreen]
-  const BasePage({super.key, this.onSignInPressed, this.onExtensionsPressed, this.onHelpPressed});
+  const BasePage({super.key, this.onExtensionsPressed, this.onHelpPressed});
 
   final VoidCallback? onHelpPressed;
-  final VoidCallback? onSignInPressed;
   final VoidCallback? onExtensionsPressed;
 
   @override
@@ -80,7 +78,7 @@ abstract class BasePageState<T extends StatefulBasePage> extends State<T> {
 
   @override
   Widget build(BuildContext context) {
-    final appActions = [AppBarActions.SignIn, AppBarActions.Extensions, AppBarActions.Help]
+    final appActions = [AppBarActions.Extensions, AppBarActions.Help]
         .where((a) => a.destinationName != widget.name).toList();
 
     return Scaffold(

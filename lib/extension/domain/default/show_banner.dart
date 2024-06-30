@@ -1,4 +1,5 @@
 
+import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
@@ -41,9 +42,10 @@ class ShowBanner extends GlobalCommand {
   final int framesDuration;
   final String message;
   final bool adjustSize;
-  final String bannerModelName = "${new DateTime.now().millisecondsSinceEpoch}"; //TODO usar uuid
+  final String bannerModelName;
 
   ShowBanner.build(RawCommand rawCommand) :
+    bannerModelName = Uuid().v4(),
     message = commandDefinition.getArg(name: "message", from: rawCommand),
     alignment = commandDefinition.getArg(name: "position", from: rawCommand),
     framesDuration = commandDefinition.getArg(name: "duration", from: rawCommand),
@@ -56,7 +58,7 @@ class ShowBanner extends GlobalCommand {
 
   @override
   Result call(Model model, CommandContext context) {
-    final globalModel = (model as GlobalModel).clone(); //TODO fail if cannot cast
+    final globalModel = (model as GlobalModel).clone();
     final bannerModel = (
         globalModel.models[bannerModelName]
         ?? BannerModel(bannerModelName, message, alignment: alignment, adjustSize: adjustSize).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal

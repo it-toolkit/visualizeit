@@ -2,12 +2,17 @@
 
 import 'dart:async';
 
+import 'package:visualizeit_extensions/logging.dart';
+
+final _logger = Logger("player.timer");
+
 class PlayerTimer {
+  static const DefaultFrameDurationInMillis = 1000;
 
   Timer? _timer;
   void Function()? _callback;
   bool _running = false;
-  int _frameDurationInMillis = 1000;
+  int _frameDurationInMillis = DefaultFrameDurationInMillis;
   double _speedFactor = 1.0;
 
   bool get running => _running;
@@ -19,6 +24,17 @@ class PlayerTimer {
 
   void init(void Function() callback) {
     _callback = callback;
+  }
+
+  set baseFrameDurationInMillis(int value) {
+    if (value == _frameDurationInMillis) return;
+
+    _frameDurationInMillis = value;
+    _logger.trace(() => "Base frame duration updated to $value ms");
+    if(_timer != null) {
+      stop();
+      start();
+    }
   }
 
   void changeSpeed(double speedFactor) {

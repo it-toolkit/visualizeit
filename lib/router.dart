@@ -6,8 +6,7 @@ import 'package:visualizeit/extension/ui/extension_page.dart';
 import 'package:visualizeit/misc/ui/help_page.dart';
 import 'package:visualizeit/player/ui/player_page.dart';
 import 'package:visualizeit/scripting/ui/script_editor_page.dart';
-import 'package:visualizeit/scripting/ui/script_selector_page_v2.dart';
-import 'package:visualizeit/user/ui/signin_page.dart';
+import 'package:visualizeit/scripting/ui/script_selector_page.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
 final _logger = Logger("base.ui");
@@ -56,11 +55,6 @@ final GoRouter _router = GoRouter(
           name: ExtensionPage.RouteName,
           path: 'extensions',
           builder: (BuildContext context, GoRouterState state) => GetIt.I.get<ExtensionPage>(param1: context, param2: state),
-        ),
-        GoRoute(
-          name: SignInPage.RouteName,
-          path: 'sign-in',
-          builder: (BuildContext context, GoRouterState state) => const SignInPage(),
         ),
         GoRoute(
           path: 'scripts/:sid/play',

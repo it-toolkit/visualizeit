@@ -20,7 +20,6 @@ Welcome to Visualize IT, your go-to app for creating dynamic diagrams and adding
     ## B# Tree values manipulation
     This script creates B# trees and perform some operations on it.
   ]]]
-  tags: data-structure, tree
   scene 1
       description [B# Tree values manipulation]
       fixture

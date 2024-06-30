@@ -14,14 +14,14 @@ void main() {
   late InMemoryScriptRepository repo;
 
   setUpAll(() {
-    registerFallbackValue(Script(RawScript("", ""), ScriptMetadata("name", "description", {}), []));
+    registerFallbackValue(Script(RawScript("", ""), ScriptMetadata("name", "description"), []));
     registerFallbackValue(RawScript("", ""));
   });
 
   setUp(() {
     when(() => scriptParser.parse(any())).thenAnswer((i) {
       final rawScript = i.positionalArguments[0] as RawScript;
-      return Script(rawScript, ScriptMetadata("Script 1", "An empty script", {'tag_1', 'tag_2'}), []);
+      return Script(rawScript, ScriptMetadata("Script 1", "An empty script"), []);
     });
     repo = InMemoryScriptRepository(scriptParser);
   });
@@ -76,7 +76,6 @@ void main() {
     repo.save(RawScript("id_1", """
       name: "Script 1"
       description: "An empty script" 
-      tags: [tag_1, tag_2]
     """));
 
     final availableScriptsMetadata = await repo.fetchAvailableScriptsMetadata();
@@ -84,7 +83,6 @@ void main() {
     expect(availableScriptsMetadata.keys, equals(["id_1"]));
     expect(availableScriptsMetadata["id_1"]!.name, equals("Script 1"));
     expect(availableScriptsMetadata["id_1"]!.description, equals("An empty script"));
-    expect(availableScriptsMetadata["id_1"]!.tags, containsAll(["tag_1", "tag_2"]));
   });
 
   test('save a raw script and then delete it', () async {

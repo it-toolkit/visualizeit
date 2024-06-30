@@ -24,7 +24,6 @@ class ExtensionPage extends StatefulBasePage {
 }
 
 class _ExtensionPageState extends BasePageState<ExtensionPage> {
-  //TODO implement extensions model
   List<Extension> _filteredExtensions = [];
   int? _selectedIndex;
   String _query = '';
@@ -82,21 +81,11 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
     return ListView.builder(
       itemCount: extensions.length,
       physics: const ClampingScrollPhysics(),
-      itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          dense: true,
-          titleAlignment: ListTileTitleAlignment.top,
-          title: Text(extensions[index].id),
-          selectedTileColor: Colors.blue.shade200,
-          onTap: () {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          hoverColor: Colors.blue.shade100,
-          selected: index == _selectedIndex,
-        );
-      },
+      itemBuilder: (BuildContext context, int index) => _ExtensionListItem(
+        extensions[index].id,
+        onTap: () => setState(() => _selectedIndex = index),
+        selected: index == _selectedIndex,
+      )
     );
   }
 
@@ -149,6 +138,39 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
             borderRadius: const BorderRadius.all(Radius.circular(10)),
           ),
           child: detailsWidget),
+    );
+  }
+}
+
+class _ExtensionListItem extends StatelessWidget {
+
+  final String text;
+  final bool selected;
+  final GestureTapCallback? onTap;
+
+  _ExtensionListItem(this.text, {this.selected = false, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 8.0,
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
+      child: SizedBox(
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
+          leading: const Icon(Icons.text_snippet_outlined),
+          dense: true,
+          title: Text(text),
+          onTap: onTap,
+          selected: selected,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          hoverColor: Colors.blue.shade100,
+          selectedTileColor: Colors.blue.shade200,
+          selectedColor: Colors.black,
+        ),
+      ),
     );
   }
 }

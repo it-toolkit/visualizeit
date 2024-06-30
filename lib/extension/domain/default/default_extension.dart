@@ -90,7 +90,7 @@ class BackgroundWidget extends StatelessWidget with RenderingPriority {
       case "fill": return BoxFit.fill;
       case "contain": return BoxFit.contain;
       case "cover": return BoxFit.cover;
-      default: throw Exception("Unknown image scaling strategy value"); //TODO handle error properly
+      default: throw Exception("Unknown image scaling strategy value"); //TODO handle error properly, provide a custom exception to use
     }
   }
 }

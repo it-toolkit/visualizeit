@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:json2yaml/json2yaml.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/extension/action.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
@@ -102,11 +100,12 @@ class ScriptDefParser {
     "name": null,
     "description": null,
     "group": null,
-    "tags": null,
     "scenes": {
       "name": null,
       "description": null,
       "extensions": null,
+      "title-duration": null,
+      "base-frame-duration-ms": null,
       "initial-state": null,
       "transitions": null
     }
@@ -127,12 +126,11 @@ class ScriptDefParser {
       final name = getRequiredString(root, 'name', errorCollector);
       final description = getRequiredString(root, 'description', errorCollector);
       final group = getOptionalString(root, 'group', errorCollector);
-      final tags = getOptionalStringSet(root, 'tags', errorCollector);
       final scenesDef = buildScenesDef(root, errorCollector);
 
       if (!errorCollector.isEmpty()) throw ParserException(errorCollector.errors);
 
-      return ScriptDef(ScriptMetadata(name, description, tags ?? Set<String>(), group: group), scenesDef);
+      return ScriptDef(ScriptMetadata(name, description, group: group), scenesDef);
     }
   }
 
@@ -181,6 +179,11 @@ class ScriptDefParser {
   dynamic getOptionalString(YamlMap node, String key, ErrorCollector errorCollector) {
     return getValue(node, key, (value) => value == null || value is String,
         (node, key, value) => errorCollector.onError(YamlException("'$key' must be a String", node.span)));
+  }
+
+  dynamic getOptionalPositiveOrZeroInt(YamlMap node, String key, ErrorCollector errorCollector) {
+    return getValue(node, key, (value) => value == null || (value is int && value >= 0),
+            (node, key, value) => errorCollector.onError(YamlException("'$key' must an integer greater or equal than zero", node.span)));
   }
 
   dynamic getOptionalStringSet(YamlMap node, String key, ErrorCollector errorCollector) {
@@ -233,16 +236,13 @@ class ScriptDefParser {
   SceneDef? buildSceneDef(YamlList scenes, int i, ErrorCollector errorCollector) {
     final sceneNode = scenes[i];
     if (sceneNode is YamlMap) {
-      //TODO name y description podrian ser opcionales para las scenes
       final name = getRequiredString(sceneNode, 'name', errorCollector) ?? "placeholder";
-      final description = getRequiredString(sceneNode, 'description', errorCollector) ?? "placeholder";
+      final description = getOptionalString(sceneNode, 'description', errorCollector);
       final extensionIds = getOptionalStringSet(sceneNode, 'extensions', errorCollector) ?? Set<String>();
+      final titleDuration = getOptionalPositiveOrZeroInt(sceneNode, 'title-duration', errorCollector);
+      final baseFrameDurationInMillis = getOptionalPositiveOrZeroInt(sceneNode, 'base-frame-duration-ms', errorCollector);
 
-      //TODO rawSceneYaml se puede eliminar
-      final rawSceneYaml = json2yaml(json.decode(json.encode(sceneNode)));
-      //TODO Se podria usar json2yaml(json.decode(json.encode(sceneNode))) para formatear el yaml
-
-      final metadata = SceneMetadata(name, description, extensionIds, rawSceneYaml, sceneNode.span.start.line);
+      final metadata = SceneMetadata(name, description, extensionIds, sceneNode.span, titleDuration, baseFrameDurationInMillis);
 
       final initialStateCommands = getOptionalArrayOf(sceneNode, 'initial-state', errorCollector, 'command') ?? YamlList.wrap(List.empty());
       final transitionCommands = getOptionalArrayOf(sceneNode, 'transitions', errorCollector, 'command') ?? YamlList.wrap(List.empty());

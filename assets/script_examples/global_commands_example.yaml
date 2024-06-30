@@ -17,7 +17,6 @@ description: |-
   
   ### nop
   This NO-OP command is used just to wait some time.
-tags: [global-extension, dev-example]
 scenes:
   - name: First scene
     extensions: []

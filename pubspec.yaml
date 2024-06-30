@@ -50,12 +50,12 @@ dependencies:
   # for 'video' tag
   video_player: ^2.8.6
 
-  animated_tree_view: ^2.2.0
   file_saver: ^0.2.13
   file_picker: ^8.0.4
   slugify: ^2.0.0
   share_plus: ^9.0.0
   single_child_two_dimensional_scroll_view: ^0.0.3
+  grouped_list: ^6.0.0
 
   visualizeit_extensions:
     git: #Read only token for extensions.. Change to public URL when available
@@ -81,9 +81,6 @@ dependencies:
   visualizeit_dynamicfile_extendiblehashing_extension:
     git: #Read only token for extensions.. Change to public URL when available
       url: https://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@github.com/it-toolkit/visualizeit_dynamicfile_extendiblehashing_extension.git
-
-
-
 
 dev_dependencies:
   flutter_test:

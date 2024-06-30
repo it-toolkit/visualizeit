@@ -18,7 +18,6 @@ description: |-
   ### externalsort-merge
   This command applies the merge algorithm to the fragments obtained from the sort algorithm
  
-tags: [externalsort-extension, dev-example]
 scenes:
   - name: First scene
     extensions: ['externalsort-extension']

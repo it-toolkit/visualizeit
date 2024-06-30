@@ -81,7 +81,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
     if(script == null) return Container(child: Text("Not ready"));
 
-    final scriptEditor = _buildExplorationPanel(context, buildButtonBar(context));//TODO script!.scenes[0].metadata.rawYaml);
+    final scriptEditor = _buildExplorationPanel(context, buildButtonBar(context));
 
     return graphicalMode
         ? buildPresentationModeContent(context, playerButtonBar, canvas)
@@ -102,13 +102,19 @@ class PlayerPageState extends BasePageState<PlayerPage> {
     return FutureBuilder(
         future: resolveScript(),
         builder: (context, snapshot) {
-          if(snapshot.hasError) { //TODO
+          if(snapshot.hasError) { //TODO Mejorar el catch de errores en FutureBuilders
             return Text("Error loading script: ${snapshot.error}");
           }else if (snapshot.hasData) {
             var initialPlayerState = PlayerState(snapshot.data!);
-            return MultiBlocProvider(providers: [
-              BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState)),
-            ], child: Builder(builder: (context) => super.build(context)));
+            return MultiBlocProvider(
+                providers: [BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState))],
+                child: BlocListener<PlayerBloc, PlayerState>(
+                   listener: (context, state) {
+                     _timer.baseFrameDurationInMillis = state.baseFrameDurationInMillis;
+                   },
+                   child: Builder(builder: (context) => super.build(context)),
+                ),
+            );
           } else
             return CircularProgressIndicator();
         });

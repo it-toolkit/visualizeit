@@ -5,7 +5,6 @@ description: |-
 
   An example, showing how can you use VisualizeIt to explain complex subjects like underflows in B\# trees
   
-tags: [bsharptree-extension, dev-example]
 scenes:
   - name: First scene
     extensions: ['bsharptree-extension']
