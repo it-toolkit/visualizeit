@@ -6,7 +6,7 @@ import 'package:visualizeit/extension/ui/extension_page.dart';
 import 'package:visualizeit/misc/ui/help_page.dart';
 import 'package:visualizeit/player/ui/player_page.dart';
 import 'package:visualizeit/scripting/ui/script_editor_page.dart';
-import 'package:visualizeit/scripting/ui/script_selector_page_v2.dart';
+import 'package:visualizeit/scripting/ui/script_selector_page.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
 final _logger = Logger("base.ui");

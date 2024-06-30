@@ -13,6 +13,7 @@ import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:collection/collection.dart';
+import 'package:visualizeit/scripting/domain/searchable_list.dart';
 import 'package:visualizeit_extensions/logging.dart';
 
 import '../../common/markdown/markdown.dart';
@@ -42,97 +43,16 @@ class ScriptSelectorPage extends StatefulBasePage {
   }
 }
 
-
-class SearchableList<T> {
-  List<T> _allItems;
-  bool Function(String, T) _queryMatcher;
-
-  String query = '';
-  List<T> values = [];
-  T? selected = null;
-  bool _dirty = true;
-  void Function(List<T> values)? onValuesUpdated;
-
-  SearchableList(List<T> initialItems, this._queryMatcher, {this.onValuesUpdated}): this._allItems = initialItems {
-    search(query);
-  }
-
-  void addItem(T item) {
-    this._allItems.add(item);
-    _dirty = true;
-    search(query);
-  }
-
-  void addItems(List<T> items) {
-    this._allItems.addAll(items);
-    _dirty = true;
-    search(query);
-  }
-
-  void setAllItems(List<T> allItems) {
-    if(this._allItems == allItems || ListEquality().equals(this._allItems, allItems)) return;
-
-    this._allItems = allItems;
-    _dirty = true;
-    search(query);
-  }
-
-  void deselect() {
-    selected = null;
-  }
-
-  void select(T selectedItem){
-    if (_allItems.indexOf(selectedItem) < 0) throw Exception("Unknown selected item: $selectedItem");
-
-    selected = selectedItem;
-  }
-
-  void search(String query) {
-    if(this.query == query && !_dirty) return;
-
-    this.query = query;
-    values = _allItems.where((item) => _queryMatcher(query, item)).toList();
-    selected = values.length == 1 ? values.first : null;
-    _dirty = false;
-
-    onValuesUpdated?.call(values);
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is SearchableList &&
-          runtimeType == other.runtimeType &&
-          _allItems == other._allItems &&
-          _queryMatcher == other._queryMatcher &&
-          query == other.query &&
-          values == other.values &&
-          selected == other.selected;
-
-  @override
-  int get hashCode => _allItems.hashCode ^ _queryMatcher.hashCode ^ query.hashCode ^ values.hashCode ^ selected.hashCode;
-
-  bool delete(T item) {
-    if (this._allItems.remove(item)) {
-      _dirty = true;
-      search(query);
-      return true;
-    }
-
-    return false;
-  }
-}
-
-class AvailableScript {
+class _AvailableScript {
   ScriptRef scriptRef;
   ScriptMetadata metadata;
 
-  AvailableScript(this.scriptRef, this.metadata);
+  _AvailableScript(this.scriptRef, this.metadata);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AvailableScript && runtimeType == other.runtimeType && scriptRef == other.scriptRef && metadata == other.metadata;
+      other is _AvailableScript && runtimeType == other.runtimeType && scriptRef == other.scriptRef && metadata == other.metadata;
 
   @override
   int get hashCode => scriptRef.hashCode ^ metadata.hashCode;
@@ -147,56 +67,56 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
   final _uuid = Uuid();
   late TabController _tabController;
 
-  IndexedTreeNode<AvailableScript> _publicScriptsTreeData = IndexedTreeNode.root();
-  SearchableList<AvailableScript> _publicAvailableScripts = SearchableList<AvailableScript>(
-    <AvailableScript>[],
+  IndexedTreeNode<_AvailableScript> _publicScriptsTreeData = IndexedTreeNode.root();
+  SearchableList<_AvailableScript> _publicAvailableScripts = SearchableList<_AvailableScript>(
+    <_AvailableScript>[],
     (query, availableScript) => availableScript.metadata.name.toLowerCase().contains(query.toLowerCase()),
   );
   bool _loadingPublicScripts = true;
-  TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? _publicScriptsTreeController;
+  TreeViewController<_AvailableScript, IndexedTreeNode<_AvailableScript>>? _publicScriptsTreeController;
   TextEditingController _publicScriptsTextEditingController = TextEditingController();
 
-  IndexedTreeNode<AvailableScript> _myScriptsTreeData = IndexedTreeNode.root();
-  SearchableList<AvailableScript> _myAvailableScripts = SearchableList<AvailableScript>(
-    <AvailableScript>[],
+  IndexedTreeNode<_AvailableScript> _myScriptsTreeData = IndexedTreeNode.root();
+  SearchableList<_AvailableScript> _myAvailableScripts = SearchableList<_AvailableScript>(
+    <_AvailableScript>[],
         (query, availableScript) => availableScript.metadata.name.toLowerCase().contains(query.toLowerCase()),
   );
   bool _loadingMyScripts = true;
-  TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? _myScriptsTreeController;
+  TreeViewController<_AvailableScript, IndexedTreeNode<_AvailableScript>>? _myScriptsTreeController;
   TextEditingController _myScriptsTextEditingController = TextEditingController();
 
-  IndexedTreeNode<AvailableScript> _buildTreeData(List<AvailableScript> values) {
+  IndexedTreeNode<_AvailableScript> _buildTreeData(List<_AvailableScript> values) {
     _logger.debug(() => "Building tree data from ${values.length} values");
-    IndexedTreeNode<AvailableScript> treeData = IndexedTreeNode.root();
+    IndexedTreeNode<_AvailableScript> treeData = IndexedTreeNode.root();
     values.forEach((availableScript) {
        final parentNode = _getOrCreateParentNode(treeData, availableScript);
-       parentNode.add(IndexedTreeNode<AvailableScript>(key: availableScript.scriptRef.hashCode.toString(), data: availableScript));
+       parentNode.add(IndexedTreeNode<_AvailableScript>(key: availableScript.scriptRef.hashCode.toString(), data: availableScript));
     });
     return treeData;
   }
 
-  IndexedTreeNode _getOrCreateParentNode(IndexedTreeNode<AvailableScript> rootNode, AvailableScript availableScript) {
+  IndexedTreeNode _getOrCreateParentNode(IndexedTreeNode<_AvailableScript> rootNode, _AvailableScript availableScript) {
     final group = availableScript.metadata.group;
     if(group == null) return rootNode;
 
     var parentNode = rootNode.children.firstWhereOrNull((node) => node.key == group) as IndexedTreeNode?;
     if(parentNode == null) {
-      parentNode = IndexedTreeNode<AvailableScript>(key: group);
+      parentNode = IndexedTreeNode<_AvailableScript>(key: group);
       rootNode.add(parentNode);
     }
     return parentNode;
   }
 
-  void search(String query, SearchableList<AvailableScript> availableScripts) => setState(() => availableScripts.search(query));
+  void search(String query, SearchableList<_AvailableScript> availableScripts) => setState(() => availableScripts.search(query));
 
-  AvailableScript? _getSelectedScript(SearchableList<AvailableScript> availableScripts) => availableScripts.selected;
+  _AvailableScript? _getSelectedScript(SearchableList<_AvailableScript> availableScripts) => availableScripts.selected;
 
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this, animationDuration: Duration.zero);
     _publicAvailableScripts.onValuesUpdated = (values) => setState(() => _publicScriptsTreeData = _buildTreeData(values));
     widget._publicRawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
-      this._publicAvailableScripts.setAllItems(value.entries.map((e) => AvailableScript(e.key, e.value)).toList())
+      this._publicAvailableScripts.setAllItems(value.entries.map((e) => _AvailableScript(e.key, e.value)).toList())
     ).whenComplete(() => setState(() {
       _loadingPublicScripts = false;
     }));
@@ -210,7 +130,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
   Future<void> loadMyAvailableScripts() {
     _logger.trace(() => "Loading my available scripts");
     return widget._myRawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
-        this._myAvailableScripts.setAllItems(value.entries.map((e) => AvailableScript(e.key, e.value)).toList())
+        this._myAvailableScripts.setAllItems(value.entries.map((e) => _AvailableScript(e.key, e.value)).toList())
     ).whenComplete(() => setState(() {
       _loadingMyScripts = false;
     }));
@@ -248,9 +168,9 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
   }
 
   Widget buildTabContent(BuildContext context, bool readOnly, ButtonBar scriptButtonBar, bool loadingScripts,
-      SearchableList<AvailableScript> availableScripts,
-      IndexedTreeNode<AvailableScript> treeData,
-      TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? treeController,
+      SearchableList<_AvailableScript> availableScripts,
+      IndexedTreeNode<_AvailableScript> treeData,
+      TreeViewController<_AvailableScript, IndexedTreeNode<_AvailableScript>>? treeController,
       TextEditingController textEditingController) {
     return AdaptiveContainerWidget(
       header: Padding(
@@ -308,7 +228,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
           widget._myRawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
           return ScriptMetadata(scriptName, scriptDescription, <String>{});
         })
-        .then((scriptMetadata) => _myAvailableScripts.addItem(AvailableScript(scriptRef, scriptMetadata)));
+        .then((scriptMetadata) => _myAvailableScripts.addItem(_AvailableScript(scriptRef, scriptMetadata)));
 
     _openScriptInEditor(scriptRef, readOnly: false);
   }
@@ -329,7 +249,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
 
           return ScriptMetadata(newScriptName, metadata.description, metadata.tags);
         })
-      .then((scriptMetadata) => _myAvailableScripts.addItem(AvailableScript(scriptRef, scriptMetadata)))
+      .then((scriptMetadata) => _myAvailableScripts.addItem(_AvailableScript(scriptRef, scriptMetadata)))
       .then((value) => _openScriptInEditor(scriptRef, readOnly: false));
     });
   }
@@ -348,7 +268,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
         .whenComplete(() => setState((){}));
   }
 
-  Widget buildScriptsList(BuildContext context, bool readOnly, bool loadingScripts, SearchableList<AvailableScript> availableScripts, IndexedTreeNode<AvailableScript> treeData, TreeViewController<AvailableScript, IndexedTreeNode<AvailableScript>>? treeController) {
+  Widget buildScriptsList(BuildContext context, bool readOnly, bool loadingScripts, SearchableList<_AvailableScript> availableScripts, IndexedTreeNode<_AvailableScript> treeData, TreeViewController<_AvailableScript, IndexedTreeNode<_AvailableScript>>? treeController) {
       return Expanded(
           flex: 40,
           child: Column(
@@ -378,7 +298,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     );
   }
 
-  Future<void> _exportScript(AvailableScript? script) async {
+  Future<void> _exportScript(_AvailableScript? script) async {
     if (script == null) return;
 
     final rawScript = await widget._myRawScriptRepository.get(script.scriptRef);
@@ -391,7 +311,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     }
   }
 
-  Future<void> _shareScript(AvailableScript? script) async {
+  Future<void> _shareScript(_AvailableScript? script) async {
     if (script == null) return;
 
     final rawScript = await widget._myRawScriptRepository.get(script.scriptRef);
@@ -427,12 +347,12 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
             return widget._myRawScriptRepository.save(rawScript).then((value) => Future.value(rawScript));
           })
     )).then((rawScripts) => rawScripts.map((rawScript) {
-      return AvailableScript(rawScript.ref, ScriptDefParser().parse(rawScript.contentAsYaml).metadata);
+      return _AvailableScript(rawScript.ref, ScriptDefParser().parse(rawScript.contentAsYaml).metadata);
     }).toList())
     .then((importedScripts) => _myAvailableScripts.addItems(importedScripts));
   }
 
-  Widget _buildListView(SearchableList<AvailableScript> availableScripts, IndexedTreeNode<AvailableScript> _treeData, _treeController) {
+  Widget _buildListView(SearchableList<_AvailableScript> availableScripts, IndexedTreeNode<_AvailableScript> _treeData, _treeController) {
     return TreeView.indexed(showRootNode: false,
       tree: _treeData,
       onTreeReady: (controller) {
@@ -457,13 +377,13 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
             });
           },
           hoverColor: Colors.blue.shade100,
-          selected: availableScripts.selected?.scriptRef != null && availableScripts.selected!.scriptRef == (node.data as AvailableScript?)?.scriptRef,
+          selected: availableScripts.selected?.scriptRef != null && availableScripts.selected!.scriptRef == (node.data as _AvailableScript?)?.scriptRef,
         );
       },
     );
   }
 
-  Expanded buildDetailsSection(BuildContext context, ButtonBar buttonBar, SearchableList<AvailableScript> availableScripts) {
+  Expanded buildDetailsSection(BuildContext context, ButtonBar buttonBar, SearchableList<_AvailableScript> availableScripts) {
     return Expanded(
         flex: 58,
         child: Column(
@@ -485,7 +405,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
         ));
   }
 
-  ButtonBar buildButtonBar(BuildContext context, SearchableList<AvailableScript> availableScripts) {
+  ButtonBar buildButtonBar(BuildContext context, SearchableList<_AvailableScript> availableScripts) {
     var selectedScript = _getSelectedScript(availableScripts);
     if (selectedScript == null) return ButtonBar(children: [
       Buttons.icon(Icons.copy_rounded, "Clone"),
@@ -502,7 +422,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     );
   }
 
-  ButtonBar buildMyScriptsButtonBar(BuildContext context, SearchableList<AvailableScript> availableScripts) {
+  ButtonBar buildMyScriptsButtonBar(BuildContext context, SearchableList<_AvailableScript> availableScripts) {
     var selectedScript = _getSelectedScript(availableScripts);
 
     if (selectedScript == null) return ButtonBar(children: [
@@ -526,13 +446,13 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     );
   }
 
-  void _deleteScript(AvailableScript selectedScript) {
+  void _deleteScript(_AvailableScript selectedScript) {
     widget._myRawScriptRepository.delete(selectedScript.scriptRef)
         .then((deleted) => _myAvailableScripts.delete(selectedScript))
         .whenComplete(() => setState((){}));
   }
 
-  void _cloneSelectedScript(SearchableList<AvailableScript> availableScripts, ScriptRepository repository){
+  void _cloneSelectedScript(SearchableList<_AvailableScript> availableScripts, ScriptRepository repository){
     final selectedScript = _getSelectedScript(availableScripts);
     if (selectedScript == null) return;
     _cloneScript(selectedScript.scriptRef, selectedScript.metadata, repository);
