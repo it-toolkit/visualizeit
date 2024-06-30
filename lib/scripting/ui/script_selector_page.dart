@@ -339,12 +339,15 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
           search(value, availableScripts);
         },
       ),
-      itemBuilder: (c, element) => _ScriptListItem(element.metadata.name, onTap: () {
-        _logger.debug(() => "Tap on: ${element.metadata.name}");
-        setState(() {
-          availableScripts.select(element);
-        });
-      }),
+      itemBuilder: (c, element) => _ScriptListItem(element.metadata.name,
+          selected: availableScripts.selected == element,
+          onTap: () {
+            _logger.debug(() => "Tap on: ${element.metadata.name}");
+            setState(() {
+              availableScripts.select(element);
+            });
+          },
+      ),
     );
   }
 
@@ -447,9 +450,10 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
 class _ScriptListItem extends StatelessWidget {
 
   final String text;
+  final bool selected;
   final GestureTapCallback? onTap;
 
-  _ScriptListItem(this.text, {this.onTap});
+  _ScriptListItem(this.text, {this.selected = false, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -464,6 +468,13 @@ class _ScriptListItem extends StatelessWidget {
           dense: true,
           title: Text(text),
           onTap: onTap,
+          selected: selected,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          hoverColor: Colors.blue.shade100,
+          selectedTileColor: Colors.blue.shade200,
+          selectedColor: Colors.black,
         ),
       ),
     );
