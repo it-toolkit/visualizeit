@@ -30,7 +30,7 @@ class SearchableList<T> {
   void setAllItems(List<T> allItems) {
     if(this._allItems == allItems || ListEquality().equals(this._allItems, allItems)) return;
 
-    this._allItems = allItems;
+    this._allItems = List.from(allItems);
     _dirty = true;
     search(query);
   }

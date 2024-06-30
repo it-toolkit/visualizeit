@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit_extensions/common.dart';
@@ -15,16 +16,46 @@ class Scene {
   }
 }
 
-@immutable
-class Script {
+sealed class Script {
   final RawScript raw;
   final ScriptMetadata metadata;
-  final List<Scene> scenes;
 
-  Script(this.raw, this.metadata, this.scenes);
+  Script(this.raw, this.metadata);
 
-  Script clone() {
-    return Script(raw.clone(), metadata.clone(), scenes.map((it) => it.clone()).toList());
+  Script clone();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Script && runtimeType == other.runtimeType && raw.ref == other.raw.ref && metadata == other.metadata;
+
+  @override
+  int get hashCode => raw.ref.hashCode ^ metadata.hashCode;
+
+  @override
+  String toString() {
+    return 'Script{name: ${metadata.name}, isValid: ${this is ValidScript}, ref:${raw.ref}';
   }
 }
 
+@immutable
+class ValidScript extends Script {
+  final List<Scene> scenes;
+
+  ValidScript(super.raw, super.metadata, this.scenes);
+
+  ValidScript clone() {
+    return ValidScript(raw.clone(), metadata.clone(), scenes.map((it) => it.clone()).toList());
+  }
+}
+
+@immutable
+class InvalidScript extends Script {
+  final ParserException parserError;
+
+  InvalidScript(super.raw, super.metadata, this.parserError);
+
+  InvalidScript clone() {
+    return InvalidScript(raw.clone(), metadata.clone(), parserError);
+  }
+}

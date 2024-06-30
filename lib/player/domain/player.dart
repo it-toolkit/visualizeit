@@ -102,7 +102,7 @@ const _defaultSceneTitleDuration = 1;
 
 class PlayerState {
 
-  final Script script;
+  final ValidScript script;
   late final int currentSceneIndex;
   late final int currentCommandIndex;
   late final Map<String, Model> currentSceneModels;

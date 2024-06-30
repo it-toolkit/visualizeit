@@ -1,7 +1,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
-import 'package:visualizeit/scripting/domain/script_def.dart';
 
 @immutable
 class RawScript {
@@ -38,8 +37,6 @@ class ScriptNotFoundException implements Exception {
 typedef ScriptRef = String;
 
 abstract class ScriptRepository {
-  Future<Map<ScriptRef, ScriptMetadata>> fetchAvailableScriptsMetadata();
-
   Future<Script> get(ScriptRef scriptRef);
 
   Future<List<Script>> getAll();
@@ -56,14 +53,6 @@ class CompositeScriptRepository implements ScriptRepository {
 
   CompositeScriptRepository(this.publicRepository, this.myScriptsRepository)
       : this.delegates = [publicRepository, myScriptsRepository];
-
-  @override
-  Future<Map<ScriptRef, ScriptMetadata>> fetchAvailableScriptsMetadata() {
-    return Future.wait(delegates.map((r) => r.fetchAvailableScriptsMetadata()))
-        .then((availableScriptsMetadataMaps) {
-      return availableScriptsMetadataMaps.fold<Map<String, ScriptMetadata>>({}, (previousValue, other) => previousValue..addAll(other));
-    });
-  }
 
   @override
   Future<Script> get(ScriptRef scriptRef) {

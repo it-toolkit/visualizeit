@@ -280,7 +280,12 @@ class ScriptParser {
   final _scripDefParser = ScriptDefParser();
 
   Script parse(RawScript rawScript) {
-    ScriptDef scriptDef = _scripDefParser.parse(rawScript.contentAsYaml);
+    ScriptDef scriptDef;
+    try {
+      scriptDef = _scripDefParser.parse(rawScript.contentAsYaml);
+    } on ParserException catch (e){
+      return InvalidScript(rawScript, ScriptMetadata("<Invalid script>", "Invalid script"), e);
+    }
     final errorCollector = ErrorCollector();
     dynamic scenes = scriptDef.scenes.map((sceneDef) {
       try {
@@ -300,9 +305,9 @@ class ScriptParser {
       }
     }).nonNulls.toList(growable: false);
 
-    if (!errorCollector.isEmpty()) throw ParserException(errorCollector.errors);
+    if (!errorCollector.isEmpty()) return InvalidScript(rawScript, ScriptMetadata("<Invalid script>", "Invalid script"), ParserException(errorCollector.errors));
 
-    return Script(rawScript, scriptDef.metadata, scenes);
+    return ValidScript(rawScript, scriptDef.metadata, scenes);
   }
 
   ///Throws error if command cannot be parsed

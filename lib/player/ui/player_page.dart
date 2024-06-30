@@ -46,7 +46,7 @@ class PlayerPage extends StatefulBasePage {
 
 class PlayerPageState extends BasePageState<PlayerPage> {
 
-  Script? script = null;
+  ValidScript? script = null;
   bool scriptHasChanges = false;
   ParserException? scriptErrors = null;
   bool graphicalMode = true;
@@ -90,7 +90,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   Future<Script> resolveScript() async {
     if(script == null){
-      script = (await widget._scriptRepository.get(widget.scriptId)).clone();
+      script = (await widget._scriptRepository.get(widget.scriptId)).clone() as ValidScript; //TODO player only receive validscript
       codeController.text = script!.raw.contentAsYaml;
     }
 
@@ -105,7 +105,8 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           if(snapshot.hasError) { //TODO Mejorar el catch de errores en FutureBuilders
             return Text("Error loading script: ${snapshot.error}");
           }else if (snapshot.hasData) {
-            var initialPlayerState = PlayerState(snapshot.data!);
+            var script = snapshot.data!;
+            var initialPlayerState = PlayerState(script as ValidScript); //TODO player only receive validscript
             return MultiBlocProvider(
                 providers: [BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState))],
                 child: BlocListener<PlayerBloc, PlayerState>(
@@ -135,9 +136,12 @@ class PlayerPageState extends BasePageState<PlayerPage> {
           action: scriptHasChanges ? () {
             try {
               final parsedScript = widget._scriptParser.parse(script!.raw.copyWith(contentAsYaml: codeController.text));
+              if (parsedScript is InvalidScript) throw parsedScript.parserError;
+
               setState(() {
-                script = parsedScript;
-                BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(script!)));
+                var validScript = parsedScript as ValidScript;
+                script = validScript;
+                BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(validScript)));
                 scriptHasChanges = false;
               });
             } on ParserException catch (e) {
@@ -275,7 +279,9 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   void _monitorScriptChangesAndErrors(String text) {
     ParserException? newScriptErrors;
     try {
-      widget._scriptParser.parse(RawScript("ref", text));
+      final parsedScript = widget._scriptParser.parse(RawScript("ref", text)); //TODO avoid throwing exception
+      if (parsedScript is InvalidScript) throw parsedScript.parserError;
+
       _logger.trace(() => "Script syntax is correct");
       newScriptErrors = null;
     } on ParserException catch (e) {

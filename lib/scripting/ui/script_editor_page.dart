@@ -81,9 +81,12 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
                     })
                 : null),
         Buttons.icon(Icons.save_outlined, "Save changes",
-            action: scriptHasChanges
+            action: scriptHasChanges && scriptErrors == null
                 ? () async {
                     var updatedRawScript = script!.raw.copyWith(contentAsYaml: codeController.text);
+                    final parsedScript = widget._scriptParser.parse(script!.raw.copyWith(contentAsYaml: codeController.text));
+                    if (parsedScript is InvalidScript) throw parsedScript.parserError;
+
                     try {
                       final updateScript = await widget._scriptRepository.save(updatedRawScript);
                       setState(() {
@@ -102,10 +105,9 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
         Buttons.highlightedIcon(
           Icons.play_circle,
           "Play",
-          action: () {
-            //TODO ask for pending changes to save
-            widget.openScriptInPlayer?.call(widget.scriptId, widget.readOnly);
-          },
+          action: !scriptHasChanges && scriptErrors == null
+              ? () => widget.openScriptInPlayer?.call(widget.scriptId, widget.readOnly)
+              : null,
         )
       ],
     );
@@ -113,8 +115,10 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
 
   Future<Script> _resolveScript() async {
     if (script == null) {
-      script = await widget._scriptRepository.get(widget.scriptId);
-      codeController.text = script!.raw.contentAsYaml;
+      var loadedScript = await widget._scriptRepository.get(widget.scriptId);
+      script = loadedScript;
+      codeController.text = loadedScript.raw.contentAsYaml;
+      scriptErrors = loadedScript is InvalidScript ? loadedScript.parserError : null;
     }
 
     return Future.value(script);
@@ -144,7 +148,9 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   void _monitorScriptChangesAndErrors(String text) {
     ParserException? newScriptErrors;
     try {
-      widget._scriptParser.parse(RawScript("ref", text));
+      final parsedScript = widget._scriptParser.parse(RawScript("ref", text));  //TODO avoid throwing exception
+      if (parsedScript is InvalidScript) throw parsedScript.parserError;
+
       _logger.trace(() => "Script syntax is correct");
       newScriptErrors = null;
     } on ParserException catch (e) {

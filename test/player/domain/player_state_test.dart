@@ -51,7 +51,7 @@ class FakeCommand extends ModelCommand {
 
 void main() {
   test('Init player state with single scene without commands', () {
-    var script = Script(
+    var script = ValidScript(
       RawScript("ref", "yaml"),
       ScriptMetadata("script_name", "script_description"),
       [
@@ -71,7 +71,7 @@ void main() {
     var transitionFakeCommand1 = FakeCommand.build("t1");
     var transitionFakeCommand2 = FakeCommand.build("t2");
 
-    var script = Script(
+    var script = ValidScript(
         RawScript("ref", "yaml"),
         ScriptMetadata("script_name", "script_description"),
         [
@@ -109,7 +109,7 @@ void main() {
     var transitionFakeCommand2 = FakeCommand.build("t2", duration: 3);
     var transitionFakeCommand3 = FakeCommand.build("t3", duration: 2);
 
-    var script = Script(
+    var script = ValidScript(
         RawScript("ref", "yaml"),
         ScriptMetadata("script_name", "script_description"),
         [
