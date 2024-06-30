@@ -127,14 +127,17 @@ class ScriptEditorWidget extends StatelessWidget {
     final keywordPrompts = availableExtensions.map((e) => CodeKeywordPrompt(word: e.id)).toList();
     List<CodePrompt> templatePrompts = [
       CodeTemplatePrompt(word: "name", template: "name: ...element name..."),
-      CodeTemplatePrompt(word: "description", template: "description: ...script description..."),
+      CodeTemplatePrompt(word: "description", template: "description: ...element description..."),
+      CodeTemplatePrompt(word: "group", template: "group: ...optional parent..."),
       CodeTemplatePrompt(word: "tags", template: "tags: [optional-tags]"),
+      CodeTemplatePrompt(word: "title-duration", template: "title-duration: 1"),
+      CodeTemplatePrompt(word: "base-frame-duration-ms", template: "base-frame-duration-ms: 1000"),
       CodeTemplatePrompt(word: "scenes", template:
       """
             scenes:
               - name: "...scene name..."
                 extensions: [ ]
-                description: "...scene description"
+                description: "...optional scene description..."
                 initial-state:
                   - nop
                 transitions:

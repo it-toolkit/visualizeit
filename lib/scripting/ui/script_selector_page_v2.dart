@@ -278,13 +278,13 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
 
   String _buildNewScriptInitialContent(String scriptName, String scriptDescription) => """
     # Write your script here...
-    name: $scriptName
-    description: $scriptDescription 
+    name: "$scriptName"
+    description: "$scriptDescription" 
     tags: []
     scenes:
       - name: "...scene name..."
         extensions: [ ]
-        description: "...scene description"
+        description: "...optional scene description"
         initial-state:
           - nop
         transitions:
@@ -304,7 +304,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
               .map((e) => int.tryParse(e)).nonNulls.maxOrNull?.let((max) => max + 1) ?? 1;
 
           var scriptName = "New script $nextIndex";
-          var scriptDescription = "... complete the 'New script $nextIndex' description";
+          var scriptDescription = "... complete the 'New script $nextIndex' description...";
           widget._myRawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
           return ScriptMetadata(scriptName, scriptDescription, <String>{});
         })
