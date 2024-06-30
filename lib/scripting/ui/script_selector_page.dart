@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:slugify/slugify.dart';
 import 'package:uuid/uuid.dart';
@@ -63,49 +63,26 @@ class _AvailableScript {
   }
 }
 
+
+
 class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with SingleTickerProviderStateMixin {
   final _uuid = Uuid();
   late TabController _tabController;
 
-  IndexedTreeNode<_AvailableScript> _publicScriptsTreeData = IndexedTreeNode.root();
-  SearchableList<_AvailableScript> _publicAvailableScripts = SearchableList<_AvailableScript>(
-    <_AvailableScript>[],
-    (query, availableScript) => availableScript.metadata.name.toLowerCase().contains(query.toLowerCase()),
-  );
+  static bool _queryByGroupOrName(String query, _AvailableScript availableScript) {
+      final lowerCaseQuery = query.toLowerCase();
+      final scriptMetadata = availableScript.metadata;
+      return (scriptMetadata.group?.toLowerCase().contains(lowerCaseQuery) ?? false)
+          || scriptMetadata.name.toLowerCase().contains(lowerCaseQuery);
+  }
+
+  SearchableList<_AvailableScript> _publicAvailableScripts = SearchableList<_AvailableScript>(<_AvailableScript>[], _queryByGroupOrName,);
   bool _loadingPublicScripts = true;
-  TreeViewController<_AvailableScript, IndexedTreeNode<_AvailableScript>>? _publicScriptsTreeController;
   TextEditingController _publicScriptsTextEditingController = TextEditingController();
 
-  IndexedTreeNode<_AvailableScript> _myScriptsTreeData = IndexedTreeNode.root();
-  SearchableList<_AvailableScript> _myAvailableScripts = SearchableList<_AvailableScript>(
-    <_AvailableScript>[],
-        (query, availableScript) => availableScript.metadata.name.toLowerCase().contains(query.toLowerCase()),
-  );
+  SearchableList<_AvailableScript> _myAvailableScripts = SearchableList<_AvailableScript>(<_AvailableScript>[], _queryByGroupOrName);
   bool _loadingMyScripts = true;
-  TreeViewController<_AvailableScript, IndexedTreeNode<_AvailableScript>>? _myScriptsTreeController;
   TextEditingController _myScriptsTextEditingController = TextEditingController();
-
-  IndexedTreeNode<_AvailableScript> _buildTreeData(List<_AvailableScript> values) {
-    _logger.debug(() => "Building tree data from ${values.length} values");
-    IndexedTreeNode<_AvailableScript> treeData = IndexedTreeNode.root();
-    values.forEach((availableScript) {
-       final parentNode = _getOrCreateParentNode(treeData, availableScript);
-       parentNode.add(IndexedTreeNode<_AvailableScript>(key: availableScript.scriptRef.hashCode.toString(), data: availableScript));
-    });
-    return treeData;
-  }
-
-  IndexedTreeNode _getOrCreateParentNode(IndexedTreeNode<_AvailableScript> rootNode, _AvailableScript availableScript) {
-    final group = availableScript.metadata.group;
-    if(group == null) return rootNode;
-
-    var parentNode = rootNode.children.firstWhereOrNull((node) => node.key == group) as IndexedTreeNode?;
-    if(parentNode == null) {
-      parentNode = IndexedTreeNode<_AvailableScript>(key: group);
-      rootNode.add(parentNode);
-    }
-    return parentNode;
-  }
 
   void search(String query, SearchableList<_AvailableScript> availableScripts) => setState(() => availableScripts.search(query));
 
@@ -114,14 +91,12 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this, animationDuration: Duration.zero);
-    _publicAvailableScripts.onValuesUpdated = (values) => setState(() => _publicScriptsTreeData = _buildTreeData(values));
     widget._publicRawScriptRepository.fetchAvailableScriptsMetadata().then((value) =>
       this._publicAvailableScripts.setAllItems(value.entries.map((e) => _AvailableScript(e.key, e.value)).toList())
     ).whenComplete(() => setState(() {
       _loadingPublicScripts = false;
     }));
 
-    _myAvailableScripts.onValuesUpdated = (values) => setState(() => _myScriptsTreeData = _buildTreeData(values));
     loadMyAvailableScripts();
 
     super.initState();
@@ -159,8 +134,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
             body: TabBarView(
               controller: _tabController,
               children: [
-                buildTabContent(context, true, buildButtonBar(context, _publicAvailableScripts), _loadingPublicScripts, _publicAvailableScripts, _publicScriptsTreeData, _publicScriptsTreeController, _publicScriptsTextEditingController),
-                buildTabContent(context, false, buildMyScriptsButtonBar(context, _myAvailableScripts), _loadingMyScripts, _myAvailableScripts, _myScriptsTreeData, _myScriptsTreeController, _myScriptsTextEditingController),
+                buildTabContent(context, true, buildButtonBar(context, _publicAvailableScripts), _loadingPublicScripts, _publicAvailableScripts, _publicScriptsTextEditingController),
+                buildTabContent(context, false, buildMyScriptsButtonBar(context, _myAvailableScripts), _loadingMyScripts, _myAvailableScripts, _myScriptsTextEditingController),
               ],
             ),
         ),
@@ -169,8 +144,6 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
 
   Widget buildTabContent(BuildContext context, bool readOnly, ButtonBar scriptButtonBar, bool loadingScripts,
       SearchableList<_AvailableScript> availableScripts,
-      IndexedTreeNode<_AvailableScript> treeData,
-      TreeViewController<_AvailableScript, IndexedTreeNode<_AvailableScript>>? treeController,
       TextEditingController textEditingController) {
     return AdaptiveContainerWidget(
       header: Padding(
@@ -191,7 +164,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
             IconButton(onPressed: _importScripts, icon: Icon(Icons.compare_arrows), tooltip: "Import scripts", iconSize: 20),
             IconButton(onPressed: readOnly ? null : _exportAllFilteredScripts.takeIf(availableScripts.values.isNotEmpty), icon: Icon(Icons.import_export), tooltip: readOnly ? null : "Export my scripts", iconSize: 20),
       ])),
-      children: [buildScriptsList(context, readOnly, loadingScripts, availableScripts, treeData, treeController),
+      children: [buildScriptsList(context, readOnly, loadingScripts, availableScripts, textEditingController),
         const Spacer(flex: 2), buildDetailsSection(context, scriptButtonBar, availableScripts)],
     );
   }
@@ -268,7 +241,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
         .whenComplete(() => setState((){}));
   }
 
-  Widget buildScriptsList(BuildContext context, bool readOnly, bool loadingScripts, SearchableList<_AvailableScript> availableScripts, IndexedTreeNode<_AvailableScript> treeData, TreeViewController<_AvailableScript, IndexedTreeNode<_AvailableScript>>? treeController) {
+  Widget buildScriptsList(BuildContext context, bool readOnly, bool loadingScripts, SearchableList<_AvailableScript> availableScripts, TextEditingController textEditingController) {
       return Expanded(
           flex: 40,
           child: Column(
@@ -283,7 +256,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
                                 ? Center(child: CircularProgressIndicator())
                                 : availableScripts.values.length == 0 //Only root node
                                     ?  const Center(child: Text('No scripts available', style: TextStyle(fontSize: 18)))
-                                    : _buildListView(availableScripts, treeData, treeController),
+                                    : _buildListView(availableScripts, textEditingController),
                   ))),
             ],
           ));
@@ -352,32 +325,47 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     .then((importedScripts) => _myAvailableScripts.addItems(importedScripts));
   }
 
-  Widget _buildListView(SearchableList<_AvailableScript> availableScripts, IndexedTreeNode<_AvailableScript> _treeData, _treeController) {
-    return TreeView.indexed(showRootNode: false,
-      tree: _treeData,
-      onTreeReady: (controller) {
-        _treeController = controller;
-        controller.expandAllChildren(_treeData);
-      },
-      builder: (context, node) {
-        return ListTile(
-          dense: true,
-          visualDensity: VisualDensity(vertical: -3),
-          title: Text(node.data?.metadata.name ?? node.key), //TODO stop using keys.. see how to represent "group" nodes
-          selectedTileColor: Colors.blue.shade200,
+  Widget _buildListView(SearchableList<_AvailableScript> availableScripts, TextEditingController textEditingController) {
+    return GroupedListView<_AvailableScript, String>(
+      elements: availableScripts.values,
+      groupBy: (element) => element.metadata.group ?? "",
+      groupComparator: (value1, value2) => value2.compareTo(value1),
+      itemComparator: (item1, item2) => item1.metadata.name.compareTo(item2.metadata.name),
+      order: GroupedListOrder.DESC,
+      useStickyGroupSeparators: true,
+      groupSeparatorBuilder: (String value) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: InkWell(
           onTap: () {
-            var data = node.data;
-            if (data == null) {
-              _treeController?.toggleExpansion(node);
-              return;
-            };
-            setState(() {
-              _logger.debug(() => "Tap on: ${data.metadata.name}");
-              availableScripts.select(data);
-            });
-          },
-          hoverColor: Colors.blue.shade100,
-          selected: availableScripts.selected?.scriptRef != null && availableScripts.selected!.scriptRef == (node.data as _AvailableScript?)?.scriptRef,
+            textEditingController.text = value;
+            search(value, availableScripts);
+            },
+          child:Text(
+            value,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+      itemBuilder: (c, element) {
+        return Card(
+          elevation: 8.0,
+          margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
+          child: SizedBox(
+            child: ListTile(
+              contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
+              leading: const Icon(Icons.text_snippet_outlined),
+              dense: true,
+              title: Text(element.metadata.name),
+              onTap: () {
+                setState(() {
+                  _logger.debug(() => "Tap on: ${element.metadata.name}");
+                  availableScripts.select(element);
+                });
+              },
+            ),
+          ),
         );
       },
     );
