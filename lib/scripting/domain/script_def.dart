@@ -28,13 +28,14 @@ class SceneMetadata {
   final String description;
   final Set<String> extensionIds;
   final int? titleDuration;
+  final int? baseFrameDurationInMillis;
   final String rawYaml;
   final int scriptLineIndex;
 
-  SceneMetadata(this.name, this.description, this.extensionIds, this.rawYaml, this.scriptLineIndex, this.titleDuration);
+  SceneMetadata(this.name, this.description, this.extensionIds, this.rawYaml, this.scriptLineIndex, this.titleDuration, this.baseFrameDurationInMillis);
 
   SceneMetadata clone() {
-    return SceneMetadata(name, description, extensionIds, rawYaml, scriptLineIndex, titleDuration);
+    return SceneMetadata(name, description, extensionIds, rawYaml, scriptLineIndex, titleDuration, baseFrameDurationInMillis);
   }
 }
 

@@ -10,6 +10,7 @@ scenes:
   - name: First scene
     extensions: ['slides']
     description: Scene showing how to use some slide types
+    base-frame-duration-ms: 2000
     initial-state:
       - create-slideshow
       - add-title-slide: { title: "Title slide", subtitle: "With subtitle..." }

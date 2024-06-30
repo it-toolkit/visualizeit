@@ -106,9 +106,15 @@ class PlayerPageState extends BasePageState<PlayerPage> {
             return Text("Error loading script: ${snapshot.error}");
           }else if (snapshot.hasData) {
             var initialPlayerState = PlayerState(snapshot.data!);
-            return MultiBlocProvider(providers: [
-              BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState)),
-            ], child: Builder(builder: (context) => super.build(context)));
+            return MultiBlocProvider(
+                providers: [BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState))],
+                child: BlocListener<PlayerBloc, PlayerState>(
+                   listener: (context, state) {
+                     _timer.baseFrameDurationInMillis = state.baseFrameDurationInMillis;
+                   },
+                   child: Builder(builder: (context) => super.build(context)),
+                ),
+            );
           } else
             return CircularProgressIndicator();
         });

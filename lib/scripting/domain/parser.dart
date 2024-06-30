@@ -108,6 +108,7 @@ class ScriptDefParser {
       "description": null,
       "extensions": null,
       "title-duration": null,
+      "base-frame-duration-ms": null,
       "initial-state": null,
       "transitions": null
     }
@@ -244,11 +245,12 @@ class ScriptDefParser {
       final description = getRequiredString(sceneNode, 'description', errorCollector) ?? "placeholder";
       final extensionIds = getOptionalStringSet(sceneNode, 'extensions', errorCollector) ?? Set<String>();
       final titleDuration = getOptionalPositiveOrZeroInt(sceneNode, 'title-duration', errorCollector);
+      final baseFrameDurationInMillis = getOptionalPositiveOrZeroInt(sceneNode, 'base-frame-duration-ms', errorCollector);
       //TODO rawSceneYaml se puede eliminar
       final rawSceneYaml = json2yaml(json.decode(json.encode(sceneNode)));
       //TODO Se podria usar json2yaml(json.decode(json.encode(sceneNode))) para formatear el yaml
 
-      final metadata = SceneMetadata(name, description, extensionIds, rawSceneYaml, sceneNode.span.start.line, titleDuration);
+      final metadata = SceneMetadata(name, description, extensionIds, rawSceneYaml, sceneNode.span.start.line, titleDuration, baseFrameDurationInMillis);
 
       final initialStateCommands = getOptionalArrayOf(sceneNode, 'initial-state', errorCollector, 'command') ?? YamlList.wrap(List.empty());
       final transitionCommands = getOptionalArrayOf(sceneNode, 'transitions', errorCollector, 'command') ?? YamlList.wrap(List.empty());
