@@ -1,7 +1,10 @@
+import 'dart:convert';
+
+import 'package:json2yaml/json2yaml.dart';
 import 'package:yaml/yaml.dart';
 
 abstract class YamlUtils {
-  const YamlUtils._();
+  YamlUtils._();
 
   static dynamic _convertNode(dynamic v) {
     if (v is YamlMap) return unwrapScalarsInMap(v);
@@ -22,5 +25,9 @@ abstract class YamlUtils {
     var list = <dynamic>[];
     yamlList.forEach((e) { list.add(_convertNode(e)); });
     return list;;
+  }
+
+  static String toFormattedYamlString(YamlNode node) {
+    return json2yaml(json.decode(json.encode(node)));
   }
 }

@@ -7,6 +7,7 @@ import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/scripting.dart';
+import 'package:source_span/source_span.dart';
 
 class FakeModel extends Model {
   FakeModel(this.invocations): super("fake_extension", "fake_model");
@@ -54,7 +55,7 @@ void main() {
       RawScript("ref", "yaml"),
       ScriptMetadata("script_name", "script_description", {}),
       [
-        Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10), [], [])
+        Scene(SceneMetadata("scene_name", "scene_description", {}, SourceSpan(SourceLocation(0), SourceLocation(1), " ")), [], [])
       ]
     );
     var playerState = PlayerState(script);
@@ -74,7 +75,7 @@ void main() {
         RawScript("ref", "yaml"),
         ScriptMetadata("script_name", "script_description", {}),
         [
-          Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10, 0),
+          Scene(SceneMetadata("scene_name", "scene_description", {}, SourceSpan(SourceLocation(0), SourceLocation(1), " "), 0),
               [
                 FakeModelCommand.build(fakeModel),
                 initFakeCommand1,
@@ -112,7 +113,7 @@ void main() {
         RawScript("ref", "yaml"),
         ScriptMetadata("script_name", "script_description", {}),
         [
-          Scene(SceneMetadata("scene_name", "scene_description", {}, "raw_yaml", 10, 0),
+          Scene(SceneMetadata("scene_name", "scene_description", {}, SourceSpan(SourceLocation(0), SourceLocation(1), " "), 0),
               [
                 FakeModelCommand.build(fakeModel),
               ],

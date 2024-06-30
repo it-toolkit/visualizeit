@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:json2yaml/json2yaml.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/extension/action.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
@@ -246,11 +244,8 @@ class ScriptDefParser {
       final extensionIds = getOptionalStringSet(sceneNode, 'extensions', errorCollector) ?? Set<String>();
       final titleDuration = getOptionalPositiveOrZeroInt(sceneNode, 'title-duration', errorCollector);
       final baseFrameDurationInMillis = getOptionalPositiveOrZeroInt(sceneNode, 'base-frame-duration-ms', errorCollector);
-      //TODO rawSceneYaml se puede eliminar
-      final rawSceneYaml = json2yaml(json.decode(json.encode(sceneNode)));
-      //TODO Se podria usar json2yaml(json.decode(json.encode(sceneNode))) para formatear el yaml
 
-      final metadata = SceneMetadata(name, description, extensionIds, rawSceneYaml, sceneNode.span.start.line, titleDuration, baseFrameDurationInMillis);
+      final metadata = SceneMetadata(name, description, extensionIds, sceneNode.span, titleDuration, baseFrameDurationInMillis);
 
       final initialStateCommands = getOptionalArrayOf(sceneNode, 'initial-state', errorCollector, 'command') ?? YamlList.wrap(List.empty());
       final transitionCommands = getOptionalArrayOf(sceneNode, 'transitions', errorCollector, 'command') ?? YamlList.wrap(List.empty());

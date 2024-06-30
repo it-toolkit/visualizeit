@@ -1,5 +1,5 @@
 
-
+import 'package:source_span/source_span.dart';
 import 'package:flutter/foundation.dart';
 import 'package:yaml/yaml.dart';
 
@@ -29,13 +29,14 @@ class SceneMetadata {
   final Set<String> extensionIds;
   final int? titleDuration;
   final int? baseFrameDurationInMillis;
-  final String rawYaml;
-  final int scriptLineIndex;
+  final SourceSpan span;
 
-  SceneMetadata(this.name, this.description, this.extensionIds, this.rawYaml, this.scriptLineIndex, [this.titleDuration, this.baseFrameDurationInMillis]);
+  SceneMetadata(this.name, this.description, this.extensionIds, this.span, [this.titleDuration, this.baseFrameDurationInMillis]);
+
+  int get scriptLineIndex => span.start.line;
 
   SceneMetadata clone() {
-    return SceneMetadata(name, description, extensionIds, rawYaml, scriptLineIndex, titleDuration, baseFrameDurationInMillis);
+    return SceneMetadata(name, description, extensionIds, span, titleDuration, baseFrameDurationInMillis);
   }
 }
 
