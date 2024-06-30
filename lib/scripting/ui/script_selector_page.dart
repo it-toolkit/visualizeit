@@ -175,9 +175,9 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
           var scriptDescription = "... complete the 'New script $nextIndex' description...";
           return widget._myRawScriptRepository.save(RawScript(scriptRef, _buildNewScriptInitialContent(scriptName, scriptDescription)));
         })
-        .then((script) => _myAvailableScripts.addItem(script));
-
-    _openScriptInEditor(scriptRef, readOnly: false);
+        .then((script) => _myAvailableScripts.addItem(script))
+        .then((v) => _openScriptInEditor(scriptRef, readOnly: false));
+    ;
   }
 
   void _cloneScript(ScriptRef ref, ScriptMetadata metadata, ScriptRepository repository) {
@@ -194,7 +194,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
           return widget._myRawScriptRepository.save(RawScript(scriptRef, script.raw.contentAsYaml.replaceFirst(metadata.name, newScriptName)));
         })
       .then((script) => _myAvailableScripts.addItem(script))
-      .then((value) => _openScriptInEditor(scriptRef, readOnly: false));
+      .then((v) => _openScriptInEditor(scriptRef, readOnly: false));
     });
   }
 
@@ -291,8 +291,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
             return widget._myRawScriptRepository.save(rawScript);
           })
     ))
-    .then((importedScripts) => _myAvailableScripts.addItems(importedScripts))
-    .then((v) => search(_myScriptsTextEditingController.text, _myAvailableScripts));
+    .then((importedScripts) => setState(() => _myAvailableScripts.addItems(importedScripts)));
   }
 
   Widget _buildListView(SearchableList<_AvailableScript> availableScripts, TextEditingController textEditingController) {
