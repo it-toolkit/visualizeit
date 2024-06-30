@@ -160,7 +160,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
     """.trimIndent();
 
 
-  void _createScript() { //TODO mucho repetido con el metodo de abajo
+  void _createScript() {
     _tabController.index = 1;
     var scriptRef = _uuid.v4();
     final  newScriptRegExp = RegExp(r'New script (\d+)');
@@ -291,7 +291,8 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
             return widget._myRawScriptRepository.save(rawScript);
           })
     ))
-    .then((importedScripts) => _myAvailableScripts.addItems(importedScripts));
+    .then((importedScripts) => _myAvailableScripts.addItems(importedScripts))
+    .then((v) => search(_myScriptsTextEditingController.text, _myAvailableScripts));
   }
 
   Widget _buildListView(SearchableList<_AvailableScript> availableScripts, TextEditingController textEditingController) {
