@@ -494,7 +494,7 @@ void main() {
           ));
     });
 
-    test('Scene without description', () {
+    test('Scene without description is valid', () {
       final scriptYaml = """
         name: Valid name
         description: Valid description
@@ -508,9 +508,7 @@ void main() {
         """.trimIndent();
 
       expect(() => ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml)),
-          throwsA(isA<ParserException>()
-              .having((e) => e.causes[0].message, 'message', equals("Missing non blank 'description' attribute"))
-          ));
+          isNot(throwsA(isA<ParserException>())));
     });
 
 

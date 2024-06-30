@@ -238,9 +238,8 @@ class ScriptDefParser {
   SceneDef? buildSceneDef(YamlList scenes, int i, ErrorCollector errorCollector) {
     final sceneNode = scenes[i];
     if (sceneNode is YamlMap) {
-      //TODO name y description podrian ser opcionales para las scenes
       final name = getRequiredString(sceneNode, 'name', errorCollector) ?? "placeholder";
-      final description = getRequiredString(sceneNode, 'description', errorCollector) ?? "placeholder";
+      final description = getOptionalString(sceneNode, 'description', errorCollector);
       final extensionIds = getOptionalStringSet(sceneNode, 'extensions', errorCollector) ?? Set<String>();
       final titleDuration = getOptionalPositiveOrZeroInt(sceneNode, 'title-duration', errorCollector);
       final baseFrameDurationInMillis = getOptionalPositiveOrZeroInt(sceneNode, 'base-frame-duration-ms', errorCollector);

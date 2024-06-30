@@ -25,7 +25,7 @@ class ScriptMetadata {
 @immutable
 class SceneMetadata {
   final String name;
-  final String description;
+  final String? description;
   final Set<String> extensionIds;
   final int? titleDuration;
   final int? baseFrameDurationInMillis;
