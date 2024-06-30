@@ -97,6 +97,8 @@ class _RunCommandResult{
   }
 }
 
+const _defaultSceneTitleDuration = 1;
+
 class PlayerState {
 
   final Script script;
@@ -108,6 +110,8 @@ class PlayerState {
   late final double canvasScale;
 
   Scene get currentScene => script.scenes[currentSceneIndex];
+
+  int get countdownToStart => max(-1-currentCommandIndex, 0);
 
   Command? get currentCommand => currentScene.transitionCommands.isNotEmpty && currentCommandIndex >= -1
       ? currentScene.transitionCommands[min(currentCommandIndex + 1, currentScene.transitionCommands.length - 1)]
@@ -148,8 +152,12 @@ class PlayerState {
     return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying, waitingAction, canvasScale);
   }
 
+  int _getSceneTitleDuration(int sceneIndex) => script.scenes[sceneIndex].metadata.titleDuration ?? _defaultSceneTitleDuration;
+
   PlayerState runNextCommand({Duration timeFrame = Duration.zero}) {
     var nextCommandIndex = currentCommandIndex + 1;
+    if (nextCommandIndex < 0) return PlayerState._internal(script, currentSceneIndex, nextCommandIndex, currentSceneModels, isPlaying, waitingAction, canvasScale);
+
     var scene = script.scenes[currentSceneIndex];
 
     final isLastScene = (currentSceneIndex == script.scenes.length - 1);
@@ -176,7 +184,7 @@ class PlayerState {
 
   PlayerState nextScene() {
     var sceneIndex = currentSceneIndex +1;
-    return PlayerState._internal(script, sceneIndex, -1, _buildInitialState(script.scenes[sceneIndex].initialStateBuilderCommands), isPlaying, waitingAction, canvasScale);
+    return PlayerState._internal(script, sceneIndex, -1 - _getSceneTitleDuration(sceneIndex), _buildInitialState(script.scenes[sceneIndex].initialStateBuilderCommands), isPlaying, waitingAction, canvasScale);
   }
 
   PlayerState startPlayback({bool waitingAction = false}) {
@@ -195,7 +203,7 @@ class PlayerState {
 
   void _setupScene(int sceneIndex) {
     currentSceneIndex = sceneIndex;
-    currentCommandIndex = -1;
+    currentCommandIndex = -1 - _getSceneTitleDuration(sceneIndex);
     currentSceneModels = _buildInitialState(script.scenes[sceneIndex].initialStateBuilderCommands);
   }
 

@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:single_child_two_dimensional_scroll_view/single_child_two_dimensional_scroll_view.dart';
+import 'package:visualizeit/common/markdown/markdown.dart';
 import 'package:visualizeit/extension/action.dart';
+import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit_extensions/logging.dart';
 import 'package:visualizeit_extensions/visualizer.dart';
 
@@ -66,13 +68,17 @@ class _CanvasWidgetState extends State<CanvasWidget> {
         builder: (context, playerState) {
           _logger.trace(() => "Rendering $playerState");
 
-          final getExtensionById = context.read<GetExtensionById>();
-          List<Widget> widgets = playerState.currentSceneModels.values
-              .expand((model) => getExtensionById(model.extensionId).renderer.renderAll(model, context))
-              .nonNulls
-              .toList()
-            ..sort((a, b) => (a is RenderingPriority ? a.priority : 0).compareTo(b is RenderingPriority ? b.priority : 0));
-
+          List<Widget> widgets;
+          if (playerState.countdownToStart > 0) {
+            widgets = buildScenePresentation(playerState.currentScene.metadata, playerState.countdownToStart);
+          } else {
+            final getExtensionById = context.read<GetExtensionById>();
+            widgets = playerState.currentSceneModels.values
+                .expand((model) => getExtensionById(model.extensionId).renderer.renderAll(model, context))
+                .nonNulls
+                .toList()
+              ..sort((a, b) => (a is RenderingPriority ? a.priority : 0).compareTo(b is RenderingPriority ? b.priority : 0));
+          }
           final scaledDown = playerState.canvasScale < 1;
 
           return LayoutBuilder(builder: (context, constraints) {
@@ -111,6 +117,75 @@ class _CanvasWidgetState extends State<CanvasWidget> {
       },
       title: title,
       message: message,
+    );
+  }
+
+  List<Widget> buildScenePresentation(SceneMetadata metadata, int pendingFrames) {
+    return [
+      SceneTitleSlide(title: metadata.name, description: metadata.description),
+      Align(alignment: Alignment.topRight, child: Padding(padding: EdgeInsets.only(right: 5), child: CircularCounter(pendingFrames)))
+    ];
+  }
+}
+
+class SceneTitleSlide extends StatelessWidget {
+  final String title;
+  final String? description;
+
+  SceneTitleSlide({required this.title, this.description});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          // colors: [Colors.cyan.shade100, Colors.green.shade100],
+          colors: [Colors.teal, Colors.grey.shade100],
+        ),
+      ),
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          if (description != null) ...[
+            SizedBox(height: 10),
+            ExtendedMarkdownBlock(data: description!)
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class CircularCounter extends StatelessWidget {
+
+  final int counterValue;
+
+  const CircularCounter(this.counterValue);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.grey,
+            width: 2.0,
+          ),
+        ),
+        child: Text("$counterValue"),
     );
   }
 }
