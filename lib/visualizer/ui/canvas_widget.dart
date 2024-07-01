@@ -6,6 +6,7 @@ import 'package:single_child_two_dimensional_scroll_view/single_child_two_dimens
 import 'package:visualizeit/common/markdown/markdown.dart';
 import 'package:visualizeit/extension/domain/default/default_extension.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
+import 'package:visualizeit/main.dart';
 import 'package:visualizeit/player/domain/player.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit_extensions/logging.dart';
@@ -55,52 +56,70 @@ class _CanvasWidgetState extends State<CanvasWidget> {
               _transformationController.value = Matrix4.identity();
             }
 
-            var stateUpdate = (playerState.currentSceneModels[globalModelName] as GlobalModel).takeNextGlobalStateUpdate();
-            if (stateUpdate == null) return;
-            switch(stateUpdate){
-              case PopupMessage _:
-                {
-                  _logger.debug(() => "Showing PopupMessage");
-                  var playerBloc = BlocProvider.of<PlayerBloc>(context);
-                  playerBloc.add(StopPlaybackEvent(waitingAction: true));
-                  _showAlertDialog(context, playerBloc, message: stateUpdate.message);
-                };
+            try {
+              var stateUpdate = (playerState.currentSceneModels.value[globalModelName] as GlobalModel).takeNextGlobalStateUpdate();
+              if (stateUpdate == null) return;
+
+              switch (stateUpdate) {
+                case PopupMessage _:
+                  {
+                    _logger.debug(() => "Showing PopupMessage");
+                    var playerBloc = BlocProvider.of<PlayerBloc>(context);
+                    playerBloc.add(StopPlaybackEvent(waitingAction: true));
+                    _showAlertDialog(context, playerBloc, message: stateUpdate.message);
+                  };
+              }
+            } on PlayerException catch (e) {
+              VisualizeItApp.showErrorInSnackBar(e.message);
             }
           },
         builder: (context, playerState) {
-          _logger.trace(() => "Rendering $playerState");
+          try {
+            _logger.trace(() => "Rendering $playerState");
 
-          List<Widget> widgets;
-          if (playerState.countdownToStart > 0) {
-            widgets = buildScenePresentation(playerState.currentScene.metadata, playerState.countdownToStart);
-          } else {
+            List<Widget> widgets;
+            if (playerState.countdownToStart > 0) {
+              widgets = buildScenePresentation(playerState.currentScene.metadata, playerState.countdownToStart);
+            } else {
+              widgets = playerState.currentSceneModels.value.values
+                  .expand((model) =>
+                  widget.extensionRepository
+                      .getById(model.extensionId)
+                      .renderer
+                      .renderAll(model, context))
+                  .nonNulls
+                  .toList()
+                ..sort((a, b) => (a is RenderingPriority ? a.priority : 0).compareTo(b is RenderingPriority ? b.priority : 0));
+            }
+            final scaledDown = playerState.canvasScale < 1;
 
-            widgets = playerState.currentSceneModels.values
-                .expand((model) => widget.extensionRepository.getById(model.extensionId).renderer.renderAll(model, context))
-                .nonNulls
-                .toList()
-              ..sort((a, b) => (a is RenderingPriority ? a.priority : 0).compareTo(b is RenderingPriority ? b.priority : 0));
-          }
-          final scaledDown = playerState.canvasScale < 1;
-
-          return LayoutBuilder(builder: (context, constraints) {
+            return LayoutBuilder(builder: (context, constraints) {
               return SingleChildTwoDimensionalScrollView(
                   verticalController: _verticalController,
                   horizontalController: _horizontalController,
                   child: InteractiveViewer(
-                    transformationController: _transformationController,
+                      transformationController: _transformationController,
                       minScale: 0.1,
-                      maxScale: scaledDown ? 3 / playerState.canvasScale: 3,
+                      maxScale: scaledDown ? 3 / playerState.canvasScale : 3,
                       child: scaledDown ? Transform.scale(scale: playerState.canvasScale, child: Container(
                           width: max(400, constraints.maxWidth),
                           height: max(400, constraints.maxHeight),
                           child: Stack(fit: StackFit.expand, children: widgets)))
-                      : Container(
+                          : Container(
                           width: max(400, constraints.maxWidth * playerState.canvasScale),
                           height: max(400, constraints.maxHeight * playerState.canvasScale),
                           child: Stack(fit: StackFit.expand, children: widgets))
                   ));
             });
+          } catch (e) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 40, color: Colors.deepOrange),
+                Text("Unexpected script error", style: TextStyle(fontSize: 20),)
+              ],
+            );
+          }
         },
       ),);
   }

@@ -32,6 +32,17 @@ class VisualizeItApp extends StatelessWidget {
     return scaffoldMessengerKey.currentState?.showSnackBar(snackBar);
   }
 
+  static void showErrorInSnackBar(String message) {
+    VisualizeItApp.showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.deepOrange.shade300,
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.all(40),
+      showCloseIcon: true,
+      duration: Duration(seconds: 5),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(

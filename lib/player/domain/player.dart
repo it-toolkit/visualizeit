@@ -2,7 +2,6 @@
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/main.dart';
@@ -54,17 +53,6 @@ class SetCanvasScaleEvent extends PlayerEvent {
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   Queue<PlayerState> history = Queue();
 
-  void _showErrorInSnackBar(String message) {
-    VisualizeItApp.showSnackBar(SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.deepOrange.shade300,
-      behavior: SnackBarBehavior.floating,
-      margin: EdgeInsets.all(40),
-      showCloseIcon: true,
-      duration: Duration(seconds: 5),
-    ));
-  }
-
   PlayerBloc(super.playerState) {
     on<OverrideEvent>((event, emit) {
       emit(event.state);
@@ -78,11 +66,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         emit(newState);
       } on PlayerException catch (e, stacktrace) {
         _logger.error(() => e.message, stackTrace: stacktrace);
-        _showErrorInSnackBar(e.message);
+        VisualizeItApp.showErrorInSnackBar(e.message);
         emit(state.restartPlayback());
       } on Exception catch (e, stacktrace) {
         _logger.error(() => "Unexpected error running command", error: e, stackTrace: stacktrace);
-        _showErrorInSnackBar("Unexpected error running command: $e");
+        VisualizeItApp.showErrorInSnackBar("Unexpected error running command: $e");
         emit(state.restartPlayback());
       }
     });
@@ -128,12 +116,19 @@ class _RunCommandResult{
 
 const _defaultSceneTitleDuration = 1;
 
+class LazyValue<T> {
+  final T Function() _builder;
+  late T value = _builder();
+
+  LazyValue(this._builder);
+}
+
 class PlayerState {
 
   final ValidScript script;
   late final int currentSceneIndex;
   late final int currentCommandIndex;
-  late final Map<String, Model> currentSceneModels;
+  late final LazyValue<Map<String, Model>> currentSceneModels;
   late final bool isPlaying;
   late final bool waitingAction;
   late final double canvasScale;
@@ -179,7 +174,7 @@ class PlayerState {
   PlayerState._internal(this.script, this.currentSceneIndex, this.currentCommandIndex, this.currentSceneModels, this.isPlaying, this.waitingAction, this.canvasScale, this.baseFrameDurationInMillis);
 
   PlayerState copy({required int sceneIndex, required int commandIndex, required Map<String, Model> models, required bool isPlaying, bool waitingAction = false}) {
-    return PlayerState._internal(script, sceneIndex, commandIndex, models, isPlaying, waitingAction, canvasScale, baseFrameDurationInMillis);
+    return PlayerState._internal(script, sceneIndex, commandIndex, LazyValue(() => models), isPlaying, waitingAction, canvasScale, baseFrameDurationInMillis);
   }
 
   int _getSceneTitleDuration(int sceneIndex) => script.scenes[sceneIndex].metadata.titleDuration ?? _defaultSceneTitleDuration;
@@ -202,7 +197,7 @@ class PlayerState {
     _logger.debug(() => "Running command [#$nextCommandIndex] $command on $commandContext");
 
     try {
-      var result = _runCommand(command, currentSceneModels, commandContext);
+      var result = _runCommand(command, currentSceneModels.value, commandContext);
       _logger.debug(() => "Command result: updated models: ${result.models}, finished: ${result.finished}");
       return copy(
         sceneIndex: currentSceneIndex,
@@ -219,17 +214,17 @@ class PlayerState {
     var sceneIndex = currentSceneIndex +1;
     var nextScene = script.scenes[sceneIndex];
     final frameDurationInMillis = nextScene.metadata.baseFrameDurationInMillis ?? PlayerTimer.DefaultFrameDurationInMillis;
-    return PlayerState._internal(script, sceneIndex, -1 - _getSceneTitleDuration(sceneIndex), _buildInitialState(nextScene.initialStateBuilderCommands), isPlaying, waitingAction, canvasScale, frameDurationInMillis);
+    return PlayerState._internal(script, sceneIndex, -1 - _getSceneTitleDuration(sceneIndex), LazyValue(() => _buildInitialState(nextScene.initialStateBuilderCommands)), isPlaying, waitingAction, canvasScale, frameDurationInMillis);
   }
 
   PlayerState startPlayback({bool waitingAction = false}) {
     _logger.debug(() => "Start playback (waitingAction=$waitingAction)");
-    return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels, isPlaying: !waitingAction || this.waitingAction);
+    return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels.value, isPlaying: !waitingAction || this.waitingAction);
   }
 
   PlayerState stopPlayback({bool waitingAction = false}) {
     _logger.debug(() => "Stop playback (waitingAction=$waitingAction)");
-    return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels, isPlaying: false, waitingAction: isPlaying && waitingAction);
+    return copy(sceneIndex: currentSceneIndex, commandIndex: currentCommandIndex, models: currentSceneModels.value, isPlaying: false, waitingAction: isPlaying && waitingAction);
   }
 
   PlayerState restartPlayback() {
@@ -240,7 +235,7 @@ class PlayerState {
     currentSceneIndex = sceneIndex;
     currentCommandIndex = -1 - _getSceneTitleDuration(sceneIndex);
     var scene = script.scenes[sceneIndex];
-    currentSceneModels = _buildInitialState(scene.initialStateBuilderCommands);
+    currentSceneModels = LazyValue(() => _buildInitialState(scene.initialStateBuilderCommands));
     baseFrameDurationInMillis = scene.metadata.baseFrameDurationInMillis ?? PlayerTimer.DefaultFrameDurationInMillis;
   }
 
@@ -255,8 +250,10 @@ class PlayerState {
         } while (!result.finished);
 
         return result.models;
+      } on PlayerException {
+        rethrow;
       } catch (e) {
-        throw PlayerException("Unexpected error executing command ${command.metadata?.scriptLineIndex.let((it) => "(line ${it + 1}")}): $e");
+        throw PlayerException("Unexpected error building initial state ${command.metadata?.scriptLineIndex.let((it) => "(line ${it + 1}")}): $e");
       }
     });
 

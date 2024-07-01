@@ -94,7 +94,7 @@ void main() {
     expect(playerState.currentCommand, isA<FakeCommand>());
     expect(fakeModel.invocations, isEmpty);
 
-    var lastFakeModel = playerState.currentSceneModels["fake_model"] as FakeModel;
+    var lastFakeModel = playerState.currentSceneModels.value["fake_model"] as FakeModel;
     expect(lastFakeModel.invocations[initFakeCommand1.id]!, equals(1));
     expect(lastFakeModel.invocations[initFakeCommand2.id]!, equals(5));
 
@@ -126,7 +126,7 @@ void main() {
         ]
     );
     var playerState = PlayerState(script);
-    var lastFakeModel = playerState.currentSceneModels["fake_model"] as FakeModel;
+    var lastFakeModel = playerState.currentSceneModels.value["fake_model"] as FakeModel;
     expect(lastFakeModel.invocations, isEmpty);
 
     PlayerState newState = playerState;
@@ -136,7 +136,7 @@ void main() {
       if (newState.progress < 1.0) framesRun++;
     } while ( newState.progress < 1.0);
 
-    lastFakeModel = newState.currentSceneModels["fake_model"] as FakeModel;
+    lastFakeModel = newState.currentSceneModels.value["fake_model"] as FakeModel;
     expect(lastFakeModel.invocations[transitionFakeCommand1.id], equals(1));
     expect(lastFakeModel.invocations[transitionFakeCommand2.id], equals(3));
     expect(lastFakeModel.invocations[transitionFakeCommand3.id], equals(2));
