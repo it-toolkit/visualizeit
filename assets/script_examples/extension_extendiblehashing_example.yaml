@@ -20,10 +20,6 @@ description: |-
   ### extendiblehashing-find
   This command searches for a given value in the file.
  
-<<<<<<< HEAD
-tags: [extendible-hashing-extension, dev-example]
-=======
->>>>>>> 3650086d2c268bb158260fbe6a665559ce911b2f
 scenes:
   - name: First scene
     extensions: ['extendible-hashing-extension']
