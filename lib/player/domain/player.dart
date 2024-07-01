@@ -2,7 +2,10 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:visualizeit/common/utils/extensions.dart';
+import 'package:visualizeit/main.dart';
 import 'package:visualizeit/player/domain/player_timer.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
@@ -11,6 +14,15 @@ import '../../extension/domain/default/default_extension.dart';
 import '../../scripting/domain/script.dart';
 
 final _logger = Logger("player");
+
+class PlayerException implements Exception {
+  final String message;
+
+  PlayerException(this.message);
+
+  @override
+  String toString() => message;
+}
 
 abstract class PlayerEvent {}
 
@@ -42,6 +54,17 @@ class SetCanvasScaleEvent extends PlayerEvent {
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   Queue<PlayerState> history = Queue();
 
+  void _showErrorInSnackBar(String message) {
+    VisualizeItApp.showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.deepOrange.shade300,
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.all(40),
+      showCloseIcon: true,
+      duration: Duration(seconds: 5),
+    ));
+  }
+
   PlayerBloc(super.playerState) {
     on<OverrideEvent>((event, emit) {
       emit(event.state);
@@ -53,8 +76,13 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         var newState = state.runNextCommand(timeFrame: event.timeFrame);
         _logger.debug(() => "Going to next state: ${newState.currentSceneIndex} - ${newState.currentCommandIndex}");
         emit(newState);
-      } on Exception catch (e) {
-        _logger.error(() => "Unexpected error running command", error: e);
+      } on PlayerException catch (e, stacktrace) {
+        _logger.error(() => e.message, stackTrace: stacktrace);
+        _showErrorInSnackBar(e.message);
+        emit(state.restartPlayback());
+      } on Exception catch (e, stacktrace) {
+        _logger.error(() => "Unexpected error running command", error: e, stackTrace: stacktrace);
+        _showErrorInSnackBar("Unexpected error running command: $e");
         emit(state.restartPlayback());
       }
     });
@@ -173,15 +201,18 @@ class PlayerState {
     var commandContext = CommandContext(timeFrame: timeFrame);
     _logger.debug(() => "Running command [#$nextCommandIndex] $command on $commandContext");
 
-    var result = _runCommand(command, currentSceneModels, commandContext);
-
-    _logger.debug(() => "Command result: updated models: ${result.models}, finished: ${result.finished}");
-    return copy(
-      sceneIndex: currentSceneIndex,
-      commandIndex: result.finished ? nextCommandIndex : currentCommandIndex,
-      models: result.models,
-      isPlaying: isPlaying,
-    );
+    try {
+      var result = _runCommand(command, currentSceneModels, commandContext);
+      _logger.debug(() => "Command result: updated models: ${result.models}, finished: ${result.finished}");
+      return copy(
+        sceneIndex: currentSceneIndex,
+        commandIndex: result.finished ? nextCommandIndex : currentCommandIndex,
+        models: result.models,
+        isPlaying: isPlaying,
+      );
+    } catch (e) {
+      throw PlayerException("Unexpected error executing command ${command.metadata?.scriptLineIndex.let((it) => "(line ${it + 1}")}): $e");
+    }
   }
 
   PlayerState nextScene() {
@@ -217,11 +248,16 @@ class PlayerState {
     var commandContext = CommandContext();
     var sceneModels = commands.fold(<String, Model>{globalModelName: GlobalModel()}, (models, command) {
       _RunCommandResult result = _RunCommandResult(models, false);
-      do {
-        _logger.debug(() => "Running command: $command");
-        result = _runCommand(command, result.models, commandContext);
-      } while (!result.finished);
-      return result.models;
+      try {
+        do {
+          _logger.debug(() => "Running command: $command");
+          result = _runCommand(command, result.models, commandContext);
+        } while (!result.finished);
+
+        return result.models;
+      } catch (e) {
+        throw PlayerException("Unexpected error executing command ${command.metadata?.scriptLineIndex.let((it) => "(line ${it + 1}")}): $e");
+      }
     });
 
     return sceneModels;

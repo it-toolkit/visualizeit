@@ -24,7 +24,13 @@ void main() {
 
 /// The main app.
 class VisualizeItApp extends StatelessWidget {
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   const VisualizeItApp();
+
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showSnackBar(SnackBar snackBar) {
+    return scaffoldMessengerKey.currentState?.showSnackBar(snackBar);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +41,7 @@ class VisualizeItApp extends StatelessWidget {
             return Builder(
               builder: (context) {
                 return MaterialApp.router(
+                  scaffoldMessengerKey: scaffoldMessengerKey,
                   routerConfig: router,
                   debugShowCheckedModeBanner: false,
                   theme: ThemeData(
