@@ -35,31 +35,25 @@ class VisualizeItApp extends StatelessWidget {
             final a = GetIt.I.get<ScriptRepository>();
             final b = GetIt.I.get<GetExtensionById>();
             return MultiRepositoryProvider(
-                providers: [
-                  RepositoryProvider<ScriptRepository>(
-                      create: (context) => a), //TODO use only getit
-                  RepositoryProvider<GetExtensionById>(create: (context) => b),
-                ],
-                child: MultiBlocProvider(
-                    providers: [
-                      BlocProvider<AppBloc>(create: (context) => AppBloc())
-                    ],
-                    child: Builder(builder: (context) {
-                      final _router =
-                          BlocProvider.of<AppBloc>(context).state.router;
-
-                      return MaterialApp.router(
-                        routerConfig: _router,
-                        debugShowCheckedModeBanner: false,
-                        theme: ThemeData(
-                            colorScheme: const ColorScheme.light(),
-                            useMaterial3: true,
-                            scrollbarTheme: ScrollbarThemeData(
-                              thumbVisibility: MaterialStateProperty.all(
-                                  true), //Always show scrollbar
-                            )),
-                      );
-                    })));
+              providers: [
+                RepositoryProvider<ScriptRepository>(create: (context) => a), //TODO use only getit
+                RepositoryProvider<GetExtensionById>(create: (context) => b),
+              ],
+              child: Builder(
+                builder: (context) {
+                  return MaterialApp.router(
+                    routerConfig: router,
+                    debugShowCheckedModeBanner: false,
+                    theme: ThemeData(
+                        colorScheme: const ColorScheme.light(),
+                        useMaterial3: true,
+                        scrollbarTheme: ScrollbarThemeData(
+                          thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
+                        )),
+                  );
+                },
+              ),
+            );
           } else {
             return Center(child: CircularProgressIndicator());
           }

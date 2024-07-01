@@ -11,30 +11,8 @@ import 'package:visualizeit_extensions/logging.dart';
 
 final _logger = Logger("base.ui");
 
-abstract class AppEvent {}
-
-class NavigationEvent extends AppEvent {
-  final String destinationName;
-
-  NavigationEvent(this.destinationName);
-}
-
-class AppState {
-  final GoRouter router;
-
-  AppState(this.router);
-}
-
-class AppBloc extends Bloc<AppEvent, AppState> {
-  AppBloc() : super(AppState(_router)) {
-    on<NavigationEvent>((event, emit) {
-      state.router.goNamed(event.destinationName);
-    });
-  }
-}
-
 /// The route configuration.
-final GoRouter _router = GoRouter(
+final GoRouter router = GoRouter(
   onException: (BuildContext context, GoRouterState state, GoRouter router) {
     //TODO handle errors properly
     print("Unexpected route!!!");
