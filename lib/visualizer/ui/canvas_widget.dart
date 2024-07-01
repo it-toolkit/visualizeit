@@ -4,20 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:single_child_two_dimensional_scroll_view/single_child_two_dimensional_scroll_view.dart';
 import 'package:visualizeit/common/markdown/markdown.dart';
-import 'package:visualizeit/extension/action.dart';
+import 'package:visualizeit/extension/domain/default/default_extension.dart';
+import 'package:visualizeit/extension/domain/extension_repository.dart';
+import 'package:visualizeit/player/domain/player.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
 import 'package:visualizeit_extensions/logging.dart';
 import 'package:visualizeit_extensions/visualizer.dart';
 
-import '../../extension/domain/default/default_extension.dart';
-import '../../player/domain/player.dart';
 import 'dialog.dart';
 
 final _logger = Logger("visualizer.ui.canvas");
 
 class CanvasWidget extends StatefulWidget {
 
-  const CanvasWidget({super.key});
+  final ExtensionRepository extensionRepository;
+
+  const CanvasWidget(this.extensionRepository, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -72,9 +74,9 @@ class _CanvasWidgetState extends State<CanvasWidget> {
           if (playerState.countdownToStart > 0) {
             widgets = buildScenePresentation(playerState.currentScene.metadata, playerState.countdownToStart);
           } else {
-            final getExtensionById = context.read<GetExtensionById>();
+
             widgets = playerState.currentSceneModels.values
-                .expand((model) => getExtensionById(model.extensionId).renderer.renderAll(model, context))
+                .expand((model) => widget.extensionRepository.getById(model.extensionId).renderer.renderAll(model, context))
                 .nonNulls
                 .toList()
               ..sort((a, b) => (a is RenderingPriority ? a.priority : 0).compareTo(b is RenderingPriority ? b.priority : 0));

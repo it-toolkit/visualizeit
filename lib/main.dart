@@ -32,32 +32,25 @@ class VisualizeItApp extends StatelessWidget {
         future: GetIt.I.allReady(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final a = GetIt.I.get<ScriptRepository>();
-            final b = GetIt.I.get<GetExtensionById>();
-            return MultiRepositoryProvider(
-              providers: [
-                RepositoryProvider<ScriptRepository>(create: (context) => a), //TODO use only getit
-                RepositoryProvider<GetExtensionById>(create: (context) => b),
-              ],
-              child: Builder(
-                builder: (context) {
-                  return MaterialApp.router(
-                    routerConfig: router,
-                    debugShowCheckedModeBanner: false,
-                    theme: ThemeData(
-                        colorScheme: const ColorScheme.light(),
-                        useMaterial3: true,
-                        scrollbarTheme: ScrollbarThemeData(
-                          thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
-                        )),
-                  );
-                },
-              ),
+            return Builder(
+              builder: (context) {
+                return MaterialApp.router(
+                  routerConfig: router,
+                  debugShowCheckedModeBanner: false,
+                  theme: ThemeData(
+                      colorScheme: const ColorScheme.light(),
+                      useMaterial3: true,
+                      scrollbarTheme: ScrollbarThemeData(
+                        thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
+                      )),
+                );
+              },
             );
           } else {
             return Center(child: CircularProgressIndicator());
           }
-        });
+        },
+    );
   }
 }
 
