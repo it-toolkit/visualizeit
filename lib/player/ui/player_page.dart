@@ -202,6 +202,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
         onScaleChanged: (scale) {
           playerBloc.add(SetCanvasScaleEvent(scale));
         },
+        baseFrameDurationMillis: playerState.baseFrameDurationInMillis,
         speedFactor: _timer.speedFactor,
         scale: playerState.canvasScale,
       );

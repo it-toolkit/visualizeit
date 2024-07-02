@@ -13,6 +13,7 @@ class PlayerButtonBar extends StatelessWidget {
   final bool isPlaying;
   final double? speedFactor;
   final double? scale;
+  final int baseFrameDurationMillis;
 
   const PlayerButtonBar({
     super.key,
@@ -26,7 +27,8 @@ class PlayerButtonBar extends StatelessWidget {
     required this.progress,
     required this.isPlaying,
     required this.speedFactor,
-    required this.scale
+    required this.scale,
+    required this.baseFrameDurationMillis
   });
 
   @override
@@ -54,7 +56,7 @@ class PlayerButtonBar extends StatelessWidget {
                   )),
             ]),
             Row(mainAxisSize: MainAxisSize.min, children: [
-              SpeedSelector(speedFactor ?? 1, onSpeedChanged: onSpeedChanged),
+              SpeedSelector(speedFactor ?? 1, onSpeedChanged: onSpeedChanged, baseFrameDurationMillis: baseFrameDurationMillis),
               CanvasScaleSelector(scale ?? 1, onScaleChanged: onScaleChanged),
               IconButton(icon: const Icon(Icons.fullscreen), onPressed: onFullscreenPressed),
             ])
@@ -66,8 +68,9 @@ class PlayerButtonBar extends StatelessWidget {
 class SpeedSelector extends StatefulWidget {
   final double initialValue;
   final Function(double)? onSpeedChanged;
+  final int baseFrameDurationMillis;
 
-  const SpeedSelector(this.initialValue, {Key? key, this.onSpeedChanged}) : super(key: key);
+  const SpeedSelector(this.initialValue, {Key? key, this.onSpeedChanged, this.baseFrameDurationMillis = 1000}) : super(key: key);
 
   @override
   _SpeedSelectorState createState() => _SpeedSelectorState();
@@ -85,31 +88,33 @@ class _SpeedSelectorState extends State<SpeedSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-        child: DropdownButton<double>(
+    return LimitedBox(
+        maxWidth: 100,
+        child: DropdownButtonFormField<double>(
+          alignment: AlignmentDirectional.center,
+          menuMaxHeight: 200,
           isDense: true,
           value: _currentSpeed,
-          icon: Icon(Icons.speed),
           iconEnabledColor: Colors.black,
-          onChanged: widget.onSpeedChanged == null
-              ? null
-              : (double? newValue) {
-                  setState(() {
-                    _currentSpeed = newValue!;
-                    widget.onSpeedChanged?.call(_currentSpeed);
-                  });
-                },
+          decoration: InputDecoration(border: InputBorder.none, prefixIcon: Icon(Icons.speed)),
           items: _speeds.map<DropdownMenuItem<double>>((double value) {
             return DropdownMenuItem<double>(
+              alignment: AlignmentDirectional.center,
               value: value,
               child: Tooltip(
-                message: '${(1 / value).toStringAsPrecision(2)} seconds per frame',
+                message: '${(widget.baseFrameDurationMillis / (1000 * value)).toStringAsPrecision(2)} seconds per frame',
                 child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
               ),
             );
           }).toList(),
-        ));
+          onChanged: widget.onSpeedChanged == null ? null : (double? newValue) {
+              setState(() {
+                _currentSpeed = newValue!;
+                widget.onSpeedChanged?.call(_currentSpeed);
+              });
+          },
+        ),
+    );
   }
 }
 
@@ -135,30 +140,32 @@ class _CanvasScaleSelectorState extends State<CanvasScaleSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-        child: DropdownButton<double>(
-          isDense: true,
-          value: _currentScale,
-          icon: Icon(Icons.photo_size_select_large_outlined),
-          iconEnabledColor: Colors.black,
-          onChanged: widget.onScaleChanged == null
-              ? null
-              : (double? newValue) {
-                  setState(() {
-                    _currentScale = newValue!;
-                    widget.onScaleChanged?.call(_currentScale);
-                  });
-                },
-          items: _scales.map<DropdownMenuItem<double>>((double value) {
-            return DropdownMenuItem<double>(
-              value: value,
-              child: Tooltip(
-                message: '${value}x scaled canvas',
-                child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
-              ),
-            );
-          }).toList(),
-        ));
+    return LimitedBox(
+      maxWidth: 100,
+      child: DropdownButtonFormField<double>(
+        alignment: AlignmentDirectional.center,
+        menuMaxHeight: 200,
+        isDense: true,
+        value: _currentScale,
+        iconEnabledColor: Colors.black,
+        decoration: InputDecoration(border: InputBorder.none, prefixIcon: Icon(Icons.photo_size_select_large_outlined)),
+        items: _scales.map<DropdownMenuItem<double>>((double value) {
+          return DropdownMenuItem<double>(
+            alignment: AlignmentDirectional.center,
+            value: value,
+            child: Tooltip(
+              message: '${value}x scaled canvas',
+              child: Text("${value}x", textScaler: TextScaler.linear(0.8)),
+            ),
+          );
+        }).toList(),
+        onChanged: widget.onScaleChanged == null ? null : (double? newValue) {
+          setState(() {
+            _currentScale = newValue!;
+            widget.onScaleChanged?.call(_currentScale);
+          });
+        },
+      ),
+    );
   }
 }
