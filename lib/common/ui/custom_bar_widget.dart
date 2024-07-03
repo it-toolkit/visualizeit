@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 
+const double AppBarHeight = 55;
+const double AppDefaultMargin = 15;
+final EdgeInsets AppBarMargin = const EdgeInsets.fromLTRB(AppDefaultMargin, 0, AppDefaultMargin, AppDefaultMargin);
+
 class ModeSwitch {
   bool initialState = false;
   String enabledModeName;
@@ -23,7 +27,7 @@ class TitleAction {
 
 PreferredSizeWidget? customBarWithModeSwitch(String title, { ModeSwitch? modeSwitch = null, TitleAction? titleAction = null }) {
   return PreferredSize(
-    preferredSize: const Size.fromHeight(70.0),
+    preferredSize: Size.fromHeight(AppBarHeight),
     child: CustomBarWidget(title: title, modeSwitch: modeSwitch, titleAction: titleAction),
   );
 }
@@ -54,7 +58,7 @@ class _CustomBarContent extends State<CustomBarWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.all(15),
+        margin: AppBarMargin,
         decoration: const BoxDecoration(
             gradient: LinearGradient(colors: <Color>[Colors.lightBlue, Colors.lightGreenAccent]),
             borderRadius: BorderRadius.all(Radius.circular(5))),

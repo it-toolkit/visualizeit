@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/extension/ui/extension_page.dart';
 import 'package:visualizeit/misc/ui/help_page.dart';
 import 'package:visualizeit_extensions/logging.dart';
@@ -28,9 +29,13 @@ PreferredSizeWidget _buildBasePageAppBar(
 
   return AppBar(
       scrolledUnderElevation: 0, //Disable color change on scroll
-      toolbarHeight: 80,
+      toolbarHeight: 100,
       bottom: buildAppBarBottom(context),
-      title: const FittedBox(child: Text("Visualize IT", textScaler: TextScaler.linear(3.0))),
+      backgroundColor: Colors.white,
+      title: Image.asset("images/logo.png",
+        fit: BoxFit.fitHeight, height: 80,
+        errorBuilder: (c, e, s) => FittedBox(child: Text("Visualize IT", textScaler: TextScaler.linear(3.0))),
+      ),
       centerTitle: false,
       actions: actions.map((action) =>
           IconButton(
@@ -63,7 +68,7 @@ abstract class BasePageState<T extends StatefulBasePage> extends State<T> {
         appBar: !showAppBar
             ? null
             : _buildBasePageAppBar(context: context, buildAppBarBottom: buildAppBarBottom, actions: actions),
-        body: Container(margin: const EdgeInsets.all(15), child: buildBody(context)));
+        body: Container(margin: AppBarMargin, child: buildBody(context)));
   }
 
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) => null;
@@ -79,7 +84,7 @@ abstract class StatelessBasePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: _buildBasePageAppBar(context: context, buildAppBarBottom: buildAppBarBottom),
-        body: Container(margin: const EdgeInsets.all(15), child: buildBody(context)));
+        body: Container(margin: AppBarMargin, child: buildBody(context)));
   }
 
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) => null;

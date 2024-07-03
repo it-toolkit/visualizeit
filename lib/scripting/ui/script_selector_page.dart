@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:slugify/slugify.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
@@ -94,7 +95,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
         decoration: const BoxDecoration(color: Colors.grey),
         child: Scaffold(
             appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(40.0),
+              preferredSize: Size.fromHeight(AppBarHeight - AppBarMargin.bottom),
               child: Container(
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(colors: <Color>[Colors.lightBlue, Colors.lightGreenAccent]),
