@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/common/ui/future_builder.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/logging.dart';
@@ -106,19 +107,18 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
   }
 
   Widget markdownFromAsset(String assetLocation) {
-    return FutureBuilder(
-        future: rootBundle.loadString(assetLocation),
-        builder: (context, snapshot) {
-          if(snapshot.hasData) {
-            return ExtendedMarkdownWidget(data: snapshot.data!);
-          } else if (snapshot.hasError) {
-            _logger.error(() => "Error loading docs from location [${assetLocation}]: ${snapshot.error}");
-            return const Text("Error loading docs");
-          } else {
-            return CircularProgressIndicator();
-          }
-        }
+    return WidgetFutureUtils.awaitAndBuild<String>(
+      future: loadExtensionDoc(assetLocation),
+      builder: (context, data) => ExtendedMarkdownWidget(data: data),
+      onErrorBuilder: (context, error) {
+        _logger.error(() => "Error loading docs from location [${assetLocation}]: ${error}");
+        return const Text("Error loading docs");
+      }
     );
+  }
+
+  Future<String> loadExtensionDoc(String assetLocation) {
+    return rootBundle.loadString(assetLocation);
   }
 
   Widget buildDetailsSection(BuildContext context) {

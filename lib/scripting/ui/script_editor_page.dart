@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:re_editor/re_editor.dart';
 import 'package:visualizeit/common/ui/buttons.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
+import 'package:visualizeit/common/ui/future_builder.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
@@ -46,16 +47,10 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _resolveScript(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text("Error loading script: ${snapshot.error}");
-          } else if (snapshot.hasData) {
-            return Builder(builder: (context) => super.build(context));
-          } else
-            return CircularProgressIndicator();
-        });
+    return WidgetFutureUtils.awaitAndBuild<Script>(
+      future: _resolveScript(),
+      builder: (context, snapshot) => super.build(context),
+    );
   }
 
   @override

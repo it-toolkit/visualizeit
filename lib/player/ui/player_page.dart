@@ -4,6 +4,7 @@ import 'package:re_editor/re_editor.dart';
 import 'package:visualizeit/common/ui/adaptive_container_widget.dart';
 import 'package:visualizeit/common/ui/buttons.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
+import 'package:visualizeit/common/ui/future_builder.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
@@ -99,14 +100,10 @@ class PlayerPageState extends BasePageState<PlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return WidgetFutureUtils.awaitAndBuild<Script>(
         future: resolveScript(),
-        builder: (context, snapshot) {
-          if(snapshot.hasError) { //TODO Mejorar el catch de errores en FutureBuilders
-            return Text("Error loading script: ${snapshot.error}");
-          }else if (snapshot.hasData) {
-            var script = snapshot.data!;
-            var initialPlayerState = PlayerState(script as ValidScript); //TODO player only receive validscript
+        builder: (context, script) {
+            var initialPlayerState = PlayerState(script as ValidScript);
             return MultiBlocProvider(
                 providers: [BlocProvider<PlayerBloc>(create: (context) => PlayerBloc(initialPlayerState))],
                 child: BlocListener<PlayerBloc, PlayerState>(
@@ -116,8 +113,6 @@ class PlayerPageState extends BasePageState<PlayerPage> {
                    child: Builder(builder: (context) => super.build(context)),
                 ),
             );
-          } else
-            return CircularProgressIndicator();
         });
   }
 

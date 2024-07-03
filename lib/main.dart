@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:visualizeit/common/ui/error.dart';
+import 'package:visualizeit/common/ui/future_builder.dart';
 import 'package:visualizeit/router.dart';
 import 'package:visualizeit/wiring/actions.dart';
 import 'package:visualizeit/wiring/repositories.dart';
@@ -50,29 +51,20 @@ class VisualizeItApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: GetIt.I.allReady(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Builder(
-              builder: (context) {
-                return MaterialApp.router(
-                  scaffoldMessengerKey: scaffoldMessengerKey,
-                  routerConfig: router,
-                  debugShowCheckedModeBanner: false,
-                  theme: ThemeData(
-                      colorScheme: const ColorScheme.light(),
-                      useMaterial3: true,
-                      scrollbarTheme: ScrollbarThemeData(
-                        thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
-                      )),
-                );
-              },
-            );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+    return WidgetFutureUtils.awaitAndBuild(
+      future: GetIt.I.allReady(),
+      builder: (context, data) => MaterialApp.router(
+        scaffoldMessengerKey: scaffoldMessengerKey,
+        routerConfig: router,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: const ColorScheme.light(),
+          useMaterial3: true,
+          scrollbarTheme: ScrollbarThemeData(
+            thumbVisibility: MaterialStateProperty.all(true), //Always show scrollbar
+          ),
+        ),
+      ),
     );
   }
 }
