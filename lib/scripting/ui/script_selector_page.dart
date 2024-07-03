@@ -97,9 +97,7 @@ class _ScriptSelectorPageState extends BasePageState<ScriptSelectorPage> with Si
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(AppBarHeight - AppBarMargin.bottom),
               child: Container(
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(colors: <Color>[Colors.lightBlue, Colors.lightGreenAccent]),
-                    borderRadius: BorderRadius.all(Radius.circular(5))),
+                decoration: AppBarBoxDecoration,
                 child: TabBar(
                   tabs: [
                     Tab(child: Text("Public scripts", softWrap: true, textAlign: TextAlign.center)),

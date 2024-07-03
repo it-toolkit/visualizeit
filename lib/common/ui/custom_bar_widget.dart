@@ -4,6 +4,10 @@ import 'package:visualizeit/common/utils/extensions.dart';
 const double AppBarHeight = 55;
 const double AppDefaultMargin = 15;
 final EdgeInsets AppBarMargin = const EdgeInsets.fromLTRB(AppDefaultMargin, 0, AppDefaultMargin, AppDefaultMargin);
+final AppBarBoxDecoration = BoxDecoration(
+    gradient: LinearGradient(colors: <Color>[Colors.lightBlue.shade100, Colors.lightGreenAccent.shade100]),
+    borderRadius: BorderRadius.all(Radius.circular(5)),
+);
 
 class ModeSwitch {
   bool initialState = false;
@@ -59,9 +63,7 @@ class _CustomBarContent extends State<CustomBarWidget> {
   Widget build(BuildContext context) {
     return Container(
         margin: AppBarMargin,
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: <Color>[Colors.lightBlue, Colors.lightGreenAccent]),
-            borderRadius: BorderRadius.all(Radius.circular(5))),
+        decoration: AppBarBoxDecoration,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
