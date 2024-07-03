@@ -7,24 +7,13 @@ description: |-
   In the extensible hashing technique, the hash function will be used to access the table (hash table) of bucket addresses. This extensible version of hashing is also known as postfix bits because it considers the last bits of a record key to determine in the hash table the bucket number that the record contains.
   
   This sample shows the first insertion algorithm where occurs a bucket overflow and the hashing table always duplicate it.
-
-  ### extendiblehashing-create
-  It's used to create the file indicating the size of the buckets, and the initial records to insert.
-
-  ### extendiblehashing-insert
-  This command adds a value to the file acording to the extendible hashing method.
-
-  ### extendiblehashing-remove
-  This command removes a value from the file acording to the extendible hashing method.
-
-  ### extendiblehashing-find
-  This command searches for a given value in the file.
  
 scenes:
-  - name: First scene
+  - name: Extendible Hashing in Direct Files example
     extensions: ['extendible-hashing-extension']
-    description: Extendible Hashing example
     initial-state:
-      - extendiblehashing-create: [3, ["270","946","741","446","123","376","458","954","973"]]
+      - extendiblehashing-create:
+          bucketSize: 3
+          initialValues: [270, 946, 741, 446, 123, 376, 458, 954, 973]
     transitions:
-      - extendiblehashing-insert: [426]
+      - extendiblehashing-insert: 426
