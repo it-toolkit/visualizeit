@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/ui/future_builder.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit_extensions/extension.dart';
@@ -44,6 +45,9 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
   }
 
   List<Extension> getAllExtensions() => widget._repository.getAll();
+
+  @override
+  PreferredSizeWidget? buildAppBarBottom(BuildContext context) => customBarWithModeSwitch("Extensions");
 
   @override
   Widget buildBody(BuildContext context) {

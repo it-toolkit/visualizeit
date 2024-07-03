@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:markdown_widget/widget/all.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
+import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/ui/future_builder.dart';
 
 class HelpPage extends StatefulBasePage {
@@ -25,6 +26,9 @@ class HelpPageState extends BasePageState<HelpPage> {
       builder: (BuildContext context, String doc) => MarkdownWidget(data: doc),
     );
   }
+
+  @override
+  PreferredSizeWidget? buildAppBarBottom(BuildContext context) => customBarWithModeSwitch("Help");
 
   static Future<String> readHelpMarkdownDoc() async {
     return await rootBundle.loadString('assets/docs/help.md');
