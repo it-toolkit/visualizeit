@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/ui/future_builder.dart';
@@ -100,19 +99,23 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
         child: Align(
           alignment: Alignment.centerLeft,
           child: SizedBox(
-            width: 200,
+            width: 400,
             height: 40,
             child: TextField(
                 onChanged: search,
                 style: const TextStyle(fontSize: 14),
-                decoration: const InputDecoration(suffixIcon: Icon(Icons.search), hintText: 'Search extensions...')),
+                decoration: const InputDecoration(suffixIcon: Icon(Icons.search), hintText: 'Search extensions...', isDense: true)),
           ),
         ));
   }
 
-  Widget markdownFromAsset(String assetLocation) {
+  Widget markdownFromAsset(BuildContext context, Map<LanguageCode, String> docsByLanguageLocations) {
+    if (docsByLanguageLocations.isEmpty) return const Text("No docs available");
+
+    final assetLocation = docsByLanguageLocations[LanguageCodes.en] ?? docsByLanguageLocations.values.first;
+
     return WidgetFutureUtils.awaitAndBuild<String>(
-      future: loadExtensionDoc(assetLocation),
+      future: loadExtensionDoc(context, assetLocation),
       builder: (context, data) => ExtendedMarkdownWidget(data: data),
       onErrorBuilder: (context, error) {
         _logger.error(() => "Error loading docs from location [${assetLocation}]: ${error}");
@@ -121,8 +124,8 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
     );
   }
 
-  Future<String> loadExtensionDoc(String assetLocation) {
-    return rootBundle.loadString(assetLocation);
+  Future<String> loadExtensionDoc(BuildContext context, String assetLocation) {
+    return DefaultAssetBundle.of(context).loadString(assetLocation);
   }
 
   Widget buildDetailsSection(BuildContext context) {
@@ -131,7 +134,8 @@ class _ExtensionPageState extends BasePageState<ExtensionPage> {
             ? getAllExtensions()[_selectedIndex!]
             : _filteredExtensions[_selectedIndex!]
         : null;
-    final detailsWidget = selectedExtension != null ? markdownFromAsset(selectedExtension.markdownDocs["en"]!) : null;
+
+    final detailsWidget = selectedExtension != null ? markdownFromAsset(context, selectedExtension.markdownDocs) : null;
 
     return Expanded(
       flex: 58,

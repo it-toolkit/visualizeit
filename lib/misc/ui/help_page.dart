@@ -17,12 +17,11 @@ class HelpPage extends StatefulBasePage {
 }
 
 class HelpPageState extends BasePageState<HelpPage> {
-  final Future<String> _helpAsMarkdownString = readHelpMarkdownDoc();
 
   @override
   Widget buildBody(BuildContext context) {
     return WidgetFutureUtils.awaitAndBuild<String>(
-      future: _helpAsMarkdownString,
+      future: readHelpMarkdownDoc(context),
       builder: (BuildContext context, String doc) => MarkdownWidget(data: doc),
     );
   }
@@ -30,7 +29,7 @@ class HelpPageState extends BasePageState<HelpPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) => customBarWithModeSwitch("Help");
 
-  static Future<String> readHelpMarkdownDoc() async {
-    return await rootBundle.loadString('assets/docs/help.md');
+  Future<String> readHelpMarkdownDoc(BuildContext context) async {
+    return await DefaultAssetBundle.of(context).loadString('assets/docs/help.md');
   }
 }
