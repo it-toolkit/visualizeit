@@ -10,7 +10,7 @@ description: |-
  
 scenes:
   - name: Extendible Hashing in Direct Files example
-    extensions: ['extendible-hashing-extension']
+    extensions: ['extendible_hashing']
     initial-state:
       - extendiblehashing-create:
           bucketSize: 3
