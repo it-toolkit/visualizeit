@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:visualizeit/common/ui/error.dart';
 import 'package:visualizeit/router.dart';
-import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/wiring/actions.dart';
 import 'package:visualizeit/wiring/repositories.dart';
 import 'package:visualizeit/wiring/services.dart';
 import 'package:visualizeit/wiring/ui.dart';
-
-import 'extension/action.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +16,14 @@ void main() {
 
   setupLogging();
   setupGetIt();
+  FlutterError.onError = (FlutterErrorDetails details) {
+    debugPrintStack(
+      stackTrace: details.stack,
+      label: details.exception.toString(),
+      maxFrames: 5,
+    );
+  };
+  ErrorWidget.builder = (FlutterErrorDetails errorDetails) => VisualizeItErrorWidget(errorDetails);
   runApp(const VisualizeItApp());
 }
 

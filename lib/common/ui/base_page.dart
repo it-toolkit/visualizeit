@@ -70,3 +70,19 @@ abstract class BasePageState<T extends StatefulBasePage> extends State<T> {
 
   Widget buildBody(BuildContext context);
 }
+
+
+abstract class StatelessBasePage extends StatelessWidget {
+  const StatelessBasePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: _buildBasePageAppBar(context: context, buildAppBarBottom: buildAppBarBottom),
+        body: Container(margin: const EdgeInsets.all(15), child: buildBody(context)));
+  }
+
+  PreferredSizeWidget? buildAppBarBottom(BuildContext context) => null;
+
+  Widget buildBody(BuildContext context);
+}
