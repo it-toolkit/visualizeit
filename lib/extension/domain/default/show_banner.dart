@@ -50,7 +50,7 @@ class ShowBanner extends GlobalCommand {
     bannerModelName = Uuid().v4(),
     message = commandDefinition.getArg(name: "message", from: rawCommand),
     alignment = commandDefinition.getAlignmentArg(name: "position", from: rawCommand),
-    framesDuration = commandDefinition.getArg(name: "duration", from: rawCommand),
+    framesDuration = commandDefinition.getIntArgGreaterOrEqualThan(name: "duration", from: rawCommand, min: 1),
     adjustSize = commandDefinition.getArg(name: "adjustSize", from: rawCommand);
 
   @override
