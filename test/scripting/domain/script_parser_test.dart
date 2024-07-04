@@ -6,6 +6,7 @@ import 'package:visualizeit/extension/action.dart';
 
 import 'package:visualizeit/scripting/domain/parser.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
+import 'package:visualizeit/scripting/domain/script_preprocessor.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/extension.dart';
@@ -18,7 +19,7 @@ class CommandMock extends Mock implements ModelCommand {}
 class ModelMock extends Mock implements Model {}
 
 ValidScript _parseValidScriptOrThrowError(GetExtensionById getExtensionsById, scriptYaml) {
-  final script = ScriptParser(getExtensionsById).parse(RawScript("ref", scriptYaml));
+  final script = ScriptParser(getExtensionsById, RawScriptPreprocessor()).parse(RawScript("ref", scriptYaml));
   if (script is InvalidScript) throw script.parserError;
   
   return script as ValidScript;
@@ -566,7 +567,7 @@ void main() {
     when(() => extension2Mock.scripting).thenReturn(scriptingExtension2Mock);
     when(() => getExtensionsById.call(any(that: equals("flow-diagram")))).thenReturn(extension2Mock);
 
-    final script = ScriptParser(getExtensionsById).parse(RawScript("ref", validRawScriptYaml));
+    final script = ScriptParser(getExtensionsById, RawScriptPreprocessor()).parse(RawScript("ref", validRawScriptYaml));
 
     expect(script.metadata.name, equals("Flow diagram example"));
     expect(script.metadata.description, equals("""
@@ -584,7 +585,7 @@ void main() {
     when(() => extension2Mock.scripting).thenReturn(scriptingExtension2Mock);
     when(() => getExtensionsById.call(any(that: equals("flow-diagram")))).thenReturn(extension2Mock);
 
-    final script = ScriptParser(getExtensionsById).parse(RawScript("ref", validRawScriptYaml)) as ValidScript;
+    final script = ScriptParser(getExtensionsById, RawScriptPreprocessor()).parse(RawScript("ref", validRawScriptYaml)) as ValidScript;
 
     expect(script.scenes.length, equals(1));
     expect(script.scenes.single.metadata.name, equals("Scene name"));
@@ -601,7 +602,7 @@ void main() {
     when(() => extension2Mock.scripting).thenReturn(scriptingExtension2Mock);
     when(() => getExtensionsById.call(any(that: equals("flow-diagram")))).thenReturn(extension2Mock);
 
-    final script = ScriptParser(getExtensionsById).parse(RawScript("ref", validRawScriptYaml)) as ValidScript;
+    final script = ScriptParser(getExtensionsById, RawScriptPreprocessor()).parse(RawScript("ref", validRawScriptYaml)) as ValidScript;
 
     expect(script.scenes.length, equals(1));
     expect(script.scenes.single.initialStateBuilderCommands.length, equals(3));
