@@ -140,7 +140,7 @@ class ScriptEditorWidget extends StatelessWidget {
                 initial-state:
                   - nop
                 transitions:
-                  - nop
+                  - show-banner: [ "**This is awesome!**", center, 2, true ]
             """.trimIndent())
     ];
 
