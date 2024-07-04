@@ -56,6 +56,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   PlayerBloc(super.playerState) {
     on<OverrideEvent>((event, emit) {
       final canvasScale = history.lastOrNull?.canvasScale ?? 1;
+      history.clear();
       emit(event.state.updateCanvasScale(canvasScale));
     });
 
@@ -93,6 +94,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     });
 
     on<RestartPlaybackEvent>((event, emit) {
+      history.clear();
       emit(state.restartPlayback());
     });
 
