@@ -101,10 +101,15 @@ class _CanvasWidgetState extends State<CanvasWidget> {
                       transformationController: _transformationController,
                       minScale: 0.1,
                       maxScale: scaledDown ? 3 / playerState.canvasScale : 3,
-                      child: scaledDown ? Transform.scale(scale: playerState.canvasScale, child: Container(
-                          width: max(400, constraints.maxWidth),
-                          height: max(400, constraints.maxHeight),
-                          child: Stack(fit: StackFit.expand, children: widgets)))
+                      child: scaledDown ?
+                          Container(
+                            width: max(400, constraints.maxWidth / playerState.canvasScale ),
+                            height: max(400, constraints.maxHeight / playerState.canvasScale ),
+                            child: Transform.scale(
+                              scale: playerState.canvasScale,
+                              alignment: Alignment.topLeft,
+                              child: Stack(fit: StackFit.expand, children: widgets))
+                          )
                           : Container(
                           width: max(400, constraints.maxWidth * playerState.canvasScale),
                           height: max(400, constraints.maxHeight * playerState.canvasScale),
