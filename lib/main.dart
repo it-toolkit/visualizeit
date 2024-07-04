@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -8,6 +9,7 @@ import 'package:visualizeit/wiring/actions.dart';
 import 'package:visualizeit/wiring/repositories.dart';
 import 'package:visualizeit/wiring/services.dart';
 import 'package:visualizeit/wiring/ui.dart';
+import 'package:visualizeit_extensions/logging.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,12 +72,15 @@ class VisualizeItApp extends StatelessWidget {
 }
 
 void setupLogging() {
-  // Logging()
-  //     ..minLogLevel = LogLevel.warn
-  //     ..filter = logCategoriesStartingWith([
-  //       "player",
-  //       "extension"
-  //     ]);
+  if (kReleaseMode) {
+    Logging()
+      ..minLogLevel = LogLevel.info
+      // ..filter = logCategoriesStartingWith([
+      //   "player",
+      //   "extension"
+      // ])
+      ;
+  }
 }
 
 void setupGetIt() {
