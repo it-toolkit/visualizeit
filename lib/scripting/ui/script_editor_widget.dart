@@ -133,9 +133,10 @@ class ScriptEditorWidget extends StatelessWidget {
 
 
   Widget withCodeAutocompletion(Widget child) {
+    const hintColor = Color.fromARGB(255, 18, 68, 22);
     final keywordPrompts = [
-      ...availableExtensions.map((e) => CodeKeywordPrompt(word: e.id)).toList(),
-      ...RawScriptPreprocessor.PreprocessorDirectivesHints.map((it) => CodeKeywordPrompt(word: it)).toList()
+      ...availableExtensions.map((e) => CodeKeywordWithHintPrompt(word: e.id, hint: ": EXTENSION", hintColor: hintColor)).toList(),
+      ...RawScriptPreprocessor.PreprocessorDirectivesHints.map((it) => CodeKeywordWithHintPrompt(word: it, hint: ": GENERATOR", hintColor: hintColor)).toList()
     ];
     List<CodePrompt> templatePrompts = [
       CodeTemplatePrompt(word: "name", template: "name: ...element name..."),
@@ -158,7 +159,7 @@ class ScriptEditorWidget extends StatelessWidget {
 
     Map<String, List<CodePrompt>> relatedCommandPrompts = {
       for (var e in _resolveReferencedExtensions())
-        e.id : e.scripting.getAllCommandDefinitions().map((def) => CodeExtensionCommandPrompt(def)).toList()
+        e.id : e.scripting.getAllCommandDefinitions().map((def) => CodeExtensionCommandPrompt(def, hintColor: hintColor)).toList()
           ..sort((a,b) => a.commandDefinition.name.compareTo(b.commandDefinition.name))
     };
 
@@ -272,8 +273,11 @@ extension _CodePromptExtension on CodePrompt {
       fontWeight: FontWeight.bold,
     );
 
+    if (prompt is CodeKeywordWithHintPrompt) {
+      return TextSpan(children: [span, TextSpan(text: ' ${prompt.hint}', style: style.copyWith(color: prompt.hintColor ?? Colors.black, fontStyle: FontStyle.italic))]);
+    }
     if (prompt is CodeExtensionCommandPrompt) {
-      return TextSpan(children: [span, TextSpan(text: ' (${prompt.commandDefinition.extensionId})', style: style.copyWith(color: Colors.black, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic))]);
+      return TextSpan(children: [span, TextSpan(text: ' : CMD (${prompt.commandDefinition.extensionId})', style: style.copyWith(color: prompt.hintColor ?? Colors.black, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic))]);
     }
     if (prompt is CodeFieldPrompt) {
       return TextSpan(children: [span, TextSpan(text: ' ${prompt.type}', style: style.copyWith(color: Colors.cyan))]);
@@ -437,8 +441,9 @@ class _AutoScrollListViewState extends State<AutoScrollListView> {
 }
 
 class CodeExtensionCommandPrompt extends CodePrompt {
-  CodeExtensionCommandPrompt(this.commandDefinition) : super(word: commandDefinition.name);
+  CodeExtensionCommandPrompt(this.commandDefinition, {this.hintColor}) : super(word: commandDefinition.name);
 
+  final Color? hintColor;
   final CommandDefinition commandDefinition;
 
   @override
@@ -494,4 +499,35 @@ class CodeTemplatePrompt extends CodePrompt {
 
   @override
   int get hashCode => Object.hash(word, template);
+}
+
+class CodeKeywordWithHintPrompt extends CodeKeywordPrompt {
+
+  final String hint;
+  final Color? hintColor;
+
+  const CodeKeywordWithHintPrompt({
+    required super.word,
+    required this.hint,
+    this.hintColor
+  });
+
+  @override
+  CodeAutocompleteResult get autocomplete => CodeAutocompleteResult.fromText(word);
+
+  @override
+  bool match(String input) {
+    return word != input && word.startsWith(input);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is CodeKeywordPrompt && other.word == word;
+  }
+
+  @override
+  int get hashCode => word.hashCode;
 }
