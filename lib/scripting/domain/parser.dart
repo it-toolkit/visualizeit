@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
@@ -6,6 +8,7 @@ import 'package:visualizeit/extension/action.dart';
 import 'package:visualizeit/extension/domain/extension_repository.dart';
 import 'package:visualizeit/scripting/domain/script.dart';
 import 'package:visualizeit/scripting/domain/script_def.dart';
+import 'package:visualizeit/scripting/domain/script_preprocessor.dart';
 import 'package:visualizeit/scripting/domain/script_repository.dart';
 import 'package:visualizeit/scripting/domain/yaml_utils.dart';
 import 'package:visualizeit_extensions/common.dart';
@@ -274,17 +277,20 @@ class ScriptDefParser {
 
 class ScriptParser {
   final GetExtensionById _getExtensionsById;
+  final RawScriptPreprocessor _rawScriptPreprocessor;
 
-  ScriptParser(this._getExtensionsById);
+  ScriptParser(this._getExtensionsById, this._rawScriptPreprocessor);
 
   final _scripDefParser = ScriptDefParser();
 
   Script parse(RawScript rawScript) {
+    RawScript? preProcessed = _rawScriptPreprocessor.preProcess(rawScript);
+
     ScriptDef scriptDef;
     try {
-      scriptDef = _scripDefParser.parse(rawScript.contentAsYaml);
+      scriptDef = _scripDefParser.parse((preProcessed ?? rawScript).contentAsYaml);
     } on ParserException catch (e){
-      return InvalidScript(rawScript, ScriptMetadata("<Invalid script>", "Invalid script"), e);
+      return InvalidScript(rawScript, ScriptMetadata("<Invalid script>", "Invalid script"), e, preProcessed);
     }
     final errorCollector = ErrorCollector();
     dynamic scenes = scriptDef.scenes.map((sceneDef) {
@@ -305,9 +311,9 @@ class ScriptParser {
       }
     }).nonNulls.toList(growable: false);
 
-    if (!errorCollector.isEmpty()) return InvalidScript(rawScript, ScriptMetadata("<Invalid script>", "Invalid script"), ParserException(errorCollector.errors));
+    if (!errorCollector.isEmpty()) return InvalidScript(rawScript, ScriptMetadata("<Invalid script>", "Invalid script"), ParserException(errorCollector.errors), preProcessed);
 
-    return ValidScript(rawScript, scriptDef.metadata, scenes);
+    return ValidScript(rawScript, scriptDef.metadata, scenes, preProcessed);
   }
 
   ///Throws error if command cannot be parsed

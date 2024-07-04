@@ -90,10 +90,12 @@ class PlayerPageState extends BasePageState<PlayerPage> {
         : buildExplorationModeContent(context, playerButtonBar, canvas, scriptEditor);
   }
 
+  String _resolveScriptYamlContent(Script script) => script.preProcessed?.contentAsYaml ?? script.raw.contentAsYaml;
+
   Future<Script> resolveScript() async {
     if(script == null){
-      script = (await widget._scriptRepository.get(widget.scriptId)).clone() as ValidScript; //TODO player only receive validscript
-      codeController.text = script!.raw.contentAsYaml;
+      script = (await widget._scriptRepository.get(widget.scriptId)).clone() as ValidScript;
+      codeController.text = _resolveScriptYamlContent(script!);
     }
 
     return Future.value(script);
@@ -122,7 +124,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
       children: [
         Buttons.icon(Icons.cancel_outlined, "Discard changes", action: scriptHasChanges ? () {
             setState(() {
-              codeController.text = script!.raw.contentAsYaml;
+              codeController.text = _resolveScriptYamlContent(script!);
               scriptHasChanges = false;
             });
         } : null),
@@ -137,6 +139,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
               setState(() {
                 var validScript = parsedScript as ValidScript;
                 script = validScript;
+                if (script!.preProcessed != null) codeController.text = _resolveScriptYamlContent(script!);
                 BlocProvider.of<PlayerBloc>(context).add(OverrideEvent(PlayerState(validScript)));
                 scriptHasChanges = false;
               });

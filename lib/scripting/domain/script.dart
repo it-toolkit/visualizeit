@@ -18,9 +18,10 @@ class Scene {
 
 sealed class Script {
   final RawScript raw;
+  final RawScript? preProcessed;
   final ScriptMetadata metadata;
 
-  Script(this.raw, this.metadata);
+  Script(this.raw, this.metadata, [this.preProcessed]);
 
   Script clone();
 
@@ -42,10 +43,10 @@ sealed class Script {
 class ValidScript extends Script {
   final List<Scene> scenes;
 
-  ValidScript(super.raw, super.metadata, this.scenes);
+  ValidScript(super.raw, super.metadata, this.scenes, [super.preProcessed]);
 
   ValidScript clone() {
-    return ValidScript(raw.clone(), metadata.clone(), scenes.map((it) => it.clone()).toList());
+    return ValidScript(raw.clone(), metadata.clone(), scenes.map((it) => it.clone()).toList(), preProcessed?.clone());
   }
 }
 
@@ -53,9 +54,9 @@ class ValidScript extends Script {
 class InvalidScript extends Script {
   final ParserException parserError;
 
-  InvalidScript(super.raw, super.metadata, this.parserError);
+  InvalidScript(super.raw, super.metadata, this.parserError, [super.preProcessed]);
 
   InvalidScript clone() {
-    return InvalidScript(raw.clone(), metadata.clone(), parserError);
+    return InvalidScript(raw.clone(), metadata.clone(), parserError, preProcessed?.clone());
   }
 }

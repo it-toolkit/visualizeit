@@ -6,6 +6,7 @@ import 'package:re_editor/re_editor.dart';
 import 'package:re_highlight/languages/yaml.dart';
 import 'package:re_highlight/styles/atom-one-dark.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
+import 'package:visualizeit/scripting/domain/script_preprocessor.dart';
 import 'package:visualizeit_extensions/extension.dart';
 import 'package:visualizeit_extensions/logging.dart';
 import 'package:visualizeit_extensions/scripting.dart';
@@ -124,7 +125,10 @@ class ScriptEditorWidget extends StatelessWidget {
   }
 
   Widget withCodeAutocompletion(Widget child) {
-    final keywordPrompts = availableExtensions.map((e) => CodeKeywordPrompt(word: e.id)).toList();
+    final keywordPrompts = [
+      ...availableExtensions.map((e) => CodeKeywordPrompt(word: e.id)).toList(),
+      ...RawScriptPreprocessor.PreprocessorDirectivesHints.map((it) => CodeKeywordPrompt(word: it)).toList()
+    ];
     List<CodePrompt> templatePrompts = [
       CodeTemplatePrompt(word: "name", template: "name: ...element name..."),
       CodeTemplatePrompt(word: "description", template: "description: ...element description..."),
