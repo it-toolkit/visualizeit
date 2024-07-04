@@ -1,7 +1,0 @@
-name: Invalid script example
-group: Extension examples
-scenes:
-  - name: First scene
-    unexpected-attribute: 1000
-    transitions:
-      - invalid-command
