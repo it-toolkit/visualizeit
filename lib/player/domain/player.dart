@@ -151,10 +151,9 @@ class PlayerState {
     return 'PlayerState{script: ${script.metadata.name}, command: $currentSceneIndex/$currentCommandIndex, isPlaying: $isPlaying, models: $currentSceneModels}';
   }
 
-  PlayerState(this.script) {
+  PlayerState(this.script, {this.canvasScale = 1}) {
     _setupScene(0);
     isPlaying = false;
-    canvasScale = 1;
     waitingAction = false;
   }
 
@@ -228,7 +227,7 @@ class PlayerState {
   }
 
   PlayerState restartPlayback() {
-    return PlayerState(script);
+    return PlayerState(script, canvasScale: canvasScale);
   }
 
   void _setupScene(int sceneIndex) {
