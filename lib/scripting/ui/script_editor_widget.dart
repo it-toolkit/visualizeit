@@ -194,7 +194,7 @@ class _DefaultCodeAutocompleteListView extends StatefulWidget implements Preferr
 
   @override
   Size get preferredSize => Size(
-      250,
+      350,
       // 2 is border size
       min(kItemHeight * notifier.value.prompts.length, 150) + 2);
 
@@ -219,7 +219,7 @@ class _DefaultCodeAutocompleteListViewState extends State<_DefaultCodeAutocomple
   Widget build(BuildContext context) {
     return Container(
         constraints: BoxConstraints.loose(widget.preferredSize),
-        decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(6)),
+        decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(6)),
         child: AutoScrollListView(
           controller: ScrollController(),
           initialIndex: widget.notifier.value.index,
@@ -244,7 +244,7 @@ class _DefaultCodeAutocompleteListViewState extends State<_DefaultCodeAutocomple
                   padding: const EdgeInsets.only(left: 5, right: 5),
                   alignment: Alignment.centerLeft,
                   decoration: BoxDecoration(
-                      color: index == widget.notifier.value.index ? Color.fromARGB(255, 255, 140, 0) : null, borderRadius: radius),
+                      color: index == widget.notifier.value.index ? Color.fromARGB(255, 120, 186, 206) : null, borderRadius: radius),
                   child: RichText(
                     text: prompt.createSpan(context, widget.notifier.value.input),
                     overflow: TextOverflow.ellipsis,
@@ -263,13 +263,18 @@ class _DefaultCodeAutocompleteListViewState extends State<_DefaultCodeAutocomple
 extension _CodePromptExtension on CodePrompt {
   InlineSpan createSpan(BuildContext context, String input) {
     final TextStyle style = TextStyle();
+    final CodePrompt prompt = this;
+
     final InlineSpan span = style.createSpan(
       value: word,
       anchor: input,
-      color: Colors.blue,
+      color: Colors.deepPurple,
       fontWeight: FontWeight.bold,
     );
-    final CodePrompt prompt = this;
+
+    if (prompt is CodeExtensionCommandPrompt) {
+      return TextSpan(children: [span, TextSpan(text: ' (${prompt.commandDefinition.extensionId})', style: style.copyWith(color: Colors.black, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic))]);
+    }
     if (prompt is CodeFieldPrompt) {
       return TextSpan(children: [span, TextSpan(text: ' ${prompt.type}', style: style.copyWith(color: Colors.cyan))]);
     }
@@ -314,7 +319,7 @@ extension _TextStyleExtension on TextStyle {
             color: color,
             fontWeight: fontWeight,
           )),
-      TextSpan(text: value.substring(index + anchor.length), style: this)
+      TextSpan(text: value.substring(index + anchor.length), style: this.copyWith(fontStyle: FontStyle.italic))
     ]);
   }
 }
