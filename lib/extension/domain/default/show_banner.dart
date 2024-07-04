@@ -1,9 +1,11 @@
 
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
 import 'package:visualizeit_extensions/common.dart';
 import 'package:visualizeit_extensions/logging.dart';
 import 'package:visualizeit_extensions/scripting.dart';
+import 'package:visualizeit_extensions/scripting_extensions.dart';
 
 import 'default_extension.dart';
 
@@ -11,10 +13,10 @@ final _logger = Logger("extension.default.banner");
 
 class BannerModel extends Model with CommandExecutionAware {
   final String message;
-  final String alignment;
+  final Alignment alignment;
   final bool adjustSize;
 
-  BannerModel(name, this.message, {this.alignment = "center", this.adjustSize = false}): super(DefaultExtensionConsts.Id, name);
+  BannerModel(name, this.message, {this.alignment = Alignment.center, this.adjustSize = false}): super(DefaultExtensionConsts.Id, name);
 
   @override
   BannerModel clone() {
@@ -38,7 +40,7 @@ class ShowBanner extends GlobalCommand {
       ]
   );
 
-  final String alignment;
+  final Alignment alignment;
   final int framesDuration;
   final String message;
   final bool adjustSize;
@@ -47,7 +49,7 @@ class ShowBanner extends GlobalCommand {
   ShowBanner.build(RawCommand rawCommand) :
     bannerModelName = Uuid().v4(),
     message = commandDefinition.getArg(name: "message", from: rawCommand),
-    alignment = commandDefinition.getArg(name: "position", from: rawCommand),
+    alignment = commandDefinition.getAlignmentArg(name: "position", from: rawCommand),
     framesDuration = commandDefinition.getArg(name: "duration", from: rawCommand),
     adjustSize = commandDefinition.getArg(name: "adjustSize", from: rawCommand);
 

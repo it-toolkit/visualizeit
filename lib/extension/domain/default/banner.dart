@@ -38,7 +38,7 @@ class _BannerState extends State<BannerWidget> {
   @override
   Widget build(BuildContext context) {
     var frameDuration = widget.model.timeFrame;
-    var alignment = parseAlignment(widget.model.alignment);
+    var alignment = widget.model.alignment;
 
     final bannerContainer = frameDuration == Duration.zero
         ? buildBannerWidget(widget.model, alignment)
@@ -67,20 +67,5 @@ class _BannerState extends State<BannerWidget> {
               child: SingleChildScrollView(child: ExtendedMarkdownBlock(data: innerModel.message)),
           ),
     );
-  }
-
-  Alignment parseAlignment(String alignment) {
-    switch(alignment) {
-      case "topLeft": return Alignment.topLeft;
-      case "topCenter": return Alignment.topCenter;
-      case "topRight": return Alignment.topRight;
-      case "centerLeft": return Alignment.centerLeft;
-      case "center": return Alignment.center;
-      case "centerRight": return Alignment.centerRight;
-      case "bottomLeft": return Alignment.bottomLeft;
-      case "bottomCenter": return Alignment.bottomCenter;
-      case "bottomRight": return Alignment.bottomRight;
-      default: throw Exception("Unknown alignment value"); //TODO handle error properly, provide a custom exception to use
-    }
   }
 }
