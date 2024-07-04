@@ -7,13 +7,13 @@ description: |-
   like new node creations, overflows and balancing the keys between nodes  
 scenes:
   - name: First scene
-    extensions: ['bsharptree-extension']
+    extensions: ['bsharptree']
     description: Tree creation
     initial-state:
       - bsharptree-create:
-          maxCapacity: "3"
-          initialValues: ["1"]
-          autoIncremental: "true"
+          maxCapacity: 3
+          initialValues: [ 1 ]
+          autoIncremental: true
     transitions:
       - show-banner: 
         - |-
@@ -24,9 +24,9 @@ scenes:
         - bottomCenter
         - 9
         - true
-      - bsharptree-insert: [2]
-      - bsharptree-insert: [3]
-      - bsharptree-insert: [4]
+      - bsharptree-insert: 2
+      - bsharptree-insert: 3
+      - bsharptree-insert: 4
       - show-banner:
         - |-
             When **5** is inserted, there's a split in the root that leaves the left leaf node at maximum capacity.<br>
@@ -34,17 +34,17 @@ scenes:
         - bottomCenter
         - 6
         - true
-      - bsharptree-insert: [5]
-      - bsharptree-insert: [6]
-      - bsharptree-insert: [7]
-      - bsharptree-insert: [8]
-      - bsharptree-insert: [9]
-      - bsharptree-insert: [10]
-      - bsharptree-insert: [11]
-      - bsharptree-insert: [12]
-      - bsharptree-insert: [13]
-      - bsharptree-insert: [14]
-      - bsharptree-insert: [15]
+      - bsharptree-insert: 5
+      - bsharptree-insert: 6
+      - bsharptree-insert: 7
+      - bsharptree-insert: 8
+      - bsharptree-insert: 9
+      - bsharptree-insert: 10
+      - bsharptree-insert: 11
+      - bsharptree-insert: 12
+      - bsharptree-insert: 13
+      - bsharptree-insert: 14
+      - bsharptree-insert: 15
       - show-banner:
         - |-
             Now, while inserting the **16** the root ****overflows****. The left branch should be at maximum capacity,<br> 
@@ -52,15 +52,15 @@ scenes:
         - bottomCenter
         - 6
         - true
-      - bsharptree-insert: [16]
-      - bsharptree-insert: [17]
-      - bsharptree-insert: [18]
-      - bsharptree-insert: [19]
-      - bsharptree-insert: [20]
-      - bsharptree-insert: [21]
-      - bsharptree-insert: [22]
-      - bsharptree-insert: [23]
-      - bsharptree-insert: [24]
+      - bsharptree-insert: 16
+      - bsharptree-insert: 17
+      - bsharptree-insert: 18
+      - bsharptree-insert: 19
+      - bsharptree-insert: 20
+      - bsharptree-insert: 21
+      - bsharptree-insert: 22
+      - bsharptree-insert: 23
+      - bsharptree-insert: 24
       - show-banner:
         - |-
             When **25** is inserted in the tree, it ****overflows**** the leaf node, but the index node is also full, <br> 
@@ -68,12 +68,12 @@ scenes:
         - bottomCenter
         - 6
         - true
-      - bsharptree-insert: [25]
-      - bsharptree-insert: [26]
-      - bsharptree-insert: [27]
-      - bsharptree-insert: [28]
-      - bsharptree-insert: [29]
-      - bsharptree-insert: [30]
+      - bsharptree-insert: 25
+      - bsharptree-insert: 26
+      - bsharptree-insert: 27
+      - bsharptree-insert: 28
+      - bsharptree-insert: 29
+      - bsharptree-insert: 30
       - show-banner:
         - |-
             When deleting keys, the algorithm also changes. Balancing can be made between branches,<br>
@@ -82,7 +82,7 @@ scenes:
         - bottomCenter
         - 6
         - true
-      - bsharptree-remove: [28]
+      - bsharptree-remove: 28
       - show-banner:
         - |-
             In any other node, leaving a node underflowed would cause a balancing attempt or a fusion, but in <br>
@@ -90,8 +90,8 @@ scenes:
         - bottomCenter
         - 6
         - true
-      - bsharptree-remove: [29]
-      - bsharptree-remove: [30]
+      - bsharptree-remove: 29
+      - bsharptree-remove: 30
       - show-banner:
         - |-
             After deleting all the keys in the leaf node **14**, the index node **13** is in underflow, but even <br>
@@ -99,8 +99,8 @@ scenes:
         - bottomCenter
         - 6
         - true
-      - bsharptree-remove: [27]
-      - bsharptree-remove: [26]
+      - bsharptree-remove: 27
+      - bsharptree-remove: 26
       - show-banner:
         - |-
             Finally, after deleting the **25** the leaf node is released and the index node **13** has no more <br>
@@ -108,4 +108,4 @@ scenes:
         - bottomCenter
         - 6
         - true
-      - bsharptree-remove: [25]
+      - bsharptree-remove: 25

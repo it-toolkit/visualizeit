@@ -20,14 +20,14 @@ description: |-
   
 scenes:
   - name: First scene
-    extensions: ['bsharptree-extension']
+    extensions: ['bsharptree']
     description: Tree creation
     initial-state:
-      - bsharptree-create: [3, ["12", "15", "39", "115"]]
+      - bsharptree-create: [3, [ 12, 15, 39, 115]]
     transitions:
-      - bsharptree-insert: [25]
-      - bsharptree-insert: [4]
-      - bsharptree-insert: [60]
-      - bsharptree-insert: [44]
-      - bsharptree-remove: [12]
-      - bsharptree-find: [39]
+      - bsharptree-insert: 25
+      - bsharptree-insert: 4
+      - bsharptree-insert: 60
+      - bsharptree-insert: 44
+      - bsharptree-remove: 12
+      - bsharptree-find: 39
