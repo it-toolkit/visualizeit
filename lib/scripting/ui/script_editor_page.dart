@@ -56,7 +56,8 @@ class ScriptEditorPageState extends BasePageState<ScriptEditorPage> {
   @override
   PreferredSizeWidget? buildAppBarBottom(BuildContext context) {
     return customBarWithModeSwitch(
-      "${script?.metadata.name ?? "Unknown script name"}${widget.readOnly ? " <read only>" : ""}",
+      "${script?.metadata.name ?? "Unknown script name"}",
+      titleAction:  widget.readOnly ? TitleAction(Icons.edit_off_outlined, null, tooltip: "Read only script"): null,
     );
   }
 

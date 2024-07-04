@@ -25,8 +25,9 @@ class ModeSwitch {
 class TitleAction {
   IconData icon = Icons.edit;
   VoidCallback? onPressed;
+  String? tooltip;
 
-  TitleAction(this.icon, this.onPressed);
+  TitleAction(this.icon, this.onPressed, {this.tooltip});
 }
 
 PreferredSizeWidget? customBarWithModeSwitch(String title, { ModeSwitch? modeSwitch = null, TitleAction? titleAction = null }) {
@@ -75,10 +76,7 @@ class _CustomBarContent extends State<CustomBarWidget> {
                     maxWidth: MediaQuery.sizeOf(context).width - (widget.titleAction == null ? 120 : 160),
                     child: Text(widget.title, softWrap: true, maxLines: 3),
                   ),
-                  widget.titleAction?.let((action) => IconButton(
-                      onPressed: action.onPressed,
-                      icon: Icon(action.icon,size: 16
-                      ))),
+                  widget.titleAction?.let((action) => IconButton(onPressed: action.onPressed, icon: Icon(action.icon,size: 16), tooltip: action.tooltip)),
                   const Spacer(),
                   widget.modeSwitch?.let((modeSwitch) => Text(
                     "${modeSwitch.getModeName(switchValue)}\nmode",
