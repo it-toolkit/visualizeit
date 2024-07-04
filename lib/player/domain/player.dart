@@ -55,7 +55,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   PlayerBloc(super.playerState) {
     on<OverrideEvent>((event, emit) {
-      emit(event.state);
+      final canvasScale = history.lastOrNull?.canvasScale ?? 1;
+      emit(event.state.updateCanvasScale(canvasScale));
     });
 
     on<NextTransitionEvent>((event, emit) {
