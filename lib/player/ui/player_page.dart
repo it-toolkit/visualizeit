@@ -69,8 +69,8 @@ class PlayerPageState extends BasePageState<PlayerPage> {
       titleAction:  widget.readOnly ? TitleAction(Icons.edit_off_outlined, null, tooltip: "Read only script"): null,
       modeSwitch: ModeSwitch(
         initialState: graphicalMode,
-        enabledModeName: "View",
-        disabledModeName: "Exploration",
+        enabledModeName: "Presentation\nmode",
+        disabledModeName: "Exploration\nmode",
         onModeChanged: (bool enabled) => setState(() => graphicalMode = enabled),
       ),
     );

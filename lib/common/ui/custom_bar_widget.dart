@@ -79,9 +79,9 @@ class _CustomBarContent extends State<CustomBarWidget> {
                   widget.titleAction?.let((action) => IconButton(onPressed: action.onPressed, icon: Icon(action.icon,size: 16), tooltip: action.tooltip)),
                   const Spacer(),
                   widget.modeSwitch?.let((modeSwitch) => Text(
-                    "${modeSwitch.getModeName(switchValue)}\nmode",
+                    "${modeSwitch.getModeName(switchValue)}",
                     style: const TextStyle(fontSize: 12),
-                    textAlign: TextAlign.left)),
+                    textAlign: TextAlign.center)),
                   SizedBox(height: 40, width: 5),
                   widget.modeSwitch?.let((modeSwitch) =>
                     SizedBox(

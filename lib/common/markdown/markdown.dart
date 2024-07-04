@@ -22,13 +22,15 @@ class ExtendedMarkdownBlock extends StatelessWidget {
 
 class ExtendedMarkdownWidget extends StatelessWidget {
   final String data;
+  final TocController? tocController;
 
-  ExtendedMarkdownWidget({required this.data});
+  ExtendedMarkdownWidget({required this.data, this.tocController});
 
   @override
   Widget build(BuildContext context) {
     return MarkdownWidget(
       data: data,
+      tocController: tocController,
       config: _buildMarkdownConfig(),
       markdownGenerator: _buildMarkdownGenerator(),
     );
