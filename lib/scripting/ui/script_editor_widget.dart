@@ -21,6 +21,7 @@ class ScriptEditorWidget extends StatelessWidget {
     CodeLineEditingController? controller,
     CodeScrollController? scrollController,
     required this.onCodeChange,
+    this.referencedExtensionIds = const {},
     this.availableExtensions = const [],
     this.listenPlayerEvents = false,
     this.readOnly = false
@@ -30,6 +31,7 @@ class ScriptEditorWidget extends StatelessWidget {
 
   final CodeLineEditingController controller;
   final CodeScrollController scrollController;
+  final Set<String> referencedExtensionIds;
   final List<Extension> availableExtensions;
   final bool listenPlayerEvents;
   final Function(String) onCodeChange;
@@ -124,6 +126,12 @@ class ScriptEditorWidget extends StatelessWidget {
     scrollController.horizontalScroller.jumpTo(0);
   }
 
+
+  List<Extension> _resolveReferencedExtensions() {
+    return availableExtensions.where((it) => referencedExtensionIds.contains(it.id)).toList();
+  }
+
+
   Widget withCodeAutocompletion(Widget child) {
     final keywordPrompts = [
       ...availableExtensions.map((e) => CodeKeywordPrompt(word: e.id)).toList(),
@@ -149,7 +157,7 @@ class ScriptEditorWidget extends StatelessWidget {
     ];
 
     Map<String, List<CodePrompt>> relatedCommandPrompts = {
-      for (var e in availableExtensions)
+      for (var e in _resolveReferencedExtensions())
         e.id : e.scripting.getAllCommandDefinitions().map((def) => CodeExtensionCommandPrompt(def)).toList()
           ..sort((a,b) => a.commandDefinition.name.compareTo(b.commandDefinition.name))
     };

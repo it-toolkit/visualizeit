@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:re_editor/re_editor.dart';
@@ -6,6 +7,7 @@ import 'package:visualizeit/common/ui/buttons.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/common/ui/future_builder.dart';
 import 'package:visualizeit/common/utils/extensions.dart';
+import 'package:visualizeit/extension/domain/default/default_extension.dart';
 import 'package:visualizeit/player/ui/player_button_bar.dart';
 import 'package:visualizeit/common/ui/base_page.dart';
 import 'package:visualizeit/scripting/domain/parser.dart';
@@ -50,6 +52,7 @@ class PlayerPageState extends BasePageState<PlayerPage> {
   ValidScript? script = null;
   bool scriptHasChanges = false;
   ParserException? scriptErrors = null;
+  Set<String> referencedExtensionIds = { DefaultExtensionConsts.Id };
   bool graphicalMode = true;
   final PlayerTimer _timer = PlayerTimer();
 
@@ -271,29 +274,42 @@ class PlayerPageState extends BasePageState<PlayerPage> {
       scrollController: codeScrollController,
       readOnly: false,
       availableExtensions: widget._extensionRepository.getAll(),
+      referencedExtensionIds: referencedExtensionIds,
       listenPlayerEvents: true,
       onCodeChange: _monitorScriptChangesAndErrors,
     );
   }
 
+  Set<String> _resolveReferencedExtensionIds(ValidScript script) {
+    Set<String> referencedExtensionIds = { DefaultExtensionConsts.Id };
+    referencedExtensionIds.addAll(script.scenes.expand((element) => element.metadata.extensionIds));
+    return referencedExtensionIds;
+  }
+
   void _monitorScriptChangesAndErrors(String text) {
     ParserException? newScriptErrors;
+    Set<String>? referencedExtensionIds;
     try {
       final parsedScript = widget._scriptParser.parse(RawScript("ref", text)); //TODO avoid throwing exception
       if (parsedScript is InvalidScript) throw parsedScript.parserError;
 
       _logger.trace(() => "Script syntax is correct");
+      referencedExtensionIds = _resolveReferencedExtensionIds(parsedScript as ValidScript);
       newScriptErrors = null;
     } on ParserException catch (e) {
       newScriptErrors = e;
     }
     final bool newErrors = newScriptErrors != scriptErrors;
+    final bool newExtensions = !setEquals(referencedExtensionIds, this.referencedExtensionIds);
     if (!scriptHasChanges) {
       setState(() {
         scriptHasChanges = true;
         scriptErrors = newScriptErrors;
       });
-    } else if (newErrors) setState(() => scriptErrors = newScriptErrors);
+    } else if (newErrors || newExtensions) setState(() {
+      scriptErrors = newScriptErrors;
+      this.referencedExtensionIds = referencedExtensionIds ?? this.referencedExtensionIds;
+    });
 
     if (newErrors && newScriptErrors != null) _logErrorsFound(newScriptErrors);
   }
