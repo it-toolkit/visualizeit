@@ -301,10 +301,10 @@ packages:
     dependency: transitive
     description:
       name: dio
-      sha256: "77befdddf51050e1635a04d2bcfff230089ce7294e642d00da58cd079c0de0c8"
+      sha256: e17f6b3097b8c51b72c74c9f071a605c47bcc8893839bd66732457a5ebe73714
       url: "https://pub.dev"
     source: hosted
-    version: "5.5.0"
+    version: "5.5.0+1"
   dio_web_adapter:
     dependency: transitive
     description:
@@ -1250,7 +1250,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "45066e1753b6a3a8730a22dd85b0ca27f881618f"
+      resolved-ref: "9da0cdd3c13b645d7bebecd58c850ff9265903cb"
       url: "https://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@github.com/it-toolkit/visualizeit_bsharptree_extension.git"
     source: git
     version: "1.0.0+1"
@@ -1259,7 +1259,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "04238116ccd529a938a4d958bac5efaaba310c96"
+      resolved-ref: "0e5a7dcb68d2d61a691d0a162670b40c1135341a"
       url: "https://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@github.com/it-toolkit/visualizeit_dynamicfile_extendiblehashing_extension.git"
     source: git
     version: "0.0.1"
@@ -1277,7 +1277,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "940d2ee7490fedcb2ead8524031b26de933d8120"
+      resolved-ref: "1cb66fe3979879faa6b2a63b4a1e4003b867493b"
       url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
     source: git
     version: "0.0.1"
@@ -1286,7 +1286,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: f4d988be5f0a3a8fb2c6b250632425f546abbeda
+      resolved-ref: "27303704c8afc9e7b5a5cba8d78b27e5f7e85784"
       url: "https://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@github.com/it-toolkit/visualizeit_external_sort_extension.git"
     source: git
     version: "0.1.0"
@@ -1295,7 +1295,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "8731dd2cff4c311652f251c0a087e9a321f45295"
+      resolved-ref: adb26f1b6bb3751cf13487ae22623892e260b368
       url: "https://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@github.com/it-toolkit/visualizeit_slides_extension.git"
     source: git
     version: "0.0.1"
