@@ -6,7 +6,7 @@ Welcome to Visualize IT, your go-to app for creating dynamic diagrams and adding
 
 1. **Open new script page**: In the home page, tap on 'Create script' icon (outlined plus symbol)
 
-![tutorial_1_1.png](images/tutorial_1_1.png)
+![tutorial_1_1.png](assets/images/tutorial_1_1.png)
 
 2. **Write your script**: By default a simple but functional script template is provided. Write your custom script using the Visualize IT syntax. 
 
@@ -14,7 +14,7 @@ Welcome to Visualize IT, your go-to app for creating dynamic diagrams and adding
 
 > &#128712; The code editor has code-autocompletion support and error detection features to improve your experience.
 
-![tutorial_1_2.png](images/tutorial_1_2.png)
+![tutorial_1_2.png](assets/images/tutorial_1_2.png)
 
 3. **Play your first script**: Tap on the 'Play script' icon located at bottom right position.
 
@@ -22,7 +22,7 @@ Welcome to Visualize IT, your go-to app for creating dynamic diagrams and adding
 
 4. **Start script visualization**: using the player button bar, tap on play button and enjoy your first visualization
 
-![tutorial_1_3.png](images/tutorial_1_3.png)
+![tutorial_1_3.png](assets/images/tutorial_1_3.png)
 
 ### Example script
 
