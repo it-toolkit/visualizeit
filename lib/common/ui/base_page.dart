@@ -33,6 +33,7 @@ PreferredSizeWidget _buildBasePageAppBar(
       bottom: buildAppBarBottom(context),
       backgroundColor: Colors.white,
       title: Image.asset("assets/images/logo.png",
+        semanticLabel: "Visualize IT",
         fit: BoxFit.fitHeight, height: 80,
         errorBuilder: (c, e, s) => FittedBox(child: Text("Visualize IT", textScaler: TextScaler.linear(3.0))),
       ),

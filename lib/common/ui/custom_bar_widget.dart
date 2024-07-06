@@ -73,7 +73,7 @@ class _CustomBarContent extends State<CustomBarWidget> {
               child: Row(
                 children: <Widget?>[
                   LimitedBox(
-                    maxWidth: MediaQuery.sizeOf(context).width - (widget.titleAction == null ? 120 : 160),
+                    maxWidth: MediaQuery.sizeOf(context).width - (widget.titleAction == null ? 120 : 210),
                     child: Text(widget.title, softWrap: true, maxLines: 3),
                   ),
                   widget.titleAction?.let((action) => IconButton(onPressed: action.onPressed, icon: Icon(action.icon,size: 16), tooltip: action.tooltip)),

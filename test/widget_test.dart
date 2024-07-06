@@ -5,6 +5,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 
@@ -29,6 +30,8 @@ void main() {
     await tester.pumpWidget(const VisualizeItApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Visualize IT'), findsOneWidget);
+    expect(find.byElementPredicate(
+            (element) => element.widget is Image && (element.widget as Image).semanticLabel == 'Visualize IT'
+    ), findsOneWidget);
   });
 }
