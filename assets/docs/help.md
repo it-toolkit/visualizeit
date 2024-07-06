@@ -38,8 +38,134 @@ scenes:
     transitions:
       - show-banner: [ "**This is awesome!**", center, 2, true ]
 ```
+## My Scripts
+In this section, you will find all your scripts. From here, you can search, import, and export them. Furthermore, for the selected script, you will have the options to share, clone, export, edit, and play it.
 
+### Search Scripts
+The search functionality to search scripts, you can use it on "My Scripts" or on "Public Scripts" sections.
 
+![tutorial_2_1.png](assets/images/tutorial_2_1.png)
+
+### Import Scripts
+Tap on 'Import Scripts' icon to import scripts. The script must be in yaml format. 
+
+![tutorial_2_2_import_scripts.png](assets/images/tutorial_2_2_import_scripts.png)
+
+After selecting and uploading the file, you will see the script acordingly to the group name chosen. In this sample, the group name was "My Imported Scripts"
+
+![tutorial_2_3_import_scripts.png](assets/images/tutorial_2_3_import_scripts.png)
+
+### Exports Scripts
+Tap on 'Export Scripts' icon to export all your scripts.
+
+![tutorial_2_4_export_all.png](assets/images/tutorial_2_4_export_all.png)
+
+![tutorial_2_4_export_confirm.png](assets/images/tutorial_2_4_export_confirm.png)
+
+### Share this Script
+At the bottom of the window, tap on the 'Share' icon to send the selected script to someone else. The application will send the script via email.
+
+![tutorial_2_5_share.png](assets/images/tutorial_2_5_share.png)
+
+### Export this Script
+In order to export only the selected script, tap on the 'Export' option in the bottom of the window.
+
+![tutorial_2_6_export.png](assets/images/tutorial_2_6_export.png)
+
+### Delete this Script
+Delete the selected script by tapping on 'Delete' in the bottom of the window.
+
+![tutorial_2_7_delete.png](assets/images/tutorial_2_7_delete.png)
+
+### Clone this Script
+To get a copy of the selected script, tap on the 'Clone' functionality at the bottom of the window.
+
+![tutorial_2_8_clone.png](assets/images/tutorial_2_8_clone.png)
+
+After confirming you will see the copy of the script on 'Edit' mode. Here you can modify the script, and then discard, save or play the script. Please refer to 'Editor Mode' section or 'Edit this script'
+
+![tutorial_2_8_clone_edit.png](assets/images/tutorial_2_8_clone_edit.png)
+
+When you save the script, you will see it in the list
+
+![tutorial_2_8_clone_list.png](assets/images/tutorial_2_8_clone_list.png)
+
+### Edit this Script
+Tap 'Edit' icon in the bottom of the window, to enter to 'Editor mode' and edit the selected script.
+
+![tutorial_2_9_edit.png](assets/images/tutorial_2_9_edit.png)
+
+After making modifications, you have the option to discard or save the changes. Once saved, the script can then be executed.
+
+![tutorial_2_9_edit_options.png](assets/images/tutorial_2_9_edit_options.png)
+
+### Play this Script
+Finally, tap in 'Play' icon to start playing the script.
+
+![tutorial_2_10_play.png](assets/images/tutorial_2_10_play.png)
+
+Refer to 'Playing an script' section for more info about this mode.
+
+## Public Scripts
+In this section, you will find sample scripts and examples related to the onboarded extensions, such as External Sort, Extendible Hashing, and B# tree samples. Specifically, you will find detailed scripts that explain the evolution of various structures and algorithms.
+
+When each script is selected, a brief explanation of the implemented model, along with the available commands, will be displayed on the right side of the screen.
+
+![tutorial_3_1_public_scripts](assets/images/tutorial_3_1_public_scripts.png)
+
+On this section, you can also search, create and import scripts in a similar way as it was instructed in 'My Scripts' section.
+
+![tutorial_3_2_public_scripts_up_options](assets/images/tutorial_3_2_public_scripts_up_options.png)
+
+Finally, at the bottom of the screen you will find the options for clone, view and play the selected script. In the view mode, you cannot edit the content of the script.
+
+![tutorial_3_3_public_scripts_options](assets/images/tutorial_3_3_public_scripts_options.png)
+
+## Cloning a Script
+Scripts can be cloned from both 'My Scripts' and 'Public Scripts'. The cloning process follows a procedure similar to the one described earlier. The cloned script will subsequently be visible in 'My Scripts'.
+
+## Playing a Script
+In 'Player' mode you will find two options that can be changed from the selector in the upper-right side of the screen, this options are 'Presentation Mode' and 'Exploration Mode'
+
+![tutorial_4_1_playing_a_script.png](assets/images/tutorial_4_1_playing_a_script.png)
+
+### Presentation Mode
+In this mode will you find the bottom bar with options to reproduce the script. It is not possible to see the script or modify it.
+
+![tutorial_4_2_playing_a_script_options.png](assets/images/tutorial_4_2_playing_a_script_options.png)
+
+The options presented are detailed below:
+
+![tutorial_4_3_playing_a_script_detailed_options.png](assets/images/tutorial_4_3_playing_a_script_detailed_options.png)
+
+1. Reset the script: The script is returned to the initial state. 
+2. Player commands: You can play the script and also see each slide forward and backward.
+3. Speed selector: Modify the speed of the presentation.
+4. Scale selector: Modifies the scale of the view. It is possible to enlarge and reduce the view.
+5. Maximize Window: Maximize the current window removing the upper section of the application. 
+
+### Exploration Mode
+Users may activate this mode by selecting the option located in the upper-right corner of the screen. In this mode, script content is accessible for viewing and modification. Users have the ability to discard or apply changes as required. Furthermore, during script execution, the currently executing line is visually highlighted.
+
+![tutorial_5_1_playing_exploration_mode.png](assets/images/tutorial_5_1_playing_exploration_mode.png)
+
+![tutorial_5_2_playing_exploration_mode_options.png](assets/images/tutorial_5_2_playing_exploration_mode_options.png)
+
+**Remember to applying the changes before to reproduce the script again.**
+
+## Extensions
+Tap on the 'Extensions' icon to see the available extensions:
+
+![tutorial_6_1_extensions](assets/images/tutorial_6_1_extensions.png)
+
+In this section, you will find a comprehensive list of all available extensions. You can search by name, and upon selection, detailed explanations of commands, arguments, and their limitations will be provided.
+
+![tutorial_6_1_extensions_options](assets/images/tutorial_6_1_extensions_options.png)
+
+## Help
+When tap on 'Help' icon you will see this page.
+
+![tutorial_7_1_help.png](assets/images/tutorial_7_1_help.png)
 
 
 
