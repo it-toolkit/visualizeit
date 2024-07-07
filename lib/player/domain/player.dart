@@ -270,7 +270,10 @@ class PlayerState {
 
     } else if (command is ModelCommand) {
       var model = result.models[command.modelName];
-      if (model == null) throw Exception("Unknown model: ${command.modelName}"); //TODO define custom exception for linter
+      if (model == null) {
+        _logger.error(() => "Model with name '${command.modelName}' was not found to trying execute command '$command'");
+        throw Exception("Unknown model: ${command.modelName}");
+      }
 
       var cmdResult = command(model, context);
       final updatedModel = cmdResult.model;
@@ -280,9 +283,9 @@ class PlayerState {
         result.models[command.modelName] = updatedModel;
         result.finished = cmdResult.finished;
       }
-
     } else {
-      throw Exception("Unknown command: $command"); //TODO define custom exception for linter
+      _logger.error(() => "Unsupported command type '$command', a ModelCommand or ModelBuilderCommand were expected");
+      throw Exception("Unsupported command type: $command");
     }
 
     _logger.debug(() => "Command result: $result");
