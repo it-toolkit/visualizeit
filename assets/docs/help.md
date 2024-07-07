@@ -38,25 +38,77 @@ scenes:
     transitions:
       - show-banner: [ "**This is awesome!**", center, 2, true ]
 ```
+
+## Script syntax / structure
+
+Visualize IT scripts must be written in YAML format using the specific structure shown below.
+
+### Root level keys
+
+| Key         | Required | Type      | Description                                                    |
+|-------------|----------|-----------|----------------------------------------------------------------|
+| name        | Yes      | String    | Script display name                                            |
+| description | Yes      | String    | Script long display description with Markdown language support |
+| group       | No       | String    | Optional group name to use in script selector page (home)      |
+| scenes      | Yes      | **Scene** | List of script scenes. At least one scene is required          |
+
+### Scene
+
+### Scene keys
+| Key                    | Required | Type              | Description                                                                                                    |
+|------------------------|----------|-------------------|----------------------------------------------------------------------------------------------------------------|
+| name                   | Yes      | String            | Scene display name                                                                                             |
+| description            | No       | String            | Optional scene short description                                                                               |
+| extensions             | Yes      | String array      | Array of extensions used in this scene (Only extension ids). The 'default' extension<br>is always included.    |
+| title-duration         | No       | Int               | Amount of frames dedicated to show the scene title slide. Default value: *1*                                   |
+| base-frame-duration-ms | No       | Int               | Duration in milliseconds for a player frame. Default value: *1000* ms (1 second per frame)                     |                                                       
+| initial-state          | No       | **Command** array | Array of commands to setup the initial scene state. Only commands available in referenced modules can be used. |
+| transitions            | No       | **Command** array | Array of commands to build the animation. Commands will be applied sequentially.                               |
+
+#### Command
+A command can have
+* No arguments
+* A single argument
+* An array of arguments
+* A key-value map of arguments. Where the keys are the argument names.
+
+Each command syntax depends on its own definition
+
+**Example**
+```yaml
+initial-state:
+    - no-arg-command
+    - command-with-arg: "my-arg"
+    - command-with-multi-arg: [arg1, arg2]
+    - command-with-multi-arg: 
+        arg_name_1: arg1
+        arg_name_2: arg2
+```
+
+> **Commands namespacing**
+> To avoid name conflicts a command can be prefixed with the extension id
+> `extension_id`**.**`command_name`
+
+
 ## My Scripts
 In this section, you will find all your scripts. From here, you can search, import, and export them. Furthermore, for the selected script, you will have the options to share, clone, export, edit, and play it.
 
 ### Search Scripts
-The search functionality to search scripts, you can use it on "My Scripts" or on "Public Scripts" sections.
+Use the search bar to filter the shown scripts. It is available for "My Scripts" and "Public Scripts" tabs.
 
 ![tutorial_2_1.png](assets/images/tutorial_2_1.png)
 
 ### Import Scripts
-Tap on 'Import Scripts' icon to import scripts. The script must be in yaml format. 
+Tap on 'Import Scripts' icon to import scripts. The script must be in YAML format. 
 
 ![tutorial_2_2_import_scripts.png](assets/images/tutorial_2_2_import_scripts.png)
 
-After selecting and uploading the file, you will see the script acordingly to the group name chosen. In this sample, the group name was "My Imported Scripts"
+After selecting and uploading the file, you will see the script accordingly to the group name chosen. In this sample, the group name was "My Imported Scripts"
 
 ![tutorial_2_3_import_scripts.png](assets/images/tutorial_2_3_import_scripts.png)
 
 ### Exports Scripts
-Tap on 'Export Scripts' icon to export all your scripts.
+Tap on 'Export Scripts' icon to export all your scripts. You can use search bar to narrow the exportable script list.  
 
 ![tutorial_2_4_export_all.png](assets/images/tutorial_2_4_export_all.png)
 
