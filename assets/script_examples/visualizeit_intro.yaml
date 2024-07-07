@@ -18,7 +18,7 @@ scenes:
           title: 'VisualizeIT'
           subtitle: "Enhancing Learning through\n\nVisual and Interactive Tools"
           alignment: '0.6/0.0'
-          imageUrl: 'gdrive:14feYVBx8IOQK56uMF4vGPDrYOAWkFy0a'
+          imageUrl: 'background:orion_nebula'
       - add-bullets-slide:
           title: "What is VisualizeIT?"
           bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
