@@ -1,23 +1,18 @@
-dependency_overrides:
+#dependency_overrides:
 #  visualizeit_extensions:
 #    path: ../visualizeit_extensions
-#    git:
-#      url: git@github.com:it-toolkit/visualizeit_extensions.git
-
-#  visualizeit_bsharptree_extension:
-#    path: ../visualizeit_bsharptree_extension
-#    git:
-#      url: git@github.com:it-toolkit/visualizeit_extensions.git
-
-#  visualizeit_external_sort_extension:
-#    path: ../visualizeit_external_sort_extension
-#    git:
-#      url: git@github.com:it-toolkit/visualizeit_extensions.git
-
+#
 #  visualizeit_extension_template:
 #    path: ../visualizeit_extension_template
-#    git:
-#      url: git@github.com:it-toolkit/visualizeit_extension_template.git
-
-  visualizeit_dynamicfile_extendiblehashing_extension:
-    path: ../visualizeit_dynamicfile_extendiblehashing_extension
+#
+#  visualizeit_slides_extension:
+#    path: ../visualizeit_slides_extension
+#
+#  visualizeit_bsharptree_extension:
+#    path: ../visualizeit_bsharptree_extension
+#
+#  visualizeit_external_sort_extension:
+#    path: ../visualizeit_external_sort_extension
+#
+#  visualizeit_dynamicfile_extendiblehashing_extension:
+#    path: ../visualizeit_dynamicfile_extendiblehashing_extension
