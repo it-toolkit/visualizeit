@@ -107,7 +107,7 @@ After selecting and uploading the file, you will see the script accordingly to t
 
 ![tutorial_2_3_import_scripts.png](assets/images/tutorial_2_3_import_scripts.png)
 
-### Exports Scripts
+### Export Scripts
 Tap on 'Export Scripts' icon to export all your scripts. You can use search bar to narrow the exportable script list.  
 
 ![tutorial_2_4_export_all.png](assets/images/tutorial_2_4_export_all.png)
@@ -169,12 +169,10 @@ On this section, you can also search, create and import scripts in a similar way
 
 ![tutorial_3_2_public_scripts_up_options](assets/images/tutorial_3_2_public_scripts_up_options.png)
 
-Finally, at the bottom of the screen you will find the options for clone, view and play the selected script. In the view mode, you cannot edit the content of the script.
+Finally, at the bottom of the screen you will find the options for clone, view and play the selected script. 
+All Public scripts are read-only, so in the view mode you won't be able edit the content of the script. If you want to made changes, just clone it to create a new script one based on it. The cloned script will be visible in 'My Scripts' tab.
 
 ![tutorial_3_3_public_scripts_options](assets/images/tutorial_3_3_public_scripts_options.png)
-
-## Cloning a Script
-Scripts can be cloned from both 'My Scripts' and 'Public Scripts'. The cloning process follows a procedure similar to the one described earlier. The cloned script will subsequently be visible in 'My Scripts'.
 
 ## Playing a Script
 In 'Player' mode you will find two options that can be changed from the selector in the upper-right side of the screen, this options are 'Presentation Mode' and 'Exploration Mode'
@@ -203,7 +201,7 @@ Users may activate this mode by selecting the option located in the upper-right 
 
 ![tutorial_5_2_playing_exploration_mode_options.png](assets/images/tutorial_5_2_playing_exploration_mode_options.png)
 
-> **Remember to apply the changes before to reproduce the script again.**
+> **Remember to apply the changes before playing script again.**
 
 ## Extensions
 Tap on the 'Extensions' icon to see the available extensions:
