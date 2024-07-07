@@ -151,7 +151,7 @@ Users may activate this mode by selecting the option located in the upper-right 
 
 ![tutorial_5_2_playing_exploration_mode_options.png](assets/images/tutorial_5_2_playing_exploration_mode_options.png)
 
-**Remember to applying the changes before to reproduce the script again.**
+> **Remember to apply the changes before to reproduce the script again.**
 
 ## Extensions
 Tap on the 'Extensions' icon to see the available extensions:
