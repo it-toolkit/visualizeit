@@ -275,7 +275,7 @@ class PlayerState {
         throw Exception("Unknown model: ${command.modelName}");
       }
 
-      var cmdResult = command(model, context);
+      var cmdResult = command(model.clone(), context);
       final updatedModel = cmdResult.model;
       if (updatedModel == null){
         result.models.remove(command.modelName);

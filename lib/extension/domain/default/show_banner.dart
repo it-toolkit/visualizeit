@@ -60,7 +60,7 @@ class ShowBanner extends GlobalCommand {
 
   @override
   Result call(Model model, CommandContext context) {
-    final globalModel = (model as GlobalModel).clone();
+    final globalModel = model as GlobalModel;
     final bannerModel = (
         globalModel.models[bannerModelName]
         ?? BannerModel(bannerModelName, message, alignment: alignment, adjustSize: adjustSize).withFramesDuration(framesDuration + 1) //Add extra frame for model disposal
