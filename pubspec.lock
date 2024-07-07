@@ -1250,7 +1250,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "9da0cdd3c13b645d7bebecd58c850ff9265903cb"
+      resolved-ref: df7fd1aa1709e929abad4dac7e7ce1bf0dcffcc5
       url: "https://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@github.com/it-toolkit/visualizeit_bsharptree_extension.git"
     source: git
     version: "1.0.0+1"
@@ -1259,16 +1259,16 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "0e5a7dcb68d2d61a691d0a162670b40c1135341a"
+      resolved-ref: "525ca21644335af1e8a8b9be5215199ca2fe0266"
       url: "https://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@github.com/it-toolkit/visualizeit_dynamicfile_extendiblehashing_extension.git"
     source: git
-    version: "0.0.1"
+    version: "1.0.0"
   visualizeit_extension_template:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: fb26dd1979bb721ebef88f1086e0096692e01ac2
+      resolved-ref: febc368aa8a2a251c3fcfbbce018449d0573ccf6
       url: "https://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@github.com/it-toolkit/visualizeit_extension_template.git"
     source: git
     version: "0.0.1"
@@ -1277,28 +1277,28 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "1cb66fe3979879faa6b2a63b4a1e4003b867493b"
+      resolved-ref: e86675ae16d9b4c27f0116bc42ee83cac1c759ab
       url: "https://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@github.com/it-toolkit/visualizeit_extensions.git"
     source: git
-    version: "0.0.1"
+    version: "1.0.0"
   visualizeit_external_sort_extension:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "27303704c8afc9e7b5a5cba8d78b27e5f7e85784"
+      resolved-ref: "58057dfe53745b13a1966aecf53f97bf67c72e68"
       url: "https://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@github.com/it-toolkit/visualizeit_external_sort_extension.git"
     source: git
-    version: "0.1.0"
+    version: "1.0.0"
   visualizeit_slides_extension:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: adb26f1b6bb3751cf13487ae22623892e260b368
+      resolved-ref: b41091381db70b8a195acf4067b9d27119e850e3
       url: "https://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@github.com/it-toolkit/visualizeit_slides_extension.git"
     source: git
-    version: "0.0.1"
+    version: "1.0.0"
   vm_service:
     dependency: transitive
     description:
