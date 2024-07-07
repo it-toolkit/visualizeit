@@ -1,4 +1,4 @@
-name: B# Tree with autoincremental values
+name: B# Tree with auto-incremental values
 group: DB data structures and algorithms
 description: |-
   ## B\# Tree example
@@ -6,9 +6,9 @@ description: |-
   In this example a B\# tree is created, some keys are added and then one key is removed. All these commands cause changes in the tree,
   like new node creations, overflows and balancing the keys between nodes  
 scenes:
-  - name: First scene
+  - name: B# Tree with auto-incremental values
     extensions: ['bsharptree']
-    description: Tree creation
+    description: Tree creation by inserting consecutive values
     initial-state:
       - bsharptree-create:
           maxCapacity: 3
