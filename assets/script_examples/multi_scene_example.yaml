@@ -1,7 +1,14 @@
 name: Multi scene example
 group: Extension examples
 description: |-
-  ## Global commands example
+  ## Multi-scene script example
+  
+  This simple script shows you three different scenes.
+  
+  1. Scene using global commands from the default extension
+  1. Scene using commands from the "fake" extension
+  1. Scene using commands from the "slides" extension
+
 scenes:
   - name: First scene
     extensions: []

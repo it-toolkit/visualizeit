@@ -19,9 +19,9 @@ description: |-
   This command searches through the tree until it finds the node a value should be located, even if it isn't in the tree at the moment
   
 scenes:
-  - name: First scene
+  - name: B# Tree example
     extensions: ['bsharptree']
-    description: Tree creation
+    description: Insert, remove and find operations on a B# tree
     initial-state:
       - bsharptree-create: [3, [ 12, 15, 39, 115]]
     transitions:

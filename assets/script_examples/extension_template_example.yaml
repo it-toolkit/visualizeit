@@ -19,7 +19,7 @@ description: |-
   
   to enrich your docs
 scenes:
-  - name: First scene
+  - name: Fake extension usage example
     extensions: ['fake_extension']
     description: Scene showing some fake commands usage
     initial-state:

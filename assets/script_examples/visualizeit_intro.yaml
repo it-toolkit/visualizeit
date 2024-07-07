@@ -2,7 +2,6 @@ name: "Visualize IT introduction"
 description: >
   ## Visualize IT introduction
   
-  
   Welcome to our presentation on VisualizeIT, an innovative app designed to visualize animated 
   algorithm and data structure operations. We'll explore its customizable scripting language, 
   extension capabilities, and multi-platform support through Flutter. 
@@ -61,7 +60,7 @@ scenes:
                  • Smooth animations for better visual understanding.
       - add-bullets-slide:
           title: "Meet the team"
-          imageUrl: "https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg"
+          imageUrl: "misc:meeting"
           bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
             - "Team"
             - "\u00A0  ‣ Anibal Irrera"

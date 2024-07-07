@@ -18,7 +18,7 @@ description: |-
   ### nop
   This NO-OP command is used just to wait some time.
 scenes:
-  - name: First scene
+  - name: Global commands
     extensions: []
     description: Scene showing some global commands usage
     initial-state:

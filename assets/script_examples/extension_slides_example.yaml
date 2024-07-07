@@ -6,20 +6,27 @@ description: |-
   A simple example of available slide types and how to use them.
 
 scenes:
-  - name: First scene
+  - name: Slides extension basic usage example
     extensions: ['slides']
     description: Scene showing how to use some slide types
     base-frame-duration-ms: 2000
     initial-state:
       - create-slideshow
-      - add-title-slide: { title: "Title slide", subtitle: "With subtitle..." }
+      - add-title-slide:
+          title: "Title slide"
+          subtitle: "With subtitle..."
       - add-fullscreen-image-slide:
-          title: "Fullscreen image slide"
+          title: 'Fullscreen image 1'
+          subtitle: "Using built-in image"
+          alignment: 'centerLeft'
+          imageUrl: 'background:swan'
+      - add-fullscreen-image-slide:
+          title: "Fullscreen image 2"
           subtitle: "Image from url"
-          imageUrl: 'https://lh3.googleusercontent.com/d/1uizdXqCdZBQ4cM_ha8Wsw3PNrDt0arqf=w1000'
+          imageUrl: 'https://images.pexels.com/photos/159627/pencils-clips-colour-pencils-foam-rubber-159627.jpeg'
       - add-bullets-slide:
           title: "Bullets slide"
-          subtitle: "With 3 bullets"
+          subtitle: "With 3 bullets and an image from google drive"
           bullets: #Example of unicode bullets: ●, ○, ◆, ◇, ■, □, ⁃, ‣, •,
             - "‣ Bullet 1"
             - "‣ Bullet 2"
