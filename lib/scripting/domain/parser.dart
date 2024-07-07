@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
@@ -233,7 +231,7 @@ class ScriptDefParser {
       }
     }
 
-    return array == null || array is YamlList ? array : YamlList.wrap(List.empty());;
+    return array == null || array is YamlList ? array : YamlList.wrap(List.empty());
   }
 
   SceneDef? buildSceneDef(YamlList scenes, int i, ErrorCollector errorCollector) {

@@ -3,9 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:visualizeit/common/ui/custom_bar_widget.dart';
 import 'package:visualizeit/extension/ui/extension_page.dart';
 import 'package:visualizeit/misc/ui/help_page.dart';
-import 'package:visualizeit_extensions/logging.dart';
-
-final _logger = Logger("base.ui");
 
 class AppBarAction {
   final IconData icon;

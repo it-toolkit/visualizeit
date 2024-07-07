@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:visualizeit/extension/ui/extension_page.dart';
@@ -14,8 +13,7 @@ final _logger = Logger("base.ui");
 /// The route configuration.
 final GoRouter router = GoRouter(
   onException: (BuildContext context, GoRouterState state, GoRouter router) {
-    //TODO handle errors properly
-    print("Unexpected route!!!");
+    _logger.warn(() => "Routing error: ${state.error}");
     router.go("/");
   },
   routes: <RouteBase>[
