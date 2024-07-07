@@ -39,7 +39,7 @@ class HelpPageState extends BasePageState<HelpPage> {
           return Row(
             children: <Widget>[
               LimitedBox(maxWidth: 200, child: _buildTocWidget()),
-              Expanded(child: markdownWidget)
+              Expanded(child: Padding(padding: EdgeInsets.only(left: 15), child: markdownWidget))
             ],
           );
         } else return markdownWidget;
