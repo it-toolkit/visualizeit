@@ -39,11 +39,11 @@ scenes:
       - show-banner: [ "**This is awesome!**", center, 2, true ]
 ```
 
-## Script syntax / structure
+## Script syntax
 
 Visualize IT scripts must be written in YAML format using the specific structure shown below.
 
-### Root level keys
+### Root keys
 
 | Key         | Required | Type      | Description                                                    |
 |-------------|----------|-----------|----------------------------------------------------------------|
@@ -51,8 +51,6 @@ Visualize IT scripts must be written in YAML format using the specific structure
 | description | Yes      | String    | Script long display description with Markdown language support |
 | group       | No       | String    | Optional group name to use in script selector page (home)      |
 | scenes      | Yes      | **Scene** | List of script scenes. At least one scene is required          |
-
-### Scene
 
 ### Scene keys
 | Key                    | Required | Type              | Description                                                                                                    |
@@ -65,7 +63,7 @@ Visualize IT scripts must be written in YAML format using the specific structure
 | initial-state          | No       | **Command** array | Array of commands to setup the initial scene state. Only commands available in referenced modules can be used. |
 | transitions            | No       | **Command** array | Array of commands to build the animation. Commands will be applied sequentially.                               |
 
-#### Command
+#### Commands
 A command can have
 * No arguments
 * A single argument
@@ -173,6 +171,40 @@ Finally, at the bottom of the screen you will find the options for clone, view a
 All Public scripts are read-only, so in the view mode you won't be able edit the content of the script. If you want to made changes, just clone it to create a new script one based on it. The cloned script will be visible in 'My Scripts' tab.
 
 ![tutorial_3_3_public_scripts_options](assets/images/tutorial_3_3_public_scripts_options.png)
+
+## Script Edition
+
+The script editor has some helpful features to make script edition easier
+
+### Code completion
+
+When writing a script, the editor will try to suggest you 
+
+* **Script section templates**
+  ![tutorial_8_1_editor_template](assets/images/tutorial_8_1_editor_template.png)
+* **Extension ids**
+  ![tutorial_8_2_extension_ids](assets/images/tutorial_8_2_extension_ids.png) 
+* **Commands**
+  ![tutorial_8_3_commands](assets/images/tutorial_8_3_commands.png)
+  > If you want to know the commands available in an extension just prefix the command with the extension id.
+  ![tutorial_8_4_namespacing](assets/images/tutorial_8_4_namespacing.png)
+  > If no suggestions appear, check if the extension was added in any script scene and if you applied that change.
+* **Generators**
+  ![tutorial_8_5_generators](assets/images/tutorial_8_5_generators.png)
+
+### Generators
+
+These pre-processor directives are utilities to generate sample data easily.
+
+Currently only random integer array generation is supported. In order to use it, write the placeholder `_int_array_???_` replacing `???` with the desired amount of elements. The amount can be between 0 and 999. For example `_int_array_3_` will by replaced with an array of 3 random numbers during script play.
+
+The effective array will be shown only when playing the script. In edition mode you will se the placeholder.
+
+### Error detection
+
+While you are editing a script, the editor is continuously checking the content and will display any error found at the bottom of the editor.
+
+![tutorial_8_6_errors](assets/images/tutorial_8_6_errors.png)
 
 ## Playing a Script
 In 'Player' mode you will find two options that can be changed from the selector in the upper-right side of the screen, this options are 'Presentation Mode' and 'Exploration Mode'
